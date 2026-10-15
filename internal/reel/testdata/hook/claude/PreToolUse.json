@@ -1,0 +1,13 @@
+{
+  "session_id": "claude-session-1",
+  "transcript_path": "/home/u/.claude/projects/SECRET-7c1f.jsonl",
+  "cwd": "/home/u/SECRET-7c1f",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "echo SECRET-7c1f",
+    "description": "SECRET-7c1f"
+  },
+  "tool_use_id": "toolu_01"
+}

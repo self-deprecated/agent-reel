@@ -1,0 +1,12 @@
+{
+  "session_id": "claude-session-1",
+  "transcript_path": "/home/u/.claude/projects/SECRET-7c1f.jsonl",
+  "cwd": "/home/u/SECRET-7c1f",
+  "permission_mode": "default",
+  "hook_event_name": "SubagentStop",
+  "agent_id": "agent-7",
+  "agent_type": "Explore",
+  "agent_transcript_path": "/tmp/SECRET-7c1f",
+  "last_assistant_message": "SECRET-7c1f",
+  "stop_hook_active": false
+}

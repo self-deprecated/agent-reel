@@ -1,0 +1,130 @@
+{{define "identity"}}<span class="identity-part" title="{{.Path}}"{{if .Path}} style="--chip-bg:{{.Tint}};--chip-fg:{{.Ink}};--chip-bg-dark:{{.TintDark}};--chip-fg-dark:{{.InkDark}}"{{end}}>{{.Label}}</span>{{end}}
+{{define "heading"}}<span class="identity">{{template "identity" .Identity.Repository}}{{with .Identity.Workspace}}<span class="identity-separator">/</span><span class="identity-part identity-ws" title="{{.Path}}"{{if .Path}} style="--chip-bg:{{.Tint}};--chip-fg:{{.Ink}};--chip-bg-dark:{{.TintDark}};--chip-fg-dark:{{.InkDark}}"{{end}}>{{.Label}}</span>{{end}}</span>{{end}}
+{{define "icon-back"}}<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>{{end}}
+{{define "icon-download"}}<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>{{end}}
+{{define "icon-fullscreen"}}<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>{{end}}
+{{define "download-areel"}}{{if .Sealed}}<a href="/download/{{.ID}}" download data-download-areel title="The original sealed recording file, byte for byte">Download recording (.areel{{with .Size}}, {{.}}{{end}})</a>{{else}}<span class="menu-disabled" aria-disabled="true" data-download-areel-unavailable title="A live recording has no sealed file yet: the .areel download is available after it stops">Download recording (.areel) · after stop</span>{{end}}{{end}}
+{{define "card"}}<article class="card{{if .Live}} card-live{{end}}" data-recording-card="{{.ID}}">
+<a class="card-open" href="{{.URL}}"><div class="card-thumb"><div class="card-preview current-preview"{{with .CardPreviewURL}} data-preview-url="{{.}}"{{end}}{{with .CardPreviewFallbackURL}} data-preview-fallback-url="{{.}}"{{end}}><span class="card-caption" data-preview-status{{if .CardPreviewURL}} hidden{{end}}>{{.CardPreviewCaption}}</span></div>
+<span class="card-badges">{{if .Live}}<span class="badge-live"><span class="dot"></span>LIVE</span>{{end}}{{with .Clock}}<span class="card-duration" title="{{$.Duration}}">{{.}}</span>{{end}}</span></div>
+<div class="card-body"><div class="card-line"><span class="card-title">{{template "heading" .}}</span><span class="card-flags">{{if .Interrupted}}<span class="flag-interrupted" title="Recording ended unexpectedly"><svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg>Interrupted</span>{{end}}{{if .DiagnosticPresent}}<span class="flag-diagnostic" title="The recorder stored a diagnostic for this recording (see Diagnostics)" aria-label="Diagnostic stored"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg></span>{{end}}</span></div>
+<div class="card-meta"><span class="card-session">{{.Session}}</span><span class="card-when" title="{{.Date}}">{{.When}}</span>{{with .Size}}<span class="card-size" title="{{$.SizeTitle}}">{{.}}</span>{{end}}</div></div></a>
+{{if .Kids.Count}}<details class="card-children" data-card-children="{{.Kids.Count}}"><summary>{{.Kids.Count}} linked{{with .Kids.Total}} · {{.}}{{end}}</summary><ul>{{range .Kids.Rows}}<li><a href="{{.URL}}" data-child-recording="{{.ID}}">{{if .Live}}<span class="dot" aria-label="live"></span>{{end}}{{.Label}}{{with .Clock}} <span class="muted">{{.}}</span>{{end}}</a></li>{{end}}</ul></details>{{end}}
+</article>{{end}}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{with .Recording}}{{with .Session}}{{.}} · {{end}}{{.Identity.Repository.Label}} · AgentReel{{else}}AgentReel{{end}}</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/app.css">
+<link rel="stylesheet" href="/assets/player.css">
+</head>
+{{with .Recording}}<body class="page-viewer">
+<header class="topbar viewer-bar server-heading">
+<a class="back" href="/">{{template "icon-back"}}Library</a>
+<span class="divider" aria-hidden="true"></span>
+<h1 class="viewer-title">{{template "heading" .}}</h1>
+{{with .Session}}<span class="viewer-session">{{.}}</span>{{end}}
+{{if .Live}}{{if and (ne $.Viewer.Mode "live") $.Viewer.LiveURL}}<a class="badge-live" href="{{$.Viewer.LiveURL}}" aria-label="Return to Live" title="Return to Live"><span class="dot"></span>LIVE</a>{{else}}<span class="badge-live"><span class="dot"></span>LIVE</span>{{end}}{{end}}
+<span class="viewer-meta" title="{{.Duration}}">{{if .Live}}{{.When}}{{else}}{{.LocalDate}}{{end}}{{with .Clock}} · {{.}}{{end}}{{with .Size}} · <span class="viewer-size" title="{{$.Recording.SizeTitle}}">{{.}}</span>{{end}}</span>
+<span class="spacer"></span>
+{{with $.Viewer}}<a class="btn" data-export-link href="{{if and .ExportURL (not .MultiSegment)}}{{.ExportURL}}{{else}}{{.RecordingExportURL}}{{end}}">{{template "icon-download"}}Export{{if $.Recording.Live}} so far{{end}}</a>
+<details class="menu" data-menu><summary class="btn btn-icon" aria-label="More: diagnostics, activity log, downloads" title="More"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></summary>
+<div class="menu-list"><a href="#diagnostics" data-open-diagnostics>Diagnostics</a><a href="/activity/{{$.Recording.ID}}">Activity log</a>{{template "download-areel" $.Recording}}<form method="post" action="/exports"><input type="hidden" name="recording" value="{{$.Recording.ID}}"><input type="hidden" name="format" value="cast"><input type="hidden" name="theme" value="{{$.Theme}}" data-theme-field><button type="submit" title="A derived asciinema cast, rendered as an export job">Export asciinema .cast</button></form><form method="post" action="/exports"><input type="hidden" name="recording" value="{{$.Recording.ID}}"><input type="hidden" name="format" value="web"><input type="hidden" name="theme" value="{{$.Theme}}" data-theme-field><button type="submit" title="An offline player page for a course site or blog (ZIP: index.html, player, fonts, licenses; no metadata)">Export web embed</button></form>
+<div class="menu-theme" data-theme-control hidden><span class="menu-theme-head">Terminal colours</span>
+<div class="menu-theme-row"><select class="control" data-theme-preset aria-label="Colour theme"></select><input type="color" data-theme-bg aria-label="Background colour" title="Background colour"><button type="button" class="menu-theme-reset" data-theme-reset title="Back to the library default">Reset</button></div>
+<p class="menu-theme-note">Colours an app set explicitly (true colour or 256-colour) are kept as recorded.</p></div></div>
+</details>{{end}}
+</header>
+<main id="app" class="viewer server-viewer{{if eq $.Viewer.Mode "live"}} viewer-live{{end}}" data-recording="{{.ID}}" data-theme-default="{{$.Theme}}">
+{{with $.Viewer}}<div class="stage">
+<div class="player" id="player" data-mode="{{.Mode}}">
+<div class="player-screen">
+{{if .FrameURL}}<iframe id="terminal-frame" class="terminal-frame" title="Terminal playback" data-src="{{.FrameURL}}" data-mode="{{.Mode}}" allow="fullscreen"></iframe>{{end}}
+{{if .StillFrameURL}}<iframe id="still-frame" class="terminal-frame" title="Latest durable screen" src="{{.StillFrameURL}}" data-live-unavailable></iframe>{{end}}
+<div class="player-notice"><svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg><span id="player-status" role="status"{{if .Problem}} data-problem{{end}}>{{.Status}}</span>{{if and (eq .Mode "live") .LiveURL}}<a class="notice-action" href="{{.LiveURL}}" data-live-retry>Retry now</a>{{end}}</div>
+</div>
+{{if eq .Mode "live"}}<div class="player-bar">{{with .PlayFromStartURL}}<a class="bar-button" href="{{.}}" aria-label="Play from start" title="Play from start"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg></a>{{end}}<span class="bar-time" data-live-clock="{{$.Recording.Clock}}">{{$.Recording.Clock}}</span><span class="bar-track bar-track-full" aria-hidden="true"><span class="bar-knob"></span></span><span class="live-toggle" aria-pressed="true"><span class="dot"></span>Live</span><button class="bar-button" type="button" data-fullscreen aria-label="Full screen" title="Full screen">{{template "icon-fullscreen"}}</button></div>{{end}}
+</div>
+<div class="below-player">
+{{if .MultiSegment}}<nav class="segments" aria-label="Segments"><span>Segment</span>{{range .Segments}}<a href="{{.URL}}">{{.Label}}</a>{{end}}</nav>{{end}}
+<details id="diagnostics" class="diagnostics"><summary>Diagnostics</summary>
+<div class="diagnostics-body">
+<p class="diag-line">{{with $.Recording.Session}}{{.}} · {{end}}recording {{$.Recording.ShortID}} · {{$.Recording.Status}} · {{$.Recording.Date}} · {{$.Recording.Duration}}</p>
+<p class="diag-line" data-diagnostic-notice>{{.Notice}}</p>{{with .Visual}}
+<section class="visual-facts" aria-label="Visual recording facts">{{if .Unavailable}}
+<p class="visual-facts-unavailable" data-fact="unavailable">Visual facts unavailable: {{.Unavailable}}</p>{{else}}
+{{if .Warning}}<p class="pills"><span class="pill pill-warn" data-fidelity-warning>Fidelity incomplete: an interval is open</span></p>{{end}}
+<dl class="visual-facts-list">
+<div><dt>Observed</dt><dd data-fact="observed">{{.Observed}}</dd></div>
+<div><dt>Source</dt><dd data-fact="source">{{.Source}}</dd></div>
+<div><dt>Durable</dt><dd data-fact="durable">{{.Durable}}</dd></div>
+{{if .Unacknowledged}}<div><dt>Committed, unacknowledged</dt><dd data-fact="unacknowledged">{{.Unacknowledged}} views committed but not yet acknowledged</dd></div>
+{{end}}<div><dt>Last visual change</dt><dd data-fact="last-change">{{.LastChange}}</dd></div>
+<div><dt>Estimated</dt><dd data-fact="estimated">{{.Estimated}}</dd></div>
+<div><dt>Pause gaps</dt><dd data-fact="pause-gaps">{{range .PauseGaps}}<span class="visual-fact-item">{{.}}</span>{{else}}none{{end}} <span class="muted">({{.PauseNote}})</span></dd></div>
+<div><dt>Fidelity</dt><dd data-fact="fidelity">{{range .Fidelity}}<span class="visual-fact-item">{{.}}</span>{{end}}</dd></div>
+</dl>{{end}}
+</section>{{end}}
+<p class="diag-line">Segments: {{range .Segments}}<a href="{{.URL}}">{{.Label}}</a> {{else}}none{{end}}· <a href="{{.MarksURL}}">All marks and activity rows</a></p>
+</div>
+</details>
+<a href="/activity/{{$.Recording.ID}}">Activity log</a>
+{{if $.Recording.Sealed}}<a href="/download/{{$.Recording.ID}}" download data-download-areel>Download recording (.areel{{with $.Recording.Size}}, {{.}}{{end}})</a>{{end}}
+<form class="inline-form" method="post" action="/exports"><input type="hidden" name="recording" value="{{$.Recording.ID}}"><input type="hidden" name="format" value="cast"><input type="hidden" name="theme" value="{{$.Theme}}" data-theme-field><button class="link-button" type="submit">Export asciinema .cast</button></form>
+<form class="inline-form" method="post" action="/exports"><input type="hidden" name="recording" value="{{$.Recording.ID}}"><input type="hidden" name="format" value="web"><input type="hidden" name="theme" value="{{$.Theme}}" data-theme-field><button class="link-button" type="submit">Export web embed</button></form>
+</div>
+</div>
+<aside class="rail" id="marks" aria-label="Marks" data-marks-api="{{.MarksAPI}}" data-summary-api="{{.SummaryAPI}}" data-newest="{{.NewestMarksCursor}}" data-segment="{{.Segment}}" data-segments="{{len .Segments}}" data-mode="{{.Mode}}" data-at="{{.At}}"{{with .Cutoff}} data-cutoff="{{.}}"{{end}} data-recording="{{$.Recording.ID}}">
+{{with .Links}}<section class="links-lane" aria-label="Links" data-links-lane>
+{{with .From}}<p class="links-from">Linked from <a href="{{.OpenURL}}" data-link-parent>{{.Label}}</a></p>{{end}}
+{{if .Items}}<h2>Links <span class="rail-count">{{len .Items}}</span></h2><ul>{{range .Items}}<li class="link-item" data-link-kind="{{.Kind}}">{{if .External}}<span class="link-open" title="Referenced in place; available to the CLI only">{{.Label}} · {{.Kind}} (CLI only)</span>{{else}}<a class="link-open" href="{{.OpenURL}}"{{if .Asset}} target="_blank" rel="noopener"{{end}} data-link-open>{{if .Live}}<span class="dot" aria-label="open"></span>{{end}}{{.Label}} · {{.Kind}}</a>{{end}}{{if .JumpURL}} <a class="link-jump" href="{{.JumpURL}}" data-link-jump title="Jump to where the link starts">{{.When}}</a>{{end}}{{with .Issues}} <span class="muted" title="{{.}}">⚠</span>{{end}}</li>{{end}}</ul>{{end}}
+</section>{{end}}
+<div class="rail-head"><div class="rail-title"><h2>Marks <span class="rail-count" data-rail-count></span></h2>{{if $.Recording.Live}}<button type="button" class="btn btn-small rail-mark" data-mark-button aria-keyshortcuts="m" title="Mark this moment, with an optional label (m)">Mark</button>{{else}}<button type="button" class="btn btn-small rail-mark" disabled data-mark-unavailable title="Marks can only be added while the recording is live">Mark</button>{{end}}</div>
+<div class="legend" aria-hidden="true"><span><span class="swatch swatch-you"></span>You</span><span><span class="swatch swatch-agent"></span>Agent</span><span><span class="swatch swatch-tool"></span>Tool</span></div>
+<form class="rail-search" role="search" data-text-search data-recording="{{$.Recording.ID}}" hidden><label class="search search-compact"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="sr-only">Search the text of this recording</span><input class="search-input" type="search" maxlength="256" placeholder="Search this recording" autocomplete="off" data-text-search-input></label></form></div>
+<div class="rail-body" data-rail-body><p class="rail-note">Loading marks…</p></div>
+<div class="rail-body search-results" data-search-results aria-live="polite" hidden></div>
+<noscript><p class="rail-note"><a href="{{.MarksURL}}">Open the marks list</a></p></noscript>
+</aside>{{end}}
+</main>
+<noscript class="page-noscript">The terminal player needs JavaScript. The marks list and exports work without it.</noscript>
+<script type="module" src="/assets/viewer-adapter.mjs"></script>
+{{if $.Viewer.Links}}<script type="module" src="/assets/sidecar-view.mjs"></script>{{end}}
+</body>{{else}}<body class="page-library">
+<header class="topbar library-bar">
+<a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span>AgentReel</a>
+<form class="library-tools" action="/" method="get" role="search" data-catalog-form>
+<label class="search"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="sr-only">Search sessions, repos, workspaces</span><input class="search-input" name="q" type="search" maxlength="256" placeholder="Search sessions, repos, workspaces" value="{{.Query.Search}}" autocomplete="off"></label>
+<nav class="filters" aria-label="Show" data-catalog-filters>{{range .Filters}}<a class="filter{{if .Active}} filter-active{{end}}" href="{{.URL}}" data-show="{{.Value}}"{{if .Active}} aria-current="true"{{end}}>{{.Label}} <span class="count">{{.Count}}</span></a>{{end}}</nav>
+{{if and .Query.Show (ne .Query.Show "all")}}<input type="hidden" name="show" value="{{.Query.Show}}">{{end}}
+<span class="spacer"></span>
+<label class="sort">Sort <select class="control" name="sort">
+<option value="newest"{{if eq .Query.Sort "newest"}} selected{{end}}>Newest first</option>
+<option value="oldest"{{if eq .Query.Sort "oldest"}} selected{{end}}>Oldest first</option>
+<option value="longest"{{if eq .Query.Sort "longest"}} selected{{end}}>Longest first</option>
+<option value="name"{{if eq .Query.Sort "name"}} selected{{end}}>Session name</option>
+{{if eq .Query.Sort "observed"}}<option value="observed" selected>Observed order</option>{{end}}
+</select></label>
+{{if .Query.After}}<input type="hidden" name="after" value="{{.Query.After}}">{{end}}
+<a class="topbar-link" href="/exports">Exports</a>
+</form>
+</header>
+<main id="app" class="library" data-theme-default="{{.Theme}}">
+<form class="text-search" role="search" data-text-search hidden><label class="search"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="sr-only">Search the text shown inside all recordings</span><input class="search-input" type="search" maxlength="256" placeholder="Search text inside recordings" autocomplete="off" data-text-search-input></label><label class="text-search-fuzzy"><input type="checkbox" data-text-search-fuzzy> Fuzzy</label></form>
+<section class="search-results library-search-results" data-search-results aria-live="polite" hidden></section>
+<span hidden data-catalog-observation="{{.ObservedAt}}"></span>
+<div class="cards" data-catalog-revision="{{.Revision}}">
+{{range .Groups}}<section class="section">{{if .Label}}<h2 class="group-title">{{.Label}} <span class="count">{{len .Rows}}</span></h2>{{end}}
+<div class="grid">{{range .Rows}}
+{{template "card" .}}{{end}}</div></section>
+{{else}}<p class="empty">No recordings match on this page.</p>{{end}}
+</div>
+{{if .Next}}<a class="btn btn-wide" data-catalog-next href="{{.Next}}">Next page</a>{{end}}
+{{if .Query.After}}<a class="btn btn-wide" href="/">First page</a>{{end}}
+</main>
+<script type="module" src="/assets/catalog-adapter.mjs"></script>
+</body>{{end}}
+</html>

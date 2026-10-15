@@ -1,0 +1,20 @@
+{
+  "name": "agent-reel",
+  "interface": {
+    "displayName": "AgentReel"
+  },
+  "plugins": [
+    {
+      "name": "agent-reel",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

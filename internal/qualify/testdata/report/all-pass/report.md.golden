@@ -1,0 +1,132 @@
+ROLLOUT: BLOCKED
+
+Budget amendments: none.
+
+**Automated qualification: pass; rollout: blocked**
+
+- Automated result: pass (correctness: pass; budgets: pass)
+- Rollout: blocked
+- Profile: full
+- Budgets: `fa9769b48857f6cf051dd46402498e2d4dbbc13d8491ea323f90340302ca4a36` (matches the frozen hash)
+- Budgets equal the Run 1 genesis `fa9769b48857f6cf051dd46402498e2d4dbbc13d8491ea323f90340302ca4a36`
+- Source: jj change `kxfixture`, commit `fd6fixture`; tree manifest `abababababababababababababababababababababababababababababababab` (3 files)
+- Suites: not collected
+
+## Blocked on
+
+| # | ID | Kind | Reason | Evidence | Next input |
+|---|---|---|---|---|---|
+| 1 | gate.soak | external-gate | No real sustained-runtime soak was run; accelerated logical timelines do not reproduce real-duration effects. | report.json#/notReproduced | user authorization + duration (e.g. ≥ 72 h) + hardware + isolated resources |
+| 2 | gate.zellij-backend | external-gate | The real Zellij backend readiness/resize/working-view gate (existing, separate) was not exercised; V8 uses isolated fixtures and owned artificial PTYs only. | docs/visual-recording-qualification.md | user authorization for the existing capture gate |
+| 3 | gate.capture-beyond-fixtures | external-gate | No capture beyond isolated fixtures was performed. | docs/visual-recording-qualification.md | explicit authorization |
+
+## Budgets
+
+| ID | Metric | Budget | Verdict | Worst observation | Basis |
+|---|---|---|---|---|---|
+| B01 | Helper peak RSS per target (80x24 workloads) | ≤ 8 MiB | pass | B01: 3 MiB vs <= 8 (W1@1:matrix target 0) | measured-prior: V2 measured 2.5–2.6 MiB (×3) |
+| B02 | Helper peak RSS per target, W7 (≤120x40) | ≤ 12 MiB | pass | B02: 3 MiB vs <= 12 (W7@1:matrix target 0) | measured-prior: V2 3.6–4.5 MiB at 512x64 envelope |
+| B03 | Sum of helper peak RSS at 32 targets | ≤ 256 MiB | pass | B03: 90 MiB vs <= 256 (W1@32:matrix) | measured-prior: V2 81–83 MiB at 32 (×3) |
+| B04 | Tier A worker peak RSS per target | ≤ 96 MiB | pass | B04: 40 MiB vs <= 96 (W1@1:matrix target 0) | measured-prior, requirement: V3 HeapInuse < 8 MiB measured; 8 MiB SQLite cache per connection × 2; requirement headroom |
+| B05 | Worker VmRSS slope (last ⅔ of 3-day) | ≤ 1 MiB per logical day | pass | B05: 0.1 MiB/logical-day vs <= 1 (mixed@1:3d target 0) | requirement: V3 bounded working memory |
+| B06 | Helper VmRSS slope (last ⅔ of 3-day) | ≤ 0.5 MiB per logical day | pass | B06: 0.01 MiB/logical-day vs <= 0.5 (mixed@1:3d target 0) | requirement: V2 "flat in event count" |
+| B07 | Worker+helper CPU-s per logical hour, per target | W1 ≤ 53; W2 ≤ 1; W3 ≤ 1000; W4 ≤ 71; W5 ≤ 101; W6 ≤ 185; W7 ≤ 75; W8 ≤ 60; W9 ≤ 215 | pass | B07.W1: 0.5 CPU-s/logical-h vs <= 53 (W1@1:matrix target 0); B07.W2: 0.5 CPU-s/logical-h vs <= 1 (W2@1:matrix target 0); B07.W3: 0.5 CPU-s/logical-h vs <= 1000 (W3@1:matrix target 0); B07.W4: 0.5 CPU-s/logical-h vs <= 71 (W4@1:matrix target 0); B07.W5: 0.5 CPU-s/logical-h vs <= 101 (W5@1:matrix target 0); B07.W6: 0.5 CPU-s/logical-h vs <= 185 (W6@1:matrix target 0); B07.W7: 0.5 CPU-s/logical-h vs <= 75 (W7@1:matrix target 0); B07.W8: 0.5 CPU-s/logical-h vs <= 60 (W8@1:matrix target 0); B07.W9: 0.5 CPU-s/logical-h vs <= 215 (W9@1:matrix target 0) | measured-prior, requirement: `5 × V2 changed-mode p99@32 × events/h + 1,800 commits/h × 5 ms`. W1 uses redraw-unchanged (2.446 ms), W4/W5 typing-sparse (0.513 ms), W3 scroll-dense (2.754 ms), W6 redraw-unchanged. W7 = W4 + 5 × 240 × 3.11 ms. W8 = W1 + 7 s scanner allowance (requirement). W9 = W4 + 28,800 × 5 ms (requirement). W2 is a requirement. |
+| B08 | Aggregate Tier A CPU for the mixed profile at 32 targets | ≤ 4.0 cores-equivalent (Σ CPU-s ÷ logical s) | pass | B08: 1 cores vs <= 4 (mixed@32:8h) | requirement: requirement (12.5% of host) |
+| B09a | Tier B total recorder+helper+capture CPU at 32 targets, real-time mix | ≤ 4.0 cores | pass | B09a: 2 cores vs <= 4 (mix-b@32:realtime) | requirement: requirement |
+| B09b | Tier B total recorder+helper+capture peak RSS at 32 targets | ≤ 4 GiB | pass | B09b: 1 GiB vs <= 4 (mix-b@32:realtime) | requirement: requirement |
+| B10 | W2 3-day: growth after the first commit | views, rows, screens +0; `visual.sqlite` +≤ 64 KiB; allocated +≤ 64 KiB | pass | B10.views: 0 count vs <= 0 (W2@32:3d target 0); B10.rows: 0 count vs <= 0 (W2@32:3d target 0); B10.screens: 0 count vs <= 0 (W2@32:3d target 0); B10.db: 16 KiB vs <= 64 (W2@32:3d target 0); B10.allocated: 16 KiB vs <= 64 (W2@32:3d target 0) | requirement: V5 "a quiet segment commits nothing" |
+| B11 | W1 (8 h and 3-day): growth | views = analytic distinct count (1); rows/screens +0 after the first repaint; db file +≤ 256 KiB after logical hour 1; db slope ≤ 4 KiB per logical hour; end allocated ≤ allocated at hour 1 + 16 MiB | pass | B11.views: 2 count vs == 2 (W1@10:3d target 0); B11.rows: 0 count vs <= 0 (W1@10:3d target 0); B11.screens: 0 count vs <= 0 (W1@10:3d target 0); B11.db: 100 KiB vs <= 256 (W1@10:3d target 0); B11.db_slope: 1 KiB/logical-h vs <= 4 (W1@10:3d target 0); B11.allocated: 20 MiB vs <= 26 (W1@10:3d target 0) | measured-prior: V3 10,000 idle commits within 8 MiB, WAL peak 1.4 MiB |
+| B12 | W5 | rows/screens +0 after the first cycle; views ≤ analytic changes; allocated per view (slope) ≤ 200 B | pass | B12.rows: 0 count vs <= 0 (W5@1:matrix target 0); B12.screens: 0 count vs <= 0 (W5@1:matrix target 0); B12.views: 2 count vs <= 2 (W5@1:matrix target 0); B12.per_view: 150 B/view vs <= 200 (W5@1:matrix target 0) | schema-estimate: schema estimate (~130 B per view row + `views_at` entry) |
+| B13 | W3 | allocated slope ≤ 200 B × views + 512 B × screens + 1,024 B × rows, per logical hour | pass | B13: 1000 B/logical-h vs <= 17360 (W3@1:matrix target 0) | schema-estimate, measured-prior: schema estimate + V2 960 B raw 80-col coloured row |
+| B14 | W6, W7 | rows/screens after the first cycle ≤ the analytic distinct set; views ≤ analytic changes | pass | B14.rows: 20 count vs <= 25 (W6@1:matrix target 0); B14.screens: 2 count vs <= 2 (W6@1:matrix target 0); B14.views: 2 count vs <= 2 (W6@1:matrix target 0) | requirement: V3 dedup contract |
+| B15 | W8 | findings = analytic transitions (repeats add 0); allocated per finding ≤ 256 B | pass | B15.findings: 10 count vs == 10 (W8@1:matrix target 0); B15.per_finding: 100 B/finding vs <= 256 (W8@1:matrix target 0) | requirement, schema-estimate: V2 sparse-warning contract; schema estimate |
+| B16 | W9 | activity allocated per event ≤ 1.5 × envelope + 512 B; visual view count = the W4-only analytic count | pass | B16.activity: 2000 B/event vs <= 3662 (W9@1:matrix target 0); B16.views: 2 count vs == 2 (W9@1:matrix target 0) | requirement: requirement; V4 contract |
+| B17 | Every `visual.sqlite-wal` and activity WAL, every scenario, every sample | ≤ 20 MiB | pass | B17: 5 MiB vs <= 20 (W1@1:matrix target 0) | measured-prior: V3 test bound (16 MiB `journal_size_limit` + 4 MiB) |
+| B18 | Exported recording's WAL peak during export | ≤ max(peak in the equal-length window before export, 4 MiB) + 1 MiB, and ≤ B17 | pass | B18.relative: 4.5 MiB vs <= 5 (export@10:realtime); B18.absolute: 4.5 MiB vs <= 20 (export@10:realtime) | requirement: V3/V7 short-transaction design |
+| B19 | Commit latency per target (non-fault scenarios) | p99 ≤ 250 ms; p99.9 ≤ 1 s; max ≤ 5 s; 0 backlog failures | pass | B19.commit_p99: 50 ms vs <= 250 (W1@1:matrix target 0); B19.commit_p999: 0.2 s vs <= 1 (W1@1:matrix target 0); B19.commit_max: 1 s vs <= 5 (W1@1:matrix target 0); B19.backlog_failures: 0 count vs == 0 (W1@1:matrix target 0) | requirement: requirement: FlushAge/8, StallAge/3 |
+| B20 | Tier B durable lag at 32 targets | p99 ≤ 3 s; max ≤ 5 s | pass | B20.p99: 2 s vs <= 3 (mix-b@32:realtime); B20.max: 3 s vs <= 5 (mix-b@32:realtime) | requirement: V5 FlushAge 2 s + 1 s |
+| B21 | Tier B live lag at 32 targets with capture running | p99 ≤ 1 s; max ≤ 2 s | pass | B21.p99: 0.3 s vs <= 1 (mix-b@32:realtime); B21.max: 0.8 s vs <= 2 (mix-b@32:realtime) | requirement: requirement |
+| B22 | Helper handshake latency at 32 concurrent starts | p99 ≤ 2 s | pass | B22: 0.5 s vs <= 2 (W1@32:matrix) | requirement: `helperStartTimeout` 10 s ÷ 5 |
+| B23 | Seek on 3-day stores | process-cold first seek ≤ 250 ms; random p99 ≤ 50 ms, max ≤ 250 ms; p99(latest 10%) ÷ p99(earliest 10%) ≤ 2; plan uses `views_at`, no `SCAN views` | pass | B23.cold: 100 ms vs <= 250 (mixed@1:3d); B23.random_p99: 10 ms vs <= 50 (mixed@1:3d); B23.random_max: 100 ms vs <= 250 (mixed@1:3d); B23.late_early: 1.2 ratio vs <= 2 (mixed@1:3d); B23.plan_index: 1 bool vs == 1 (mixed@1:3d); B23.plan_scan: 0 count vs == 0 (mixed@1:3d) | measured-prior, requirement: V3 query-plan assertion; latency requirement |
+| B24 | GUI history pin and window per segment, 8 h / 3-day | pin ≤ 10 s, within V6 budgets or a visible refusal; late window first render p99 ≤ 2 s; cached window p99 ≤ 100 ms | pass | B24.pin: 3 s vs <= 10 (mixed@1:8h target 0); B24.refusal: 0 count vs == 0 (mixed@1:8h target 0); B24.late_window: 1 s vs <= 2 (mixed@1:8h target 0); B24.cached_window: 20 ms vs <= 100 (mixed@1:8h target 0) | requirement: V6 declared budgets; requirement |
+| B25 | Readers: 16 viewers on 10 capturing recordings | served (non-503) p99 ≤ 5 s; 503 rate ≤ 10%; 0 other 5xx; 0 truncated bodies; B17/B19 hold | pass | B25.served_p99: 2 s vs <= 5 (readers-16@10:realtime); B25.503_rate: 5 percent vs <= 10 (readers-16@10:realtime); B25.other_5xx: 0 count vs == 0 (readers-16@10:realtime); B25.truncated: 0 count vs == 0 (readers-16@10:realtime); B25.wal: 5 MiB vs <= 20 (readers-16@10:realtime target 0); B25.commit_p99: 50 ms vs <= 250 (readers-16@10:realtime target 0); B25.commit_p999: 0.2 s vs <= 1 (readers-16@10:realtime target 0); B25.commit_max: 1 s vs <= 5 (readers-16@10:realtime target 0); B25.backlog_failures: 0 count vs == 0 (readers-16@10:realtime target 0) | requirement: V6 permit 2 + 5 s wait |
+| B26 | Recovery after SIGKILL | doctor verdict ≤ 30 s (8 h store), ≤ 120 s (3-day store), within **default** work limits (no `unverified`); salvage ≤ 2 × doctor time | pass | B26.doctor_8h: 10 s vs <= 30 (mixed@1:8h); B26.doctor_3d: 10 s vs <= 120 (mixed@1:3d); B26.unverified: 0 count vs == 0 (mixed@1:8h); B26.salvage: 15 s vs <= 20 (mixed@1:8h) | requirement: requirement; V5 flagged `--work` defaults |
+| B27 | Export under capture (10 dense + 32 mixed targets) | 1280x720 H.264 30 fps course recipe ≥ 10 frames/s; 640x480 ≥ 10 frames/s; export peak RSS ≤ 1,536 MiB; B19 holds during export | pass | B27.fps_720p: 15 frames/s vs >= 10 (export@10:realtime); B27.fps_480p: 30 frames/s vs >= 10 (export@10:realtime); B27.rss: 800 MiB vs <= 1536 (export@10:realtime); B27.commit_p99: 50 ms vs <= 250 (export@10:realtime target 0); B27.commit_p999: 0.2 s vs <= 1 (export@10:realtime target 0); B27.commit_max: 1 s vs <= 5 (export@10:realtime target 0); B27.backlog_failures: 0 count vs == 0 (export@10:realtime target 0) | requirement: legacy 10 fps target; `MaxJobAge` (18,000 frames in 30 min); `MaxRSSBytes` |
+| B29 | Activity overload: 8 producers flooding one target for 60 s | every `durable:true` receipt present after reopen/verify; every overload/reject receipt absent; counters equal rejects; that target's B19/B21 hold; others unaffected; holder heap ≤ 64 MiB | pass | B29.durable_missing: 0 count vs == 0 (flood@10:realtime); B29.rejected_present: 0 count vs == 0 (flood@10:realtime); B29.counter_mismatch: 0 count vs == 0 (flood@10:realtime); B29.live_p99: 0.3 s vs <= 1 (flood@10:realtime); B29.live_max: 0.8 s vs <= 2 (flood@10:realtime); B29.heap: 20 MiB vs <= 64 (flood@10:realtime); B29.commit_p99: 50 ms vs <= 250 (flood@10:realtime target 0); B29.commit_p999: 0.2 s vs <= 1 (flood@10:realtime target 0); B29.commit_max: 1 s vs <= 5 (flood@10:realtime target 0); B29.backlog_failures: 0 count vs == 0 (flood@10:realtime target 0) | measured-prior, requirement: V4 queue design; V4 heap bound |
+
+## Scenarios
+
+| Scenario | State | Planned | Cells (planned) | Checks pass/fail | Label |
+|---|---|---|---|---|---|
+| A.matrix | complete | yes | 30 (30) | 1/0 | accelerated-logical |
+| A.timeline.8h | complete | yes | 3 (3) | 1/0 | accelerated-logical |
+| A.timeline.3d | complete | yes | 3 (3) | 1/0 | accelerated-logical |
+| A.nongrowth | complete | yes | 3 (3) | 1/0 | accelerated-logical |
+| A.seek | complete | yes | 2 (2) | 1/0 | accelerated-logical |
+| A.recovery | complete | yes | 2 (2) | 1/0 | accelerated-logical |
+| A.fault.F1 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F2 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F3 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F4 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F5 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F6 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F7 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F8 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F9 | complete | yes | 1 (1) | 1/0 | accelerated-logical |
+| A.fault.F10 | complete | yes | 2 (2) | 1/0 | accelerated-logical |
+| A.fault.H4 | complete | yes (report-only) | 0 (0) | 1/0 | accelerated-logical |
+| B.scale | complete | yes | 3 (3) | 1/0 | real-time |
+| B.live-loss | complete | yes | 1 (1) | 1/0 | real-time |
+| B.metadata-overload | complete | yes | 1 (1) | 1/0 | real-time |
+| C.export-under-capture | complete | yes | 2 (2) | 1/0 | real-time |
+| C.readers | complete | yes | 2 (2) | 1/0 | real-time |
+| C.history-budgets | complete | yes | 3 (3) | 1/0 | real-time |
+
+All 27 correctness checks pass.
+
+## Report-only metrics
+
+| Scenario | Cell | Metric | Value | Kind | Method / formula |
+|---|---|---|---|---|---|
+| A.timeline.8h |  | fidelity.scanner_cpu_share | 1.5 percent | derived | getrusage deltas around Feed; scanner CPU / worker CPU |
+| A.fault.H4 |  | h4.verify_live_wal_peak | 900 MiB | measured | fixture |
+
+## Findings
+
+| Scenario | ID | Evidence | Suspected cause | Proposed remedy |
+|---|---|---|---|---|
+| A.fault.H4 | H4/W3@1:fault | scenarios/A.fault.H4/result.json: fixture WAL peak 900 MiB | one long read transaction | short read transactions |
+
+## What accelerated logical time does not reproduce
+
+- real-duration effects: page-cache aging, allocator fragmentation over days, timer drift, fsync behaviour across a real day
+- wall-clock estimates (V6's ack-mtime estimate)
+- durable lag and live lag, which are meaningful only in Tier B
+- holder supervision intervals
+- process lifetime over real days
+
+## Known limits
+
+- Accelerated results are labelled accelerated-logical with the logical span and wall duration; they are never a soak.
+- Resize coverage is synthetic asciicast r events in Tier A only; it is not backend resize qualification.
+- Cold seek is process-cold; the OS page cache is not dropped (drop_caches needs root).
+- Slow I/O is simulated by injected commit latency, not a slow block device.
+- ENOSPC is real on a size-limited tmpfs in a private user/mount namespace, not on the production filesystem.
+- H5: power loss, -shm damage and forgery are not exercised (no power-cut rig, no root).
+- Budgets are at 80x24; W3 at 200x50 is report-only.
+- Results characterise the recorded host only (x86_64 Linux); macOS and aarch64 are not covered.
+- H2: the fidelity scanner cost is reported, not budgeted separately; cursor shape, combining marks and wrap flags are known readout limits; no coalescing is enabled.
+- H7: the activity sender does not latch storage-limit/sink-unavailable; holder restart/reopen is not exercised; activitystore.Create leaves its directory on failure.
+- H8: completion disagreements, an empty store after a failed post-Start launch, a generic 422 and the fixed 10 s helperStartTimeout are known and not retested.
+- H1: there is no source idle/drain barrier; live estimates are UI-only and export stays within durable coverage. Tier B measures durable lag and trailing holds against this degraded contract.
+- H4: exported visualstore.Verify holds one read transaction on a live store (the doctor CLI refuses active owners); A.fault.H4 records the WAL it pins as report-only metrics and a finding above B17, never a budget exemption.
+- H10: the declared export limits (108,000 frames, the 30-minute MaxJobAge, the 512 MiB render input) are compared by the M28 estimate and render-input bytes per selected hour; an incremental render input is only a proposal.
+- Accelerated non-growth of quiet content (B10, B11) follows from the logical flush committing nothing without a change; real-time quiet-segment evidence comes from Tier B.
+- No Zellij binary, session or working terminal is touched: Tier B uses real asciinema 3.2.1 in owned artificial PTYs with ZELLIJ*/TMUX* stripped and a trap zellij shim.
+
+## V9 input
+
+| Scenario | Cell | Metric | Value | Kind | Method / formula |
+|---|---|---|---|---|---|
+| A.timeline.3d |  | v9.spinner_view_bytes_per_hour | 4.2 MiB/logical-h | derived | store accounting; view bytes / logical hours |
+

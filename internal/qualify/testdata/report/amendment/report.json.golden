@@ -1,0 +1,3029 @@
+{
+  "schema": "agent-reel/qualification-report/1",
+  "rollout": {
+    "status": "blocked",
+    "blockedOn": [
+      {
+        "id": "gate.soak",
+        "kind": "external-gate",
+        "reason": "No real sustained-runtime soak was run; accelerated logical timelines do not reproduce real-duration effects.",
+        "evidence": "report.json#/notReproduced",
+        "nextInput": "user authorization + duration (e.g. ≥ 72 h) + hardware + isolated resources"
+      },
+      {
+        "id": "gate.zellij-backend",
+        "kind": "external-gate",
+        "reason": "The real Zellij backend readiness/resize/working-view gate (existing, separate) was not exercised; V8 uses isolated fixtures and owned artificial PTYs only.",
+        "evidence": "docs/visual-recording-qualification.md",
+        "nextInput": "user authorization for the existing capture gate"
+      },
+      {
+        "id": "gate.capture-beyond-fixtures",
+        "kind": "external-gate",
+        "reason": "No capture beyond isolated fixtures was performed.",
+        "evidence": "docs/visual-recording-qualification.md",
+        "nextInput": "explicit authorization"
+      }
+    ]
+  },
+  "automated": {
+    "result": "pass",
+    "correctness": "pass",
+    "budgets": "pass",
+    "statement": "automated qualification: pass; rollout: blocked"
+  },
+  "profile": "full",
+  "profileLabel": "full",
+  "budgets": {
+    "schema": "agent-reel/qualification-budgets/1",
+    "sha256": "046d5501928e496bc729ec6896ccd1b71a0c07cfc32f2f3b7d963baa544cefe8",
+    "frozenSha256": "046d5501928e496bc729ec6896ccd1b71a0c07cfc32f2f3b7d963baa544cefe8",
+    "matchesFrozen": true,
+    "genesisSha256": "fa9769b48857f6cf051dd46402498e2d4dbbc13d8491ea323f90340302ca4a36",
+    "amendedSinceGenesis": true,
+    "amendments": [
+      {
+        "date": "2026-09-23",
+        "id": "B01",
+        "old": "≤ 8 MiB",
+        "new": "≤ 8 MiB (fixture)",
+        "reason": "fixture amendment for the report golden test",
+        "approvedBy": "fixture user"
+      }
+    ]
+  },
+  "source": {
+    "changeId": "kxfixture",
+    "commitId": "fd6fixture",
+    "treeSha256": "abababababababababababababababababababababababababababababababab",
+    "treeFiles": 3,
+    "method": "V0 manifest (docs/visual-recording-baseline.md): regular files under cmd/ and internal/ plus go.mod and go.sum, excluding *.md and cleanSource backup/swap files as the Nix source filter does; paths sorted bytewise; sha256 of the UTF-8 lines sha256(file) + \"  \" + path + \"\\n\""
+  },
+  "environment": {
+    "host": "fixture",
+    "nproc": 32
+  },
+  "suites": null,
+  "budgetVerdicts": [
+    {
+      "id": "B01",
+      "metric": "Helper peak RSS per target (80x24 workloads)",
+      "budget": "≤ 8 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V2 measured 2.5–2.6 MiB (×3)",
+        "derivation": "docs/visual-recording-readout-benchmarks.md: ~2.5 MiB resident per 80x24 helper at 1/10/32 helpers (2.480-2.625 MiB/helper across the benchmark rows). 8 MiB / 2.6 MiB = 3.08."
+      },
+      "limits": [
+        {
+          "key": "B01",
+          "metric": "helper.peak_rss",
+          "comparator": "\u003c=",
+          "threshold": "8 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 24,
+          "passed": 24,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 3,
+            "threshold": 8,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/helper.peak_rss"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B02",
+      "metric": "Helper peak RSS per target, W7 (≤120x40)",
+      "budget": "≤ 12 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V2 3.6–4.5 MiB at 512x64 envelope",
+        "derivation": "docs/visual-recording-readout-benchmarks.md: 3.6-4.5 MiB/helper at 512x64 (32,768 cells), which bounds 120x40 (4,800 cells). 12 MiB / 4.5 MiB = 2.67."
+      },
+      "limits": [
+        {
+          "key": "B02",
+          "metric": "helper.peak_rss",
+          "comparator": "\u003c=",
+          "threshold": "12 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W7@1:matrix",
+            "target": 0,
+            "observed": 3,
+            "threshold": 12,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W7@1:matrix/helper.peak_rss"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B03",
+      "metric": "Sum of helper peak RSS at 32 targets",
+      "budget": "≤ 256 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V2 81–83 MiB at 32 (×3)",
+        "derivation": "docs/visual-recording-readout-benchmarks.md: 80.3-83.5 MiB summed VmRSS of 32 80x24 helpers. 256 MiB / 83 MiB = 3.08."
+      },
+      "limits": [
+        {
+          "key": "B03",
+          "metric": "helper.peak_rss_sum",
+          "comparator": "\u003c=",
+          "threshold": "256 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 9,
+          "passed": 9,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@32:matrix",
+            "observed": 90,
+            "threshold": 256,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@32:matrix/helper.peak_rss_sum"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B04",
+      "metric": "Tier A worker peak RSS per target",
+      "budget": "≤ 96 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "V3 HeapInuse \u003c 8 MiB measured; 8 MiB SQLite cache per connection × 2; requirement headroom",
+        "derivation": "Measured: V3 HeapInuse \u003c 8 MiB. Modelled: 8 MiB SQLite page cache per connection x 2 connections. 8 + 2 x 8 = 24 MiB; 96 MiB = 4 x 24 MiB, the headroom being a requirement."
+      },
+      "limits": [
+        {
+          "key": "B04",
+          "metric": "worker.peak_rss",
+          "comparator": "\u003c=",
+          "threshold": "96 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 27,
+          "passed": 27,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 40,
+            "threshold": 96,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/worker.peak_rss"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B05",
+      "metric": "Worker VmRSS slope (last ⅔ of 3-day)",
+      "budget": "≤ 1 MiB per logical day",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V3 bounded working memory",
+        "derivation": "V3 establishes bounded working memory qualitatively; the numeric slope is a requirement. Least squares over samples in the last two-thirds of the 3-day span."
+      },
+      "limits": [
+        {
+          "key": "B05",
+          "metric": "worker.rss_slope",
+          "comparator": "\u003c=",
+          "threshold": "1 MiB/logical-day",
+          "unit": "MiB/logical-day",
+          "verdict": "pass",
+          "cells": 5,
+          "passed": 5,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.timeline.3d",
+            "cell": "mixed@1:3d",
+            "target": 0,
+            "observed": 0.1,
+            "threshold": 1,
+            "kind": "derived",
+            "verdict": "pass",
+            "evidence": "scenarios/A.timeline.3d/result.json#mixed@1:3d/worker.rss_slope"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B06",
+      "metric": "Helper VmRSS slope (last ⅔ of 3-day)",
+      "budget": "≤ 0.5 MiB per logical day",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V2 \"flat in event count\"",
+        "derivation": "V2 reports helper memory flat in the event count (qualitative); the numeric slope is a requirement. Least squares over samples in the last two-thirds of the 3-day span."
+      },
+      "limits": [
+        {
+          "key": "B06",
+          "metric": "helper.rss_slope",
+          "comparator": "\u003c=",
+          "threshold": "0.5 MiB/logical-day",
+          "unit": "MiB/logical-day",
+          "verdict": "pass",
+          "cells": 5,
+          "passed": 5,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.timeline.3d",
+            "cell": "mixed@1:3d",
+            "target": 0,
+            "observed": 0.01,
+            "threshold": 0.5,
+            "kind": "derived",
+            "verdict": "pass",
+            "evidence": "scenarios/A.timeline.3d/result.json#mixed@1:3d/helper.rss_slope"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B07",
+      "metric": "Worker+helper CPU-s per logical hour, per target",
+      "budget": "W1 ≤ 53; W2 ≤ 1; W3 ≤ 1000; W4 ≤ 71; W5 ≤ 101; W6 ≤ 185; W7 ≤ 75; W8 ≤ 60; W9 ≤ 215",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "`5 × V2 changed-mode p99@32 × events/h + 1,800 commits/h × 5 ms`. W1 uses redraw-unchanged (2.446 ms), W4/W5 typing-sparse (0.513 ms), W3 scroll-dense (2.754 ms), W6 redraw-unchanged. W7 = W4 + 5 × 240 × 3.11 ms. W8 = W1 + 7 s scanner allowance (requirement). W9 = W4 + 28,800 × 5 ms (requirement). W2 is a requirement.",
+        "derivation": "5 x p99 x events/h + 1,800 commits/h x 5 ms (= 9 s; the 5 ms per commit is an allowance). W1: 5 x 2.446 ms x 3,600 = 44.03 + 9 = 53.03 -\u003e 53. W3: 5 x 2.754 ms x 72,000 = 991.44 + 9 = 1,000.44 -\u003e 1000. W4: 5 x 0.513 ms x 24,000 = 61.56 + 9 = 70.56 -\u003e 71. W5: 5 x 0.513 ms x 36,000 = 92.34 + 9 = 101.34 -\u003e 101. W6: 5 x 2.446 ms x 14,400 = 176.11 + 9 = 185.11 -\u003e 185. W7: 71 + 5 x 240 x 3.11 ms = 71 + 3.73 = 74.73 -\u003e 75. W8: 53 + 7 = 60 (7 s scanner allowance is a requirement). W9: 71 + 28,800 x 5 ms = 71 + 144 = 215 (activity allowance is a requirement). W2: requirement."
+      },
+      "limits": [
+        {
+          "key": "B07.W1",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "53 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 53,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W2",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "1 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W2@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W2@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W3",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "1000 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W3@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 1000,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W3@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W4",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "71 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W4@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 71,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W4@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W5",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "101 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W5@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 101,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W5@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W6",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "185 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W6@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 185,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W6@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W7",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "75 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W7@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 75,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W7@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W8",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "60 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W8@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 60,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W8@1:matrix/cpu.per_logical_hour"
+          }
+        },
+        {
+          "key": "B07.W9",
+          "metric": "cpu.per_logical_hour",
+          "comparator": "\u003c=",
+          "threshold": "215 CPU-s/logical-h",
+          "unit": "CPU-s/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W9@1:matrix",
+            "target": 0,
+            "observed": 0.5,
+            "threshold": 215,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W9@1:matrix/cpu.per_logical_hour"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B08",
+      "metric": "Aggregate Tier A CPU for the mixed profile at 32 targets",
+      "budget": "≤ 4.0 cores-equivalent (Σ CPU-s ÷ logical s)",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement (12.5% of host)",
+        "derivation": "4.0 cores / 32 host cores = 12.5%."
+      },
+      "limits": [
+        {
+          "key": "B08",
+          "metric": "cpu.aggregate_cores",
+          "comparator": "\u003c=",
+          "threshold": "4 cores",
+          "unit": "cores",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.timeline.8h",
+            "cell": "mixed@32:8h",
+            "observed": 1,
+            "threshold": 4,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.timeline.8h/result.json#mixed@32:8h/cpu.aggregate_cores"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B09a",
+      "metric": "Tier B total recorder+helper+capture CPU at 32 targets, real-time mix",
+      "budget": "≤ 4.0 cores",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement",
+        "derivation": "Requirement: recorder + helper + capture CPU summed over all 32 targets, divided by wall seconds."
+      },
+      "limits": [
+        {
+          "key": "B09a",
+          "metric": "tierb.total_cpu_cores",
+          "comparator": "\u003c=",
+          "threshold": "4 cores",
+          "unit": "cores",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.scale",
+            "cell": "mix-b@32:realtime",
+            "observed": 2,
+            "threshold": 4,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.scale/result.json#mix-b@32:realtime/tierb.total_cpu_cores"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B09b",
+      "metric": "Tier B total recorder+helper+capture peak RSS at 32 targets",
+      "budget": "≤ 4 GiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement",
+        "derivation": "Requirement: sum of per-process peak RSS (VmHWM) of recorders, helpers and capture holders at 32 targets."
+      },
+      "limits": [
+        {
+          "key": "B09b",
+          "metric": "tierb.total_peak_rss",
+          "comparator": "\u003c=",
+          "threshold": "4 GiB",
+          "unit": "GiB",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.scale",
+            "cell": "mix-b@32:realtime",
+            "observed": 1,
+            "threshold": 4,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.scale/result.json#mix-b@32:realtime/tierb.total_peak_rss"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B10",
+      "metric": "W2 3-day: growth after the first commit",
+      "budget": "views, rows, screens +0; `visual.sqlite` +≤ 64 KiB; allocated +≤ 64 KiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V5 \"a quiet segment commits nothing\"",
+        "derivation": "V5 documents that a quiet segment commits nothing, hence +0 for views/rows/screens; the 64 KiB byte allowances are a requirement."
+      },
+      "limits": [
+        {
+          "key": "B10.views",
+          "metric": "views.growth_after_first_commit",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W2@32:3d",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W2@32:3d/views.growth_after_first_commit"
+          }
+        },
+        {
+          "key": "B10.rows",
+          "metric": "rows.growth_after_first_commit",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W2@32:3d",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W2@32:3d/rows.growth_after_first_commit"
+          }
+        },
+        {
+          "key": "B10.screens",
+          "metric": "screens.growth_after_first_commit",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W2@32:3d",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W2@32:3d/screens.growth_after_first_commit"
+          }
+        },
+        {
+          "key": "B10.db",
+          "metric": "db.growth_after_first_commit",
+          "comparator": "\u003c=",
+          "threshold": "64 KiB",
+          "unit": "KiB",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W2@32:3d",
+            "target": 0,
+            "observed": 16,
+            "threshold": 64,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W2@32:3d/db.growth_after_first_commit"
+          }
+        },
+        {
+          "key": "B10.allocated",
+          "metric": "allocated.growth_after_first_commit",
+          "comparator": "\u003c=",
+          "threshold": "64 KiB",
+          "unit": "KiB",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W2@32:3d",
+            "target": 0,
+            "observed": 16,
+            "threshold": 64,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W2@32:3d/allocated.growth_after_first_commit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B11",
+      "metric": "W1 (8 h and 3-day): growth",
+      "budget": "views = analytic distinct count (1); rows/screens +0 after the first repaint; db file +≤ 256 KiB after logical hour 1; db slope ≤ 4 KiB per logical hour; end allocated ≤ allocated at hour 1 + 16 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V3 10,000 idle commits within 8 MiB, WAL peak 1.4 MiB",
+        "derivation": "V3 measured 10,000 idle commits within 8 MiB and a WAL peak of 1.4 MiB. views.analytic is the Expectation.Views of the workload: the header's initial view plus the one distinct repainted screen."
+      },
+      "limits": [
+        {
+          "key": "B11.views",
+          "metric": "views.total",
+          "comparator": "==",
+          "threshold": "1 × views.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W1@10:3d",
+            "target": 0,
+            "observed": 2,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W1@10:3d/views.total"
+          }
+        },
+        {
+          "key": "B11.rows",
+          "metric": "rows.growth_after_first_repaint",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W1@10:3d",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W1@10:3d/rows.growth_after_first_repaint"
+          }
+        },
+        {
+          "key": "B11.screens",
+          "metric": "screens.growth_after_first_repaint",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W1@10:3d",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W1@10:3d/screens.growth_after_first_repaint"
+          }
+        },
+        {
+          "key": "B11.db",
+          "metric": "db.growth_after_hour1",
+          "comparator": "\u003c=",
+          "threshold": "256 KiB",
+          "unit": "KiB",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W1@10:3d",
+            "target": 0,
+            "observed": 100,
+            "threshold": 256,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W1@10:3d/db.growth_after_hour1"
+          }
+        },
+        {
+          "key": "B11.db_slope",
+          "metric": "db.slope",
+          "comparator": "\u003c=",
+          "threshold": "4 KiB/logical-h",
+          "unit": "KiB/logical-h",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W1@10:3d",
+            "target": 0,
+            "observed": 1,
+            "threshold": 4,
+            "kind": "derived",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W1@10:3d/db.slope"
+          }
+        },
+        {
+          "key": "B11.allocated",
+          "metric": "allocated.end",
+          "comparator": "\u003c=",
+          "threshold": "1 × allocated.hour1 [MiB] + 16 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.nongrowth",
+            "cell": "W1@10:3d",
+            "target": 0,
+            "observed": 20,
+            "threshold": 26,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.nongrowth/result.json#W1@10:3d/allocated.end"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B12",
+      "metric": "W5",
+      "budget": "rows/screens +0 after the first cycle; views ≤ analytic changes; allocated per view (slope) ≤ 200 B",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "schema-estimate"
+        ],
+        "cite": "schema estimate (~130 B per view row + `views_at` entry)",
+        "derivation": "~130 B per view row + its views_at index entry, rounded up to 200 B. views.analytic is Expectation.Views (1 + one change per spinner frame)."
+      },
+      "limits": [
+        {
+          "key": "B12.rows",
+          "metric": "rows.growth_after_first_cycle",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W5@1:matrix",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W5@1:matrix/rows.growth_after_first_cycle"
+          }
+        },
+        {
+          "key": "B12.screens",
+          "metric": "screens.growth_after_first_cycle",
+          "comparator": "\u003c=",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W5@1:matrix",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W5@1:matrix/screens.growth_after_first_cycle"
+          }
+        },
+        {
+          "key": "B12.views",
+          "metric": "views.total",
+          "comparator": "\u003c=",
+          "threshold": "1 × views.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W5@1:matrix",
+            "target": 0,
+            "observed": 2,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W5@1:matrix/views.total"
+          }
+        },
+        {
+          "key": "B12.per_view",
+          "metric": "allocated.per_view_slope",
+          "comparator": "\u003c=",
+          "threshold": "200 B/view",
+          "unit": "B/view",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W5@1:matrix",
+            "target": 0,
+            "observed": 150,
+            "threshold": 200,
+            "kind": "derived",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W5@1:matrix/allocated.per_view_slope"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B13",
+      "metric": "W3",
+      "budget": "allocated slope ≤ 200 B × views + 512 B × screens + 1,024 B × rows, per logical hour",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "schema-estimate",
+          "measured-prior"
+        ],
+        "cite": "schema estimate + V2 960 B raw 80-col coloured row",
+        "derivation": "Threshold = 200 B x views/h + 512 B x screens/h + 1,024 B x rows/h, each a slope over the same window. 1,024 B per row covers V2's measured 960 B raw 80-column coloured row."
+      },
+      "limits": [
+        {
+          "key": "B13",
+          "metric": "allocated.slope",
+          "comparator": "\u003c=",
+          "threshold": "200 × views.slope [count/logical-h] + 512 × screens.slope [count/logical-h] + 1024 × rows.slope [count/logical-h] B/logical-h",
+          "unit": "B/logical-h",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W3@1:matrix",
+            "target": 0,
+            "observed": 1000,
+            "threshold": 17360,
+            "kind": "derived",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W3@1:matrix/allocated.slope"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B14",
+      "metric": "W6, W7",
+      "budget": "rows/screens after the first cycle ≤ the analytic distinct set; views ≤ analytic changes",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V3 dedup contract",
+        "derivation": "rows/screens/views analytic = Expectation.RowsMax / ScreensMax / Views of the workload; the V3 dedup contract means nothing beyond the distinct set is stored."
+      },
+      "limits": [
+        {
+          "key": "B14.rows",
+          "metric": "rows.total",
+          "comparator": "\u003c=",
+          "threshold": "1 × rows.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 6,
+          "passed": 6,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W6@1:matrix",
+            "target": 0,
+            "observed": 20,
+            "threshold": 25,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W6@1:matrix/rows.total"
+          }
+        },
+        {
+          "key": "B14.screens",
+          "metric": "screens.total",
+          "comparator": "\u003c=",
+          "threshold": "1 × screens.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 6,
+          "passed": 6,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W6@1:matrix",
+            "target": 0,
+            "observed": 2,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W6@1:matrix/screens.total"
+          }
+        },
+        {
+          "key": "B14.views",
+          "metric": "views.total",
+          "comparator": "\u003c=",
+          "threshold": "1 × views.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 6,
+          "passed": 6,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W6@1:matrix",
+            "target": 0,
+            "observed": 2,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W6@1:matrix/views.total"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B15",
+      "metric": "W8",
+      "budget": "findings = analytic transitions (repeats add 0); allocated per finding ≤ 256 B",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement",
+          "schema-estimate"
+        ],
+        "cite": "V2 sparse-warning contract; schema estimate",
+        "derivation": "fidelity.analytic = Expectation.FidelityTotal, the exact fidelity.Scanner count over the W8 stream (intervals and unknown-sequence repeats add nothing; hyperlink and sync-output are per-occurrence points per docs/visual-recording-fidelity.md). 256 B per finding is a schema estimate."
+      },
+      "limits": [
+        {
+          "key": "B15.findings",
+          "metric": "fidelity.total",
+          "comparator": "==",
+          "threshold": "1 × fidelity.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W8@1:matrix",
+            "target": 0,
+            "observed": 10,
+            "threshold": 10,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W8@1:matrix/fidelity.total"
+          }
+        },
+        {
+          "key": "B15.per_finding",
+          "metric": "allocated.per_finding",
+          "comparator": "\u003c=",
+          "threshold": "256 B/finding",
+          "unit": "B/finding",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W8@1:matrix",
+            "target": 0,
+            "observed": 100,
+            "threshold": 256,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W8@1:matrix/allocated.per_finding"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B16",
+      "metric": "W9",
+      "budget": "activity allocated per event ≤ 1.5 × envelope + 512 B; visual view count = the W4-only analytic count",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement; V4 contract",
+        "derivation": "Threshold = 1.5 x envelope bytes + 512 B per activity event. views.analytic is the W4-only Expectation.Views (W9's visuals are W4's)."
+      },
+      "limits": [
+        {
+          "key": "B16.activity",
+          "metric": "activity.allocated_per_event",
+          "comparator": "\u003c=",
+          "threshold": "1.5 × activity.envelope_bytes [B/event] + 512 B/event",
+          "unit": "B/event",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W9@1:matrix",
+            "target": 0,
+            "observed": 2000,
+            "threshold": 3662,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W9@1:matrix/activity.allocated_per_event"
+          }
+        },
+        {
+          "key": "B16.views",
+          "metric": "views.total",
+          "comparator": "==",
+          "threshold": "1 × views.analytic [count] count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W9@1:matrix",
+            "target": 0,
+            "observed": 2,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W9@1:matrix/views.total"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B17",
+      "metric": "Every `visual.sqlite-wal` and activity WAL, every scenario, every sample",
+      "budget": "≤ 20 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V3 test bound (16 MiB `journal_size_limit` + 4 MiB)",
+        "derivation": "16 MiB journal_size_limit + 4 MiB = 20 MiB. wal.peak is the maximum over every sample of both visual.sqlite-wal and the activity WAL. W3@200x50 is report-only (U10)."
+      },
+      "limits": [
+        {
+          "key": "B17",
+          "metric": "wal.peak",
+          "comparator": "\u003c=",
+          "threshold": "20 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 63,
+          "passed": 63,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 5,
+            "threshold": 20,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/wal.peak"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B18",
+      "metric": "Exported recording's WAL peak during export",
+      "budget": "≤ max(peak in the equal-length window before export, 4 MiB) + 1 MiB, and ≤ B17",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V3/V7 short-transaction design",
+        "derivation": "Threshold = max(peak in the equal-length window before export, 4 MiB) + 1 MiB, and never above B17's 20 MiB."
+      },
+      "limits": [
+        {
+          "key": "B18.relative",
+          "metric": "export.source_wal_peak",
+          "comparator": "\u003c=",
+          "threshold": "max(1 × export.source_wal_pre_peak [MiB], 4) + 1 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "observed": 4.5,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/export.source_wal_peak"
+          }
+        },
+        {
+          "key": "B18.absolute",
+          "metric": "export.source_wal_peak",
+          "comparator": "\u003c=",
+          "threshold": "20 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "observed": 4.5,
+            "threshold": 20,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/export.source_wal_peak"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B19",
+      "metric": "Commit latency per target (non-fault scenarios)",
+      "budget": "p99 ≤ 250 ms; p99.9 ≤ 1 s; max ≤ 5 s; 0 backlog failures",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement: FlushAge/8, StallAge/3",
+        "derivation": "FlushAge 2 s / 8 = 250 ms; StallAge 15 s / 3 = 5 s. Latency = BatchSample.Acknowledged - Start, nearest-rank percentiles."
+      },
+      "limits": [
+        {
+          "key": "B19.commit_p99",
+          "metric": "commit.p99",
+          "comparator": "\u003c=",
+          "threshold": "250 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 43,
+          "passed": 43,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 50,
+            "threshold": 250,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/commit.p99"
+          }
+        },
+        {
+          "key": "B19.commit_p999",
+          "metric": "commit.p999",
+          "comparator": "\u003c=",
+          "threshold": "1 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 43,
+          "passed": 43,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 0.2,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/commit.p999"
+          }
+        },
+        {
+          "key": "B19.commit_max",
+          "metric": "commit.max",
+          "comparator": "\u003c=",
+          "threshold": "5 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 43,
+          "passed": 43,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 1,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/commit.max"
+          }
+        },
+        {
+          "key": "B19.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 43,
+          "passed": 43,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@1:matrix",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@1:matrix/commit.backlog_failures"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B20",
+      "metric": "Tier B durable lag at 32 targets",
+      "budget": "p99 ≤ 3 s; max ≤ 5 s",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V5 FlushAge 2 s + 1 s",
+        "derivation": "FlushAge 2 s + 1 s = 3 s."
+      },
+      "limits": [
+        {
+          "key": "B20.p99",
+          "metric": "durable_lag.p99",
+          "comparator": "\u003c=",
+          "threshold": "3 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.scale",
+            "cell": "mix-b@32:realtime",
+            "observed": 2,
+            "threshold": 3,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.scale/result.json#mix-b@32:realtime/durable_lag.p99"
+          }
+        },
+        {
+          "key": "B20.max",
+          "metric": "durable_lag.max",
+          "comparator": "\u003c=",
+          "threshold": "5 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.scale",
+            "cell": "mix-b@32:realtime",
+            "observed": 3,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.scale/result.json#mix-b@32:realtime/durable_lag.max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B21",
+      "metric": "Tier B live lag at 32 targets with capture running",
+      "budget": "p99 ≤ 1 s; max ≤ 2 s",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement",
+        "derivation": "Requirement."
+      },
+      "limits": [
+        {
+          "key": "B21.p99",
+          "metric": "live_lag.p99",
+          "comparator": "\u003c=",
+          "threshold": "1 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.scale",
+            "cell": "mix-b@32:realtime",
+            "observed": 0.3,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.scale/result.json#mix-b@32:realtime/live_lag.p99"
+          }
+        },
+        {
+          "key": "B21.max",
+          "metric": "live_lag.max",
+          "comparator": "\u003c=",
+          "threshold": "2 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.scale",
+            "cell": "mix-b@32:realtime",
+            "observed": 0.8,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.scale/result.json#mix-b@32:realtime/live_lag.max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B22",
+      "metric": "Helper handshake latency at 32 concurrent starts",
+      "budget": "p99 ≤ 2 s",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "`helperStartTimeout` 10 s ÷ 5",
+        "derivation": "helperStartTimeout 10 s / 5 = 2 s, over 32 concurrent starts."
+      },
+      "limits": [
+        {
+          "key": "B22",
+          "metric": "helper.handshake_p99",
+          "comparator": "\u003c=",
+          "threshold": "2 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 9,
+          "passed": 9,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.matrix",
+            "cell": "W1@32:matrix",
+            "observed": 0.5,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.matrix/result.json#W1@32:matrix/helper.handshake_p99"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B23",
+      "metric": "Seek on 3-day stores",
+      "budget": "process-cold first seek ≤ 250 ms; random p99 ≤ 50 ms, max ≤ 250 ms; p99(latest 10%) ÷ p99(earliest 10%) ≤ 2; plan uses `views_at`, no `SCAN views`",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "V3 query-plan assertion; latency requirement",
+        "derivation": "Query-plan limits mirror V3's plan assertion (uses views_at, no SCAN views); latency limits are requirements. Cold = process-cold, OS page cache not dropped."
+      },
+      "limits": [
+        {
+          "key": "B23.cold",
+          "metric": "seek.cold_first",
+          "comparator": "\u003c=",
+          "threshold": "250 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.seek",
+            "cell": "mixed@1:3d",
+            "observed": 100,
+            "threshold": 250,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.seek/result.json#mixed@1:3d/seek.cold_first"
+          }
+        },
+        {
+          "key": "B23.random_p99",
+          "metric": "seek.random_p99",
+          "comparator": "\u003c=",
+          "threshold": "50 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.seek",
+            "cell": "mixed@1:3d",
+            "observed": 10,
+            "threshold": 50,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.seek/result.json#mixed@1:3d/seek.random_p99"
+          }
+        },
+        {
+          "key": "B23.random_max",
+          "metric": "seek.random_max",
+          "comparator": "\u003c=",
+          "threshold": "250 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.seek",
+            "cell": "mixed@1:3d",
+            "observed": 100,
+            "threshold": 250,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.seek/result.json#mixed@1:3d/seek.random_max"
+          }
+        },
+        {
+          "key": "B23.late_early",
+          "metric": "seek.late_early_p99_ratio",
+          "comparator": "\u003c=",
+          "threshold": "2 ratio",
+          "unit": "ratio",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.seek",
+            "cell": "mixed@1:3d",
+            "observed": 1.2,
+            "threshold": 2,
+            "kind": "derived",
+            "verdict": "pass",
+            "evidence": "scenarios/A.seek/result.json#mixed@1:3d/seek.late_early_p99_ratio"
+          }
+        },
+        {
+          "key": "B23.plan_index",
+          "metric": "seek.plan_uses_views_at",
+          "comparator": "==",
+          "threshold": "1 bool",
+          "unit": "bool",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.seek",
+            "cell": "mixed@1:3d",
+            "observed": 1,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.seek/result.json#mixed@1:3d/seek.plan_uses_views_at"
+          }
+        },
+        {
+          "key": "B23.plan_scan",
+          "metric": "seek.plan_scan_views",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.seek",
+            "cell": "mixed@1:3d",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.seek/result.json#mixed@1:3d/seek.plan_scan_views"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B24",
+      "metric": "GUI history pin and window per segment, 8 h / 3-day",
+      "budget": "pin ≤ 10 s, within V6 budgets or a visible refusal; late window first render p99 ≤ 2 s; cached window p99 ≤ 100 ms",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V6 declared budgets; requirement",
+        "derivation": "V6 declared budgets must hold or be refused visibly; latency limits are requirements. Per-target values are per segment."
+      },
+      "limits": [
+        {
+          "key": "B24.pin",
+          "metric": "history.pin",
+          "comparator": "\u003c=",
+          "threshold": "10 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.history-budgets",
+            "cell": "mixed@1:8h",
+            "target": 0,
+            "observed": 3,
+            "threshold": 10,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.history-budgets/result.json#mixed@1:8h/history.pin"
+          }
+        },
+        {
+          "key": "B24.refusal",
+          "metric": "history.over_budget_without_refusal",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.history-budgets",
+            "cell": "mixed@1:8h",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.history-budgets/result.json#mixed@1:8h/history.over_budget_without_refusal"
+          }
+        },
+        {
+          "key": "B24.late_window",
+          "metric": "history.late_window_first_render_p99",
+          "comparator": "\u003c=",
+          "threshold": "2 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.history-budgets",
+            "cell": "mixed@1:8h",
+            "target": 0,
+            "observed": 1,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.history-budgets/result.json#mixed@1:8h/history.late_window_first_render_p99"
+          }
+        },
+        {
+          "key": "B24.cached_window",
+          "metric": "history.cached_window_p99",
+          "comparator": "\u003c=",
+          "threshold": "100 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 3,
+          "passed": 3,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.history-budgets",
+            "cell": "mixed@1:8h",
+            "target": 0,
+            "observed": 20,
+            "threshold": 100,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.history-budgets/result.json#mixed@1:8h/history.cached_window_p99"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B25",
+      "metric": "Readers: 16 viewers on 10 capturing recordings",
+      "budget": "served (non-503) p99 ≤ 5 s; 503 rate ≤ 10%; 0 other 5xx; 0 truncated bodies; B17/B19 hold",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V6 permit 2 + 5 s wait",
+        "derivation": "V6: 2 permits + 5 s wait, so a served request completes within 5 s. B17 and B19 limits are repeated for the capturing targets during the reader load."
+      },
+      "limits": [
+        {
+          "key": "B25.served_p99",
+          "metric": "readers.served_p99",
+          "comparator": "\u003c=",
+          "threshold": "5 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "observed": 2,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/readers.served_p99"
+          }
+        },
+        {
+          "key": "B25.503_rate",
+          "metric": "readers.503_rate",
+          "comparator": "\u003c=",
+          "threshold": "10 percent",
+          "unit": "percent",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "observed": 5,
+            "threshold": 10,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/readers.503_rate"
+          }
+        },
+        {
+          "key": "B25.other_5xx",
+          "metric": "readers.other_5xx",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/readers.other_5xx"
+          }
+        },
+        {
+          "key": "B25.truncated",
+          "metric": "readers.truncated",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/readers.truncated"
+          }
+        },
+        {
+          "key": "B25.wal",
+          "metric": "wal.peak",
+          "comparator": "\u003c=",
+          "threshold": "20 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "target": 0,
+            "observed": 5,
+            "threshold": 20,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/wal.peak"
+          }
+        },
+        {
+          "key": "B25.commit_p99",
+          "metric": "commit.p99",
+          "comparator": "\u003c=",
+          "threshold": "250 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "target": 0,
+            "observed": 50,
+            "threshold": 250,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/commit.p99"
+          }
+        },
+        {
+          "key": "B25.commit_p999",
+          "metric": "commit.p999",
+          "comparator": "\u003c=",
+          "threshold": "1 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "target": 0,
+            "observed": 0.2,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/commit.p999"
+          }
+        },
+        {
+          "key": "B25.commit_max",
+          "metric": "commit.max",
+          "comparator": "\u003c=",
+          "threshold": "5 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "target": 0,
+            "observed": 1,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/commit.max"
+          }
+        },
+        {
+          "key": "B25.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.readers",
+            "cell": "readers-16@10:realtime",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.readers/result.json#readers-16@10:realtime/commit.backlog_failures"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B26",
+      "metric": "Recovery after SIGKILL",
+      "budget": "doctor verdict ≤ 30 s (8 h store), ≤ 120 s (3-day store), within **default** work limits (no `unverified`); salvage ≤ 2 × doctor time",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement; V5 flagged `--work` defaults",
+        "derivation": "Default doctor work limits; an unverified verdict fails. Salvage threshold = 2 x the doctor time."
+      },
+      "limits": [
+        {
+          "key": "B26.doctor_8h",
+          "metric": "recovery.doctor",
+          "comparator": "\u003c=",
+          "threshold": "30 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.recovery",
+            "cell": "mixed@1:8h",
+            "observed": 10,
+            "threshold": 30,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.recovery/result.json#mixed@1:8h/recovery.doctor"
+          }
+        },
+        {
+          "key": "B26.doctor_3d",
+          "metric": "recovery.doctor",
+          "comparator": "\u003c=",
+          "threshold": "120 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.recovery",
+            "cell": "mixed@1:3d",
+            "observed": 10,
+            "threshold": 120,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.recovery/result.json#mixed@1:3d/recovery.doctor"
+          }
+        },
+        {
+          "key": "B26.unverified",
+          "metric": "recovery.doctor_unverified",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.recovery",
+            "cell": "mixed@1:8h",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.recovery/result.json#mixed@1:8h/recovery.doctor_unverified"
+          }
+        },
+        {
+          "key": "B26.salvage",
+          "metric": "recovery.salvage",
+          "comparator": "\u003c=",
+          "threshold": "2 × recovery.doctor [s] s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "A.recovery",
+            "cell": "mixed@1:8h",
+            "observed": 15,
+            "threshold": 20,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/A.recovery/result.json#mixed@1:8h/recovery.salvage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B27",
+      "metric": "Export under capture (10 dense + 32 mixed targets)",
+      "budget": "1280x720 H.264 30 fps course recipe ≥ 10 frames/s; 640x480 ≥ 10 frames/s; export peak RSS ≤ 1,536 MiB; B19 holds during export",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "legacy 10 fps target; `MaxJobAge` (18,000 frames in 30 min); `MaxRSSBytes`",
+        "derivation": "10 frames/s is the legacy throughput target; MaxJobAge 30 min x 10 frames/s = 18,000 frames; MaxRSSBytes = 1,536 MiB. B19 limits are repeated for every capturing target during export."
+      },
+      "limits": [
+        {
+          "key": "B27.fps_720p",
+          "metric": "export.fps_1280x720_h264",
+          "comparator": "\u003e=",
+          "threshold": "10 frames/s",
+          "unit": "frames/s",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "observed": 15,
+            "threshold": 10,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/export.fps_1280x720_h264"
+          }
+        },
+        {
+          "key": "B27.fps_480p",
+          "metric": "export.fps_640x480",
+          "comparator": "\u003e=",
+          "threshold": "10 frames/s",
+          "unit": "frames/s",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "observed": 30,
+            "threshold": 10,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/export.fps_640x480"
+          }
+        },
+        {
+          "key": "B27.rss",
+          "metric": "export.peak_rss",
+          "comparator": "\u003c=",
+          "threshold": "1536 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "observed": 800,
+            "threshold": 1536,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/export.peak_rss"
+          }
+        },
+        {
+          "key": "B27.commit_p99",
+          "metric": "commit.p99",
+          "comparator": "\u003c=",
+          "threshold": "250 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "target": 0,
+            "observed": 50,
+            "threshold": 250,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/commit.p99"
+          }
+        },
+        {
+          "key": "B27.commit_p999",
+          "metric": "commit.p999",
+          "comparator": "\u003c=",
+          "threshold": "1 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "target": 0,
+            "observed": 0.2,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/commit.p999"
+          }
+        },
+        {
+          "key": "B27.commit_max",
+          "metric": "commit.max",
+          "comparator": "\u003c=",
+          "threshold": "5 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "target": 0,
+            "observed": 1,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/commit.max"
+          }
+        },
+        {
+          "key": "B27.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 2,
+          "passed": 2,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "C.export-under-capture",
+            "cell": "export@10:realtime",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/C.export-under-capture/result.json#export@10:realtime/commit.backlog_failures"
+          }
+        }
+      ]
+    },
+    {
+      "id": "B29",
+      "metric": "Activity overload: 8 producers flooding one target for 60 s",
+      "budget": "every `durable:true` receipt present after reopen/verify; every overload/reject receipt absent; counters equal rejects; that target's B19/B21 hold; others unaffected; holder heap ≤ 64 MiB",
+      "verdict": "pass",
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "V4 queue design; V4 heap bound",
+        "derivation": "Receipt and counter checks follow the V4 queue design; the 64 MiB heap bound is V4's. B19 limits apply per target (the flooded one and the others); B21 limits apply to the flooded target."
+      },
+      "limits": [
+        {
+          "key": "B29.durable_missing",
+          "metric": "activity.durable_missing",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/activity.durable_missing"
+          }
+        },
+        {
+          "key": "B29.rejected_present",
+          "metric": "activity.rejected_present",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/activity.rejected_present"
+          }
+        },
+        {
+          "key": "B29.counter_mismatch",
+          "metric": "activity.overload_counter_mismatch",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/activity.overload_counter_mismatch"
+          }
+        },
+        {
+          "key": "B29.live_p99",
+          "metric": "live_lag.p99",
+          "comparator": "\u003c=",
+          "threshold": "1 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "observed": 0.3,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/live_lag.p99"
+          }
+        },
+        {
+          "key": "B29.live_max",
+          "metric": "live_lag.max",
+          "comparator": "\u003c=",
+          "threshold": "2 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "observed": 0.8,
+            "threshold": 2,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/live_lag.max"
+          }
+        },
+        {
+          "key": "B29.heap",
+          "metric": "holder.heap_peak",
+          "comparator": "\u003c=",
+          "threshold": "64 MiB",
+          "unit": "MiB",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "observed": 20,
+            "threshold": 64,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/holder.heap_peak"
+          }
+        },
+        {
+          "key": "B29.commit_p99",
+          "metric": "commit.p99",
+          "comparator": "\u003c=",
+          "threshold": "250 ms",
+          "unit": "ms",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "target": 0,
+            "observed": 50,
+            "threshold": 250,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/commit.p99"
+          }
+        },
+        {
+          "key": "B29.commit_p999",
+          "metric": "commit.p999",
+          "comparator": "\u003c=",
+          "threshold": "1 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "target": 0,
+            "observed": 0.2,
+            "threshold": 1,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/commit.p999"
+          }
+        },
+        {
+          "key": "B29.commit_max",
+          "metric": "commit.max",
+          "comparator": "\u003c=",
+          "threshold": "5 s",
+          "unit": "s",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "target": 0,
+            "observed": 1,
+            "threshold": 5,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/commit.max"
+          }
+        },
+        {
+          "key": "B29.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "comparator": "==",
+          "threshold": "0 count",
+          "unit": "count",
+          "verdict": "pass",
+          "cells": 1,
+          "passed": 1,
+          "failed": 0,
+          "notEvaluated": 0,
+          "worst": {
+            "scenario": "B.metadata-overload",
+            "cell": "flood@10:realtime",
+            "target": 0,
+            "observed": 0,
+            "threshold": 0,
+            "kind": "measured",
+            "verdict": "pass",
+            "evidence": "scenarios/B.metadata-overload/result.json#flood@10:realtime/commit.backlog_failures"
+          }
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "A.matrix",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 30,
+      "plannedCells": 30,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.timeline.8h",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 3,
+      "plannedCells": 3,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.timeline.3d",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 3,
+      "plannedCells": 3,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.nongrowth",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 3,
+      "plannedCells": 3,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.seek",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 2,
+      "plannedCells": 2,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.recovery",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 2,
+      "plannedCells": 2,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F1",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F2",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F3",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F4",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F5",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F6",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F7",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F8",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F9",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.F10",
+      "state": "complete",
+      "planned": true,
+      "label": "accelerated-logical",
+      "cells": 2,
+      "plannedCells": 2,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "A.fault.H4",
+      "state": "complete",
+      "planned": true,
+      "reportOnly": true,
+      "label": "accelerated-logical",
+      "cells": 0,
+      "plannedCells": 0,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "B.scale",
+      "state": "complete",
+      "planned": true,
+      "label": "real-time",
+      "cells": 3,
+      "plannedCells": 3,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "B.live-loss",
+      "state": "complete",
+      "planned": true,
+      "label": "real-time",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "B.metadata-overload",
+      "state": "complete",
+      "planned": true,
+      "label": "real-time",
+      "cells": 1,
+      "plannedCells": 1,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "C.export-under-capture",
+      "state": "complete",
+      "planned": true,
+      "label": "real-time",
+      "cells": 2,
+      "plannedCells": 2,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "C.readers",
+      "state": "complete",
+      "planned": true,
+      "label": "real-time",
+      "cells": 2,
+      "plannedCells": 2,
+      "checksPass": 1,
+      "checksFail": 0
+    },
+    {
+      "id": "C.history-budgets",
+      "state": "complete",
+      "planned": true,
+      "label": "real-time",
+      "cells": 3,
+      "plannedCells": 3,
+      "checksPass": 1,
+      "checksFail": 0
+    }
+  ],
+  "correctness": [
+    {
+      "where": "report",
+      "id": "budgets-frozen",
+      "description": "the budgets judged against are the frozen budgets (sha256 matches the pinned hash)",
+      "result": "pass",
+      "evidence": "sha256 046d5501928e496bc729ec6896ccd1b71a0c07cfc32f2f3b7d963baa544cefe8, frozen 046d5501928e496bc729ec6896ccd1b71a0c07cfc32f2f3b7d963baa544cefe8"
+    },
+    {
+      "where": "report",
+      "id": "budgets-genesis",
+      "description": "budgets that differ from the Run 1 genesis hash carry at least one user-approved amendment",
+      "result": "pass",
+      "evidence": "sha256 046d5501928e496bc729ec6896ccd1b71a0c07cfc32f2f3b7d963baa544cefe8, genesis fa9769b48857f6cf051dd46402498e2d4dbbc13d8491ea323f90340302ca4a36, 1 amendment(s)"
+    },
+    {
+      "where": "report",
+      "id": "source-identity",
+      "description": "the artifact carries the source tree identity (source.json with a tree manifest sha256)",
+      "result": "pass",
+      "evidence": "source.json"
+    },
+    {
+      "where": "report",
+      "id": "environment",
+      "description": "the artifact carries the host environment (environment.json)",
+      "result": "pass",
+      "evidence": "environment.json"
+    },
+    {
+      "where": "A.matrix",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.timeline.8h",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.timeline.3d",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.nongrowth",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.seek",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.recovery",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F1",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F2",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F3",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F4",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F5",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F6",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F7",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F8",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F9",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.F10",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "A.fault.H4",
+      "id": "h4-verify-beside-live-writer",
+      "description": "Verify ran beside a live writer; its WAL peak is an E-metric",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "B.scale",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "B.live-loss",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "B.metadata-overload",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "C.export-under-capture",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "C.readers",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    },
+    {
+      "where": "C.history-budgets",
+      "id": "no-false-success",
+      "description": "no completion claimed without a verified store",
+      "result": "pass",
+      "evidence": "fixture"
+    }
+  ],
+  "reportOnly": [
+    {
+      "scenario": "A.timeline.8h",
+      "metric": {
+        "id": "fidelity.scanner_cpu_share",
+        "value": 1.5,
+        "unit": "percent",
+        "kind": "derived",
+        "method": "getrusage deltas around Feed",
+        "formula": "scanner CPU / worker CPU",
+        "inputs": {
+          "scanner_cpu_s": 3,
+          "worker_cpu_s": 200
+        },
+        "reportOnly": true
+      }
+    },
+    {
+      "scenario": "A.fault.H4",
+      "metric": {
+        "id": "h4.verify_live_wal_peak",
+        "value": 900,
+        "unit": "MiB",
+        "kind": "measured",
+        "method": "fixture",
+        "reportOnly": true
+      }
+    }
+  ],
+  "v9Input": [
+    {
+      "scenario": "A.timeline.3d",
+      "metric": {
+        "id": "v9.spinner_view_bytes_per_hour",
+        "value": 4.2,
+        "unit": "MiB/logical-h",
+        "kind": "derived",
+        "method": "store accounting",
+        "formula": "view bytes / logical hours",
+        "inputs": {
+          "hours": 72,
+          "view_bytes": 302000000
+        },
+        "reportOnly": true
+      }
+    }
+  ],
+  "findings": [
+    {
+      "scenario": "A.fault.H4",
+      "finding": {
+        "id": "H4/W3@1:fault",
+        "evidence": "scenarios/A.fault.H4/result.json: fixture WAL peak 900 MiB",
+        "suspectedCause": "one long read transaction",
+        "proposedRemedy": "short read transactions"
+      }
+    }
+  ],
+  "notReproduced": [
+    "real-duration effects: page-cache aging, allocator fragmentation over days, timer drift, fsync behaviour across a real day",
+    "wall-clock estimates (V6's ack-mtime estimate)",
+    "durable lag and live lag, which are meaningful only in Tier B",
+    "holder supervision intervals",
+    "process lifetime over real days"
+  ],
+  "knownLimits": [
+    "Accelerated results are labelled accelerated-logical with the logical span and wall duration; they are never a soak.",
+    "Resize coverage is synthetic asciicast r events in Tier A only; it is not backend resize qualification.",
+    "Cold seek is process-cold; the OS page cache is not dropped (drop_caches needs root).",
+    "Slow I/O is simulated by injected commit latency, not a slow block device.",
+    "ENOSPC is real on a size-limited tmpfs in a private user/mount namespace, not on the production filesystem.",
+    "H5: power loss, -shm damage and forgery are not exercised (no power-cut rig, no root).",
+    "Budgets are at 80x24; W3 at 200x50 is report-only.",
+    "Results characterise the recorded host only (x86_64 Linux); macOS and aarch64 are not covered.",
+    "H2: the fidelity scanner cost is reported, not budgeted separately; cursor shape, combining marks and wrap flags are known readout limits; no coalescing is enabled.",
+    "H7: the activity sender does not latch storage-limit/sink-unavailable; holder restart/reopen is not exercised; activitystore.Create leaves its directory on failure.",
+    "H8: completion disagreements, an empty store after a failed post-Start launch, a generic 422 and the fixed 10 s helperStartTimeout are known and not retested.",
+    "H1: there is no source idle/drain barrier; live estimates are UI-only and export stays within durable coverage. Tier B measures durable lag and trailing holds against this degraded contract.",
+    "H4: exported visualstore.Verify holds one read transaction on a live store (the doctor CLI refuses active owners); A.fault.H4 records the WAL it pins as report-only metrics and a finding above B17, never a budget exemption.",
+    "H10: the declared export limits (108,000 frames, the 30-minute MaxJobAge, the 512 MiB render input) are compared by the M28 estimate and render-input bytes per selected hour; an incremental render input is only a proposal.",
+    "Accelerated non-growth of quiet content (B10, B11) follows from the logical flush committing nothing without a change; real-time quiet-segment evidence comes from Tier B.",
+    "No Zellij binary, session or working terminal is touched: Tier B uses real asciinema 3.2.1 in owned artificial PTYs with ZELLIJ*/TMUX* stripped and a trap zellij shim."
+  ]
+}

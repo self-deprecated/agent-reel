@@ -1,0 +1,177 @@
+version: 1
+project:
+  id: areel
+  name: AgentReel terminal recorder
+  workArea: Developer tooling
+  visibility: public-code
+  dir: .
+tasks:
+  build:
+    desc: Build areel (no installation or activation)
+    run: go build -o areel ./cmd/areel
+  nix-check:
+    desc: Build the native AgentReel package and its contract without activation
+    run: nix build "path:.#checks.$(nix eval --impure --raw --expr builtins.currentSystem).package-contract" --no-link --no-write-lock-file
+  test:
+    desc: Fast Go unit and fake-backend holder contracts (no capture tools)
+    run: go test ./...
+  check:
+    desc: Check Go contracts/vet/help and independently pinned assets without capture/browser
+    run: |
+      set -euo pipefail
+      test -z "$(gofmt -l cmd internal)"
+      # nix develop exports only AREEL_TEST_AVT; tests select the helper through it.
+      if test -n "${AREEL_TEST_AVT:-}"; then export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"; fi
+      go test ./...
+      go vet ./...
+      go run ./cmd/areel help >/dev/null
+      echo 'Browser/video/capture/race qualification excluded; run browser-check, video-check and race-check explicitly. V8 qualification is explicit too: qualify-smoke, qualify (full profile), qualify-suites DIR, qualify-report --in DIR.'
+      (cd agent-plugin/opencode && bun test)
+  plugin-check:
+    desc: OpenCode shim unit tests (bun)
+    run: cd agent-plugin/opencode && bun test
+  browser-check:
+    desc: Go-driven real Chromium tests using synthetic private libraries (explicit prerequisite)
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      : "${AREEL_TEST_ASCIINEMA:?Run inside nix develop for locked asciinema}"
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_CHROMIUM" && test -x "$AREEL_TEST_ASCIINEMA" && test -x "$AREEL_TEST_AVT"
+      go test -tags=browser -run '^(TestBrowser|TestAVT)' -count=1 -v ./...
+  checkpoint-check:
+    desc: Exact pinned avt continuation and reconstruction contracts (no browser)
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_AVT"
+      go test -run '^TestAVT' -count=1 -v ./internal/castexport
+  zellij-check:
+    desc: Real Zellij on PATH (validated 0.44.3, 0.45.1) + asciinema 3.2.1 capture in throwaway private sessions (geometry follow, AREEL_PARENT_SESSION links; explicit prerequisite)
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_AVT"
+      command -v zellij >/dev/null && command -v asciinema >/dev/null
+      go test -tags=zellij -run '^TestZellij(Follow|Link|Keys)' -count=1 -v ./internal/reel
+  video-check:
+    desc: Official-player H.264/ProRes decoded-pixel, cancellation and throughput qualification
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      : "${AREEL_TEST_FFMPEG:?Run inside nix develop for locked FFmpeg}"
+      : "${AREEL_TEST_FFPROBE:?Run inside nix develop for locked FFprobe}"
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_AVT"
+      go test -tags=video -count=1 -v ./internal/videoexport ./internal/reel
+  video-race-check:
+    desc: Explicit CGO-enabled real video qualification with the Go race detector
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      : "${AREEL_TEST_FFMPEG:?Run inside nix develop for locked FFmpeg}"
+      : "${AREEL_TEST_FFPROBE:?Run inside nix develop for locked FFprobe}"
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_AVT"
+      CGO_ENABLED=1 go test -race -tags=video -count=1 -v ./internal/videoexport ./internal/reel
+  race-check:
+    desc: Go race detector with CGO enabled; no capture or browser
+    run: |
+      set -euo pipefail
+      if test -n "${AREEL_TEST_AVT:-}"; then export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"; fi
+      CGO_ENABLED=1 go test -race ./...
+  ui-check:
+    desc: Go HTML/marks/activity contracts and shipped asset/font/license pins
+    run: go test -count=1 -run 'TestLibrary(Asset|Embedded|GoPages|HTML|Activity|MarksHTML)' ./internal/reel
+  assets-build:
+    desc: Recopy pinned official player assets and licenses (installs the pinned player with npm)
+    run: npm install --no-package-lock --no-audit --no-fund && npm run assets:build
+  pi-check:
+    desc: Pi extension typecheck and tests (installs its dev dependencies with npm)
+    run: cd pi && npm install --no-package-lock --no-audit --no-fund && npm run check
+  qualify-smoke:
+    desc: V8 qualification, smoke profile, in a fresh OUT (every scenario; report.md starts ROLLOUT BLOCKED; fails only on correctness/harness errors)
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      : "${AREEL_TEST_ASCIINEMA:?Run inside nix develop for locked asciinema}"
+      : "${AREEL_TEST_FFMPEG:?Run inside nix develop for locked FFmpeg}"
+      : "${AREEL_TEST_FFPROBE:?Run inside nix develop for locked FFprobe}"
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_CHROMIUM" && test -x "$AREEL_TEST_ASCIINEMA" && test -x "$AREEL_TEST_FFMPEG" && test -x "$AREEL_TEST_FFPROBE" && test -x "$AREEL_TEST_AVT"
+      # Read-only source identity for source.json; the runner never runs a VCS command.
+      if command -v jj >/dev/null 2>&1; then
+        AREEL_QUALIFY_JJ="$(jj log --no-pager --no-graph -r @ -T 'change_id ++ " " ++ commit_id' 2>/dev/null || true)"
+        export AREEL_QUALIFY_JJ
+      fi
+      # Fresh 0700 OUT via mkdtemp under ${TMPDIR:-/tmp} (/tmp when too long; tmpfs refused),
+      # ZELLIJ*/TMUX* unset and a private XDG_RUNTIME_DIR for the go test runs.
+      go run ./internal/qualify/cmd/qualify-run --profile smoke "$@"
+  qualify:
+    desc: V8 qualification, FULL profile (about 8 h and 40 GiB free; run with the machine idle); exits non-zero unless the automated result passes
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      : "${AREEL_TEST_ASCIINEMA:?Run inside nix develop for locked asciinema}"
+      : "${AREEL_TEST_FFMPEG:?Run inside nix develop for locked FFmpeg}"
+      : "${AREEL_TEST_FFPROBE:?Run inside nix develop for locked FFprobe}"
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_CHROMIUM" && test -x "$AREEL_TEST_ASCIINEMA" && test -x "$AREEL_TEST_FFMPEG" && test -x "$AREEL_TEST_FFPROBE" && test -x "$AREEL_TEST_AVT"
+      if command -v jj >/dev/null 2>&1; then
+        AREEL_QUALIFY_JJ="$(jj log --no-pager --no-graph -r @ -T 'change_id ++ " " ++ commit_id' 2>/dev/null || true)"
+        export AREEL_QUALIFY_JJ
+      fi
+      # Optional: --suites DIR/suites.json from qualify-suites.
+      go run ./internal/qualify/cmd/qualify-run --profile full "$@"
+  qualify-suites:
+    desc: Run the legacy suites (check, ui-check, race-check, checkpoint-check, browser-check, video-check) and write DIR/suites.json
+    run: |
+      set -euo pipefail
+      dir="${1:?usage: sd areel qualify-suites DIR}"
+      mkdir -p "$dir"
+      dir="$(cd "$dir" && pwd)"
+      if test -e "$dir/suites.tsv"; then
+        echo "$dir already holds suites.tsv; use a fresh directory" >&2
+        false
+      fi
+      failed=0
+      for suite in check ui-check race-check checkpoint-check browser-check video-check; do
+        echo "qualify-suites: sd areel $suite (log $dir/$suite.log)"
+        start="$(date +%s.%N)"
+        set +e
+        sd areel "$suite" >"$dir/$suite.log" 2>&1
+        code=$?
+        set -e
+        end="$(date +%s.%N)"
+        wall="$(awk -v a="$start" -v b="$end" 'BEGIN { printf "%.1f", b - a }')"
+        printf '%s\t%d\t%s\t%s\t%s\n' "$suite" "$code" "$wall" "$suite.log" "sd areel $suite" >>"$dir/suites.tsv"
+        echo "qualify-suites: $suite exit $code after ${wall}s"
+        test "$code" = 0 || failed=1
+      done
+      go run ./internal/qualify/cmd/qualify-suites --dir "$dir"
+      # The task fails when any suite failed (no `exit`: sd's login shell would
+      # run bash_logout under set -u).
+      test "$failed" = 0
+  qualify-report:
+    desc: Regenerate report.json/report.md in a qualification artifact dir (--in DIR [--suites FILE] [--exit-on ...])
+    run: go run ./internal/qualify/cmd/qualify-report "$@"
+  smoke:
+    desc: CLI help and read-only prerequisite doctor
+    run: |
+      set -euo pipefail
+      go run ./cmd/areel help
+      go run ./cmd/areel doctor
+passthrough:
+  run:
+    desc: Run areel without installing, forwarding arguments
+    run: |
+      set -euo pipefail
+      go build -o areel ./cmd/areel
+      exec ./areel "$@"

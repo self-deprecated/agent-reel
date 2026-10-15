@@ -1,0 +1,414 @@
+{
+ "about": "Tail of a real sealed Zellij recording (agent-reel-sealed/1, Zellij 0.44.3, 200x62): its last three committed views and the exit event, extracted from the .areel store. The final view is exact: Zellij left the alternate screen, cleared and printed 'Bye from Zellij!' (every cell default pen). The two pre-exit views keep their real row layout and box-drawing glyphs with private text redacted (ASCII letters to x, digits to 0, other non-box glyphs to *).",
+ "cols": 200,
+ "rows": 62,
+ "exitNs": 12658000000,
+ "views": [
+  {
+   "atNs": 12651000000,
+   "cursor": {
+    "col": 6,
+    "row": 25,
+    "visible": false
+   },
+   "rows": [
+    {
+     "row": 0,
+     "text": "                                                                                                    ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮"
+    },
+    {
+     "row": 1,
+     "text": "                                                                                                    │ - xxxxxx xxxxxx xxxxxxx xxxx xxx                                                                 │"
+    },
+    {
+     "row": 2,
+     "text": " xxxxxxxx xxxxxxx xxxxx xxxxx                                                                       ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯"
+    },
+    {
+     "row": 5,
+     "text": " $ xxxxxx0 - <<'xx'"
+    },
+    {
+     "row": 6,
+     "text": " xxxx xxxxxxx xxxxxx xxxx"
+    },
+    {
+     "row": 7,
+     "text": " xxx xxx xx [0000000,0000000,0000000,000000,0000000]:"
+    },
+    {
+     "row": 8,
+     "text": "  x=xxxx('/xxxx')/xxx(xxx)"
+    },
+    {
+     "row": 9,
+     "text": "  xxx:"
+    },
+    {
+     "row": 10,
+     "text": "   xxxxx(xxx,(x/'xxxxxxx').xxxx_xxxxx().xxxxxxx(x'\\0',x' ').xxxxxx(xxxxxx='xxxxxxx'))"
+    },
+    {
+     "row": 11,
+     "text": "  xxxxxx xxxxxxx xx x: xxxxx(x)"
+    },
+    {
+     "row": 12,
+     "text": " xxxxx('\\xxxxxxxx xxxxxxxx:')"
+    },
+    {
+     "row": 13,
+     "text": " xxxx=xxxx.xxxx()/'.xxxxxxx/xxxxxxx'"
+    },
+    {
+     "row": 14,
+     "text": " xx xxxx.xxxxxx():"
+    },
+    {
+     "row": 15,
+     "text": "  xxx x xx xxxx.xxxx('*/xxxxxxxxxxxx-xxxxxxx/xxxxxxxx.xxxxxx0'): xxxxx(x)"
+    },
+    {
+     "row": 16,
+     "text": "  xxx x xx xxxx.xxxx('xxxxxxxx.xxx'): xxxxx(x.xxxx_xxxx())"
+    },
+    {
+     "row": 17,
+     "text": " xxxxx('\\xxxxxxxxxx xxxxx:')"
+    },
+    {
+     "row": 18,
+     "text": " xxx xxxx xx [xxxx,xxxx.xxxx()/'.xxxxxx/xxxxxxx/xxxxxxx']:"
+    },
+    {
+     "row": 19,
+     "text": "  xx xxxx.xxxxxx():"
+    },
+    {
+     "row": 20,
+     "text": "   xxx xxxx xx ['xxxxxxxxxxxxxxxxxx','xxxxxxxxxxxxxxxxxxxx','xxxxxxxxxxxxxxxxxxx.xxxx']:"
+    },
+    {
+     "row": 21,
+     "text": "    xxx x xx xxxx.xxxx('*/'+xxxx): xxxxx(x,x.xxxx_xxxx())"
+    },
+    {
+     "row": 22,
+     "text": " xx"
+    },
+    {
+     "row": 23,
+     "text": " xx -xxxx | xx -x 'xxxxxxx|:0000|:0000|:0000' (xxxxxxx 00x)"
+    },
+    {
+     "row": 25,
+     "text": " ... (00 xxxxxxx xxxxx, xxxx+x xx xxxxxx)"
+    },
+    {
+     "row": 27,
+     "text": " xxxxxxxxx xxxxx:"
+    },
+    {
+     "row": 30,
+     "text": " xxxxxxx xxxxxx xxxx xxxx 0"
+    },
+    {
+     "row": 32,
+     "text": " xxxx 0.0x"
+    },
+    {
+     "row": 35,
+     "text": " xxxxxxx xxxxx*x xxxxxx xxx xxxxx xx xxx xx xxxxxxx xxxx, xxx xxx xxxxxx xxxxxxxx xxx*x xxxxxxx, xx x xxx*x xxx xxxx xxxxxxxx xxxx."
+    },
+    {
+     "row": 37,
+     "text": " xxxx xxxxx:xxxxxxxxx xx xxxxxxx, xxxx xx xxxxxx, xxx xxxxxx xxxxx xxxxxxxxx:"
+    },
+    {
+     "row": 39,
+     "text": " ┌─────────┬────────────┐"
+    },
+    {
+     "row": 40,
+     "text": " │ xxx     │ xxx + xxxx │"
+    },
+    {
+     "row": 41,
+     "text": " ├─────────┼────────────┤"
+    },
+    {
+     "row": 42,
+     "text": " │ 0000000 │ 0.0 xxx    │"
+    },
+    {
+     "row": 43,
+     "text": " ├─────────┼────────────┤"
+    },
+    {
+     "row": 44,
+     "text": " │ 000000  │ 0.0 xxx    │"
+    },
+    {
+     "row": 45,
+     "text": " ├─────────┼────────────┤"
+    },
+    {
+     "row": 46,
+     "text": " │ 0000000 │ 0.0 xxx    │"
+    },
+    {
+     "row": 47,
+     "text": " └─────────┴────────────┘"
+    },
+    {
+     "row": 49,
+     "text": " xxxxxxx xxxx xxxx xxx xxxxxxxxxx xxxxx/xxxx. x xxxxxxx xxx xxxxx xxxxxxxx xxxx, xx xxxxx xxxx*x xxxxxxxxxxx xxxxxxxxxx-xxx xxxxxx."
+    },
+    {
+     "row": 51,
+     "text": " xxxx x xxxxxxxxxx xx xxxxx xxxxxxxx xxxx, xxx x*xx xxxxxxxx xxx xxxxxxxx."
+    },
+    {
+     "row": 53,
+     "text": " xxxx: xxx xxxxxxx xxxxxxxxx; xxxxxxx xxxxxxxx. xxxxxxx xxxxxxxx xxxxxxx xxxxxxxxxx."
+    },
+    {
+     "row": 55,
+     "text": " ★ xxxxxx xxx xxxxxxx: xxxx (xxx+x xx xxxxx)"
+    },
+    {
+     "row": 56,
+     "text": "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"
+    },
+    {
+     "row": 57,
+     "text": "/xxxx xxxx"
+    },
+    {
+     "row": 58,
+     "text": "──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── xxxxxx"
+    },
+    {
+     "row": 59,
+     "text": "! xxxxxxx xxxxxxxx  xxxx/xxx   [xxxxx] * ~/xxxxxxxxxxx/xxxx/xxx (xxxxxxxx)"
+    },
+    {
+     "row": 60,
+     "text": "*00x *0.0x x000x $0.000 (xxx) 0.0%/000x (xxxx@00%)                                                                                                                     (xxxxxx-xxxxx) xxx-0-xxxxx * xxxx"
+    },
+    {
+     "row": 61,
+     "text": "xx: 0 │ xxxxx xxxx: 🔴 │ xxxx: xxxxxx │ xx: ?0 │ xxx: 0/0"
+    }
+   ]
+  },
+  {
+   "atNs": 12651000000,
+   "cursor": {
+    "col": 0,
+    "row": 57,
+    "visible": true
+   },
+   "rows": [
+    {
+     "row": 0,
+     "text": "                                                                                                    ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮"
+    },
+    {
+     "row": 1,
+     "text": "                                                                                                    │ - xxxxxx xxxxxx xxxxxxx xxxx xxx                                                                 │"
+    },
+    {
+     "row": 2,
+     "text": " xxxxxxxx xxxxxxx xxxxx xxxxx                                                                       ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯"
+    },
+    {
+     "row": 5,
+     "text": " $ xxxxxx0 - <<'xx'"
+    },
+    {
+     "row": 6,
+     "text": " xxxx xxxxxxx xxxxxx xxxx"
+    },
+    {
+     "row": 7,
+     "text": " xxx xxx xx [0000000,0000000,0000000,000000,0000000]:"
+    },
+    {
+     "row": 8,
+     "text": "  x=xxxx('/xxxx')/xxx(xxx)"
+    },
+    {
+     "row": 9,
+     "text": "  xxx:"
+    },
+    {
+     "row": 10,
+     "text": "   xxxxx(xxx,(x/'xxxxxxx').xxxx_xxxxx().xxxxxxx(x'\\0',x' ').xxxxxx(xxxxxx='xxxxxxx'))"
+    },
+    {
+     "row": 11,
+     "text": "  xxxxxx xxxxxxx xx x: xxxxx(x)"
+    },
+    {
+     "row": 12,
+     "text": " xxxxx('\\xxxxxxxx xxxxxxxx:')"
+    },
+    {
+     "row": 13,
+     "text": " xxxx=xxxx.xxxx()/'.xxxxxxx/xxxxxxx'"
+    },
+    {
+     "row": 14,
+     "text": " xx xxxx.xxxxxx():"
+    },
+    {
+     "row": 15,
+     "text": "  xxx x xx xxxx.xxxx('*/xxxxxxxxxxxx-xxxxxxx/xxxxxxxx.xxxxxx0'): xxxxx(x)"
+    },
+    {
+     "row": 16,
+     "text": "  xxx x xx xxxx.xxxx('xxxxxxxx.xxx'): xxxxx(x.xxxx_xxxx())"
+    },
+    {
+     "row": 17,
+     "text": " xxxxx('\\xxxxxxxxxx xxxxx:')"
+    },
+    {
+     "row": 18,
+     "text": " xxx xxxx xx [xxxx,xxxx.xxxx()/'.xxxxxx/xxxxxxx/xxxxxxx']:"
+    },
+    {
+     "row": 19,
+     "text": "  xx xxxx.xxxxxx():"
+    },
+    {
+     "row": 20,
+     "text": "   xxx xxxx xx ['xxxxxxxxxxxxxxxxxx','xxxxxxxxxxxxxxxxxxxx','xxxxxxxxxxxxxxxxxxx.xxxx']:"
+    },
+    {
+     "row": 21,
+     "text": "    xxx x xx xxxx.xxxx('*/'+xxxx): xxxxx(x,x.xxxx_xxxx())"
+    },
+    {
+     "row": 22,
+     "text": " xx"
+    },
+    {
+     "row": 23,
+     "text": " xx -xxxx | xx -x 'xxxxxxx|:0000|:0000|:0000' (xxxxxxx 00x)"
+    },
+    {
+     "row": 25,
+     "text": " ... (00 xxxxxxx xxxxx, xxxx+x xx xxxxxx)"
+    },
+    {
+     "row": 27,
+     "text": " xxxxxxxxx xxxxx:"
+    },
+    {
+     "row": 30,
+     "text": " xxxxxxx xxxxxx xxxx xxxx 0"
+    },
+    {
+     "row": 32,
+     "text": " xxxx 0.0x"
+    },
+    {
+     "row": 35,
+     "text": " xxxxxxx xxxxx*x xxxxxx xxx xxxxx xx xxx xx xxxxxxx xxxx, xxx xxx xxxxxx xxxxxxxx xxx*x xxxxxxx, xx x xxx*x xxx xxxx xxxxxxxx xxxx."
+    },
+    {
+     "row": 37,
+     "text": " xxxx xxxxx:xxxxxxxxx xx xxxxxxx, xxxx xx xxxxxx, xxx xxxxxx xxxxx xxxxxxxxx:"
+    },
+    {
+     "row": 39,
+     "text": " ┌─────────┬────────────┐"
+    },
+    {
+     "row": 40,
+     "text": " │ xxx     │ xxx + xxxx │"
+    },
+    {
+     "row": 41,
+     "text": " ├─────────┼────────────┤"
+    },
+    {
+     "row": 42,
+     "text": " │ 0000000 │ 0.0 xxx    │"
+    },
+    {
+     "row": 43,
+     "text": " ├─────────┼────────────┤"
+    },
+    {
+     "row": 44,
+     "text": " │ 000000  │ 0.0 xxx    │"
+    },
+    {
+     "row": 45,
+     "text": " ├─────────┼────────────┤"
+    },
+    {
+     "row": 46,
+     "text": " │ 0000000 │ 0.0 xxx    │"
+    },
+    {
+     "row": 47,
+     "text": " └─────────┴────────────┘"
+    },
+    {
+     "row": 49,
+     "text": " xxxxxxx xxxx xxxx xxx xxxxxxxxxx xxxxx/xxxx. x xxxxxxx xxx xxxxx xxxxxxxx xxxx, xx xxxxx xxxx*x xxxxxxxxxxx xxxxxxxxxx-xxx xxxxxx."
+    },
+    {
+     "row": 51,
+     "text": " xxxx x xxxxxxxxxx xx xxxxx xxxxxxxx xxxx, xxx x*xx xxxxxxxx xxx xxxxxxxx."
+    },
+    {
+     "row": 53,
+     "text": " xxxx: xxx xxxxxxx xxxxxxxxx; xxxxxxx xxxxxxxx. xxxxxxx xxxxxxxx xxxxxxx xxxxxxxxxx."
+    },
+    {
+     "row": 55,
+     "text": " ★ xxxxxx xxx xxxxxxx: xxxx (xxx+x xx xxxxx)"
+    },
+    {
+     "row": 56,
+     "text": "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"
+    },
+    {
+     "row": 58,
+     "text": "──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── xxxxxx"
+    },
+    {
+     "row": 59,
+     "text": "! xxxxxxx xxxxxxxx  xxxx/xxx   [xxxxx] * ~/xxxxxxxxxxx/xxxx/xxx (xxxxxxxx)"
+    },
+    {
+     "row": 60,
+     "text": "*00x *0.0x x000x $0.000 (xxx) 0.0%/000x (xxxx@00%)                                                                                                                     (xxxxxx-xxxxx) xxx-0-xxxxx * xxxx"
+    },
+    {
+     "row": 61,
+     "text": "xx: 0 │ xxxxx xxxx: 🔴 │ xxxx: xxxxxx │ xx: ?0 │ xxx: 0/0"
+    }
+   ]
+  },
+  {
+   "atNs": 12656000000,
+   "cursor": {
+    "col": 0,
+    "row": 61,
+    "visible": true
+   },
+   "rows": [
+    {
+     "row": 60,
+     "text": "Bye from Zellij!"
+    }
+   ]
+  }
+ ]
+}

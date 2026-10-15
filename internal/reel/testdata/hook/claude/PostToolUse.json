@@ -1,0 +1,16 @@
+{
+  "session_id": "claude-session-1",
+  "transcript_path": "/home/u/.claude/projects/SECRET-7c1f.jsonl",
+  "cwd": "/home/u/SECRET-7c1f",
+  "permission_mode": "default",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "mcp__github__create_issue",
+  "tool_input": {
+    "title": "SECRET-7c1f",
+    "body": "SECRET-7c1f"
+  },
+  "tool_response": {
+    "url": "SECRET-7c1f"
+  },
+  "tool_use_id": "toolu_02"
+}

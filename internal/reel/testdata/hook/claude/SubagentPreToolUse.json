@@ -1,0 +1,13 @@
+{
+  "session_id": "claude-session-1",
+  "transcript_path": "/home/u/.claude/projects/SECRET-7c1f.jsonl",
+  "cwd": "/home/u/SECRET-7c1f",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "agent_id": "agent-7",
+  "agent_type": "Explore",
+  "tool_name": "Read",
+  "tool_input": {
+    "file_path": "SECRET-7c1f"
+  }
+}

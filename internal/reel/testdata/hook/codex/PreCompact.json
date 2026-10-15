@@ -1,0 +1,8 @@
+{
+  "session_id": "codex-session-1",
+  "transcript_path": "/home/u/.codex/sessions/SECRET-7c1f",
+  "cwd": "/home/u/SECRET-7c1f",
+  "model": "SECRET-7c1f",
+  "hook_event_name": "PreCompact",
+  "trigger": "auto"
+}

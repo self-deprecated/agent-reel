@@ -1,0 +1,15 @@
+version: 1
+project:
+  id: pi/agent-reel
+  name: Pi AgentReel
+  workArea: mono-agent first-party Pi packages
+  visibility: canonical / first-party / manual opt-in
+  dir: .
+tasks:
+  check:
+    desc: Typecheck and synthetic adapter tests through the root workspace (no Pi activation)
+    run: |
+      set -euo pipefail
+      root=$(cd ../.. && pwd)
+      corepack pnpm --dir "$root" --filter pi-agent-reel install --frozen-lockfile --ignore-scripts
+      corepack pnpm --dir "$root" --filter pi-agent-reel run check

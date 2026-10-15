@@ -1,0 +1,9 @@
+{
+  "name": "agent-reel",
+  "version": "0.1.0",
+  "description": "Record Claude Code activity and marks into the live AgentReel recording of this terminal.",
+  "author": {
+    "name": "mono-agent"
+  },
+  "hooks": "./hooks/claude.json"
+}

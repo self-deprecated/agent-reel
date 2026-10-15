@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "agent-reel",
+  "description": "AgentReel agent hooks",
+  "owner": {
+    "name": "mono-agent"
+  },
+  "plugins": [
+    {
+      "name": "agent-reel",
+      "description": "Record agent activity and marks into the live AgentReel recording of this terminal.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

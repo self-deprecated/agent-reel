@@ -1,0 +1,146 @@
+/* Sidecar view (sidecar-view.mjs): links lane, Parent/child tabs, "Now running"
+   grid. Colours come from app.css tokens, so light, dark and forced colours
+   follow. */
+
+/* Tabs: Parent and each open panel (up to two) share one full-width view row;
+   the lane stays under it, lined up with the parent's scrubber. An inactive
+   view stays laid out (align() measures the parent's geometry) but is
+   invisible and inert (.sidecar-hidden), never hidden or display:none, so it
+   never takes pointer input. Narrow screens use the same tabs. */
+.stage.sidecar-tabs { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "tabs" "view" "lane" "grid" "below"; }
+.stage.sidecar-tabs > .sidecar-tabbar { grid-area: tabs; }
+.stage.sidecar-tabs > .player, .stage.sidecar-tabs > .sidecar-panels { grid-area: view; min-height: 0; }
+.stage.sidecar-tabs > .sidecar-lane { grid-area: lane; }
+.stage.sidecar-tabs > .sidecar-grid { grid-area: grid; }
+.stage.sidecar-tabs > .below-player { grid-area: below; }
+.sidecar-panels { position: relative; display: block; min-height: 0; }
+.sidecar-hidden { visibility: hidden; }
+/* The tab bar: the tablist (tabs only; the stage itself also carries
+   .sidecar-tabs), scrolling sideways when full, then Compare outside it. */
+.sidecar-tabbar { display: flex; align-items: flex-end; min-width: 0; margin-bottom: 6px; border-bottom: 1px solid var(--line); }
+.sidecar-tabbar > .sidecar-tabs { flex: 0 1 auto; display: flex; align-items: flex-end; gap: 4px; min-width: 0; overflow-x: auto; }
+.sidecar-tab-item { flex: 0 1 auto; min-width: 0; display: flex; align-items: center; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--surface-2); }
+.sidecar-tab-item:has(> [aria-selected="true"]) { background: var(--surface); border-color: var(--line-strong); }
+.sidecar-tab { min-width: 0; height: 32px; padding: 0 12px; border: 0; border-radius: 8px 8px 0 0; background: none; color: var(--muted); font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: color .12s ease, box-shadow .12s ease; }
+.sidecar-tab:hover { color: var(--fg); }
+.sidecar-tab:focus-visible { outline-offset: -2px; }
+.sidecar-tab[aria-selected="true"] { color: var(--fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--accent); }
+/* A link tab's × is for the pointer only (aria-hidden, never focusable);
+   Delete closes a focused tab. */
+.sidecar-tab-close { flex: none; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; margin-right: 3px; border-radius: 6px; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; user-select: none; }
+.sidecar-tab-close:hover { background: var(--surface-2); color: var(--fg); }
+/* In Compare the Parent tab is aria-disabled: the parent already shows. */
+.sidecar-tab[aria-disabled="true"] { cursor: default; }
+.sidecar-tab[aria-disabled="true"]:hover { color: var(--muted); }
+.sidecar-tab-tools { flex: none; display: flex; align-items: center; gap: 6px; margin-left: auto; align-self: center; padding: 0 2px 3px 12px; }
+.sidecar-tab-tools:empty { display: none; }
+.sidecar-compare { height: 28px; padding: 0 10px; font-size: 12.5px; }
+.sidecar-compare[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+/* Compare (explicit, sidecar-view.mjs): the parent and the selected child
+   together, both visible and live; the other panels stay concealed. Side by
+   side on a stage at least 1300px wide; otherwise stacked, each player at
+   least half the viewport tall, with the page scrolling (app.css lets the
+   viewer grow for data-compare="stack" only). */
+.stage.sidecar-tabs[data-compare="side"] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "tabs tabs" "player view" "lane ." "grid grid" "below below"; column-gap: 16px; }
+.stage.sidecar-tabs[data-compare="stack"] { grid-template-rows: auto auto auto auto auto auto; grid-template-areas: "tabs" "player" "view" "lane" "grid" "below"; align-content: start; }
+.stage.sidecar-tabs[data-compare] > .player { grid-area: player; }
+/* auto rows: a min-height item in a minmax(0, 1fr) row would overflow into
+   the rows below instead of growing its row. */
+.stage.sidecar-tabs[data-compare="stack"] > .player, .stage.sidecar-tabs[data-compare="stack"] > .sidecar-panels { min-height: 50vh; }
+.stage.sidecar-tabs[data-compare="stack"] > .sidecar-panels { margin-top: 12px; }
+
+/* Lane: one row per kind; the tracks line up with the scrubber above. */
+.sidecar-lane { --sidecar-track-left: 150px; --sidecar-track-right: 16px; position: relative; flex: none; margin-top: 8px; padding: 6px 0 8px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.sidecar-lane-head { display: flex; align-items: center; gap: 10px; padding: 0 var(--sidecar-track-right) 4px 12px; }
+.sidecar-lane-title { font-weight: 600; color: var(--fg-2); }
+.sidecar-grid-toggle { margin-left: auto; height: 28px; padding: 0 10px; font-size: 12.5px; }
+.sidecar-grid-toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.sidecar-lane-body { position: relative; display: flex; flex-direction: column; gap: 3px; }
+.sidecar-row { --sidecar-rows: 1; position: relative; display: flex; align-items: stretch; height: calc(var(--sidecar-rows) * 16px + 2px); }
+.sidecar-row[hidden] { display: none; }
+.sidecar-row-label { position: absolute; left: 12px; width: calc(var(--sidecar-track-left) - 20px); top: 1px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidecar-track { position: absolute; top: 0; bottom: 0; left: var(--sidecar-track-left); right: var(--sidecar-track-right); border-radius: 4px; background: var(--surface-2); cursor: pointer; }
+.sidecar-bar { position: absolute; top: calc(var(--sidecar-stack, 0) * 16px + 1px); height: 14px; min-width: 3px; padding: 0 4px; border: 0; border-radius: 3px; background: var(--accent); color: #fff; font-size: 10.5px; line-height: 14px; text-align: left; overflow: hidden; white-space: nowrap; cursor: pointer; }
+.sidecar-row[data-sidecar-kind="video"] .sidecar-bar { background: var(--agent, #7c5cd6); }
+.sidecar-bar-label { pointer-events: none; }
+/* The parent paused while the child ran on, and no resume re-anchors it. */
+.sidecar-track .sidecar-bar.sidecar-gap { background: repeating-linear-gradient(135deg, var(--line-strong) 0 4px, transparent 4px 8px); color: var(--muted); outline: 1px dashed var(--line-strong); outline-offset: -1px; }
+.sidecar-pin { position: absolute; top: 1px; width: 12px; height: 14px; margin-left: -6px; padding: 0; border: 0; border-radius: 3px 3px 6px 6px; background: var(--warn); cursor: pointer; }
+.sidecar-bar:hover, .sidecar-pin:hover, .sidecar-bar:focus-visible, .sidecar-pin:focus-visible { filter: brightness(1.15); outline: 2px solid var(--fg-2); outline-offset: 0; }
+.sidecar-playhead { position: absolute; top: -2px; bottom: -2px; left: calc(var(--sidecar-track-left) + (100% - var(--sidecar-track-left) - var(--sidecar-track-right)) * var(--sidecar-at, 0)); width: 2px; margin-left: -1px; background: var(--live); pointer-events: none; }
+.sidecar-playhead[hidden] { display: none; }
+.sidecar-tip { position: absolute; bottom: calc(100% + 6px); z-index: 30; width: 240px; padding: 8px; display: flex; flex-direction: column; gap: 4px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 10px 30px rgba(0, 0, 0, .18); color: var(--fg-2); pointer-events: none; }
+.sidecar-tip[hidden] { display: none; }
+.sidecar-thumb { position: relative; aspect-ratio: 8 / 5; overflow: hidden; border-radius: 6px; background: var(--term); }
+.sidecar-thumb[hidden] { display: none; }
+.sidecar-thumb img, .sidecar-tile-view img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.sidecar-note { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 8px; text-align: center; color: var(--term-muted, #9aa0aa); font-size: 12px; }
+
+/* Panels: each fills the view row (one shows at a time). */
+.sidecar-panel { position: absolute; inset: 0; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: var(--term); border: 1px solid var(--line); }
+/* The head wraps its controls onto a second row rather than clipping them. */
+.sidecar-panel-head { flex: none; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-height: 36px; padding: 3px 6px 3px 12px; background: var(--surface); color: var(--fg-2); font-size: 13px; border-bottom: 1px solid var(--line); }
+.sidecar-panel-title { font-weight: 600; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sidecar-panel-kind { color: var(--muted); font-size: 12px; }
+.sidecar-panel-open { margin-left: auto; color: var(--muted); font-size: 12.5px; }
+/* Recording panels: where the parent is while exploring (or a following
+   panel's "Load newer footage" feedback), then the mode and Live controls
+   (sidecar-view.mjs). */
+.sidecar-panel-status { flex: 1 1 auto; min-width: 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidecar-panel-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.sidecar-action { height: 26px; padding: 0 8px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: var(--fg-2); font-size: 12px; white-space: nowrap; }
+.sidecar-action:hover:not(:disabled) { border-color: var(--faint); color: var(--fg); }
+.sidecar-action[aria-pressed="true"] { border-color: var(--live); color: var(--live); }
+/* Move parent (explore only): a seek, a link to the parent's history
+   elsewhere, or a focusable control marked aria-disabled whose reason sits on
+   its own row of the head. */
+a.sidecar-action { display: inline-flex; align-items: center; box-sizing: border-box; color: var(--accent); text-decoration: none; }
+a.sidecar-action:hover { text-decoration: underline; }
+.sidecar-action[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
+.sidecar-action[aria-disabled="true"]:hover { border-color: var(--line-strong); color: var(--fg-2); }
+.sidecar-move-reason { order: 1; flex: 1 0 100%; min-width: 0; padding-bottom: 2px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.sidecar-close { flex: none; width: 30px; height: 30px; border: 0; border-radius: 6px; background: none; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; }
+.sidecar-panel-head .sidecar-panel-kind + .sidecar-close { margin-left: auto; }
+.sidecar-close:hover { background: var(--surface-2); color: var(--fg); }
+.sidecar-panel-body { position: relative; flex: 1 1 auto; min-height: 0; }
+.sidecar-shot, .sidecar-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--term); }
+.sidecar-shot[hidden] { display: none; }
+.sidecar-overlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; margin: 0; padding: 8px 14px; border-radius: 10px; background: rgba(40, 43, 50, .92); color: #f3f4f6; font-size: 13.5px; white-space: normal; max-width: calc(100% - 24px); text-align: center; pointer-events: none; }
+.sidecar-panel[data-state="after"] .sidecar-overlay, .sidecar-panel[data-state="beyond"] .sidecar-overlay, .sidecar-panel[data-state="live-unavailable"] .sidecar-overlay { top: 12px; transform: translateX(-50%); }
+.sidecar-overlay[hidden], .sidecar-overlay:empty { display: none; }
+.sidecar-panel[data-state="before"] .sidecar-frame, .sidecar-panel[data-state="unanchored"] .sidecar-frame { opacity: .35; }
+.sidecar-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px; text-align: center; color: var(--term-muted, #9aa0aa); font-size: 13px; }
+.sidecar-placeholder strong { color: #f3f4f6; }
+
+/* "Now running" grid. */
+.sidecar-grid { flex: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 8px; }
+.sidecar-grid[hidden] { display: none; }
+.sidecar-grid.sidecar-grid-empty::before { content: "Nothing linked is running at the playhead."; color: var(--muted); font-size: 13px; }
+.sidecar-tile { display: flex; flex-direction: column; gap: 4px; padding: 0; border: 0; background: none; color: var(--fg-2); font-size: 12.5px; text-align: left; cursor: pointer; }
+.sidecar-tile-view { position: relative; aspect-ratio: 8 / 5; overflow: hidden; border-radius: 8px; background: var(--term); box-shadow: var(--shadow); }
+.sidecar-tile:hover .sidecar-tile-view, .sidecar-tile:focus-visible .sidecar-tile-view { box-shadow: 0 0 0 2px var(--accent); }
+.sidecar-tile-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidecar-parent { color: var(--accent); font-weight: 500; line-height: 20px; }
+/* The child's position has no parent position: said, not linked. */
+span.sidecar-parent { color: var(--muted); font-weight: 400; }
+.sidecar-tile-view .preview-snapshot > .ap-term, .sidecar-thumb .preview-snapshot > .ap-term { font-size: 7px; }
+
+@media (max-width: 960px) {
+  .sidecar-lane { --sidecar-track-left: 110px; }
+  /* The view row keeps the plain player's floor (app.css: 62vh, at least
+     320px), which the tabs' min-height: 0 would otherwise drop. */
+  .stage.sidecar-tabs > .player { min-height: 320px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidecar-tab, .sidecar-compare { transition: none; }
+}
+@media (forced-colors: active) {
+  .sidecar-bar, .sidecar-pin { border: 1px solid CanvasText; }
+  .sidecar-track .sidecar-bar.sidecar-gap { background: repeating-linear-gradient(135deg, CanvasText 0 2px, Canvas 2px 6px); }
+  .sidecar-action[aria-disabled="true"] { border-color: GrayText; color: GrayText; opacity: 1; }
+  /* The selected tab's accent shadow is dropped in forced colours. */
+  .sidecar-tabs [role="tab"][aria-selected="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+  /* So is Compare's pressed accent. */
+  [data-sidecar-compare][aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+}

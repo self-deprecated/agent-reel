@@ -1,0 +1,5 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminal playback</title><link rel="stylesheet" href="/assets/player.css"><link rel="stylesheet" href="/assets/app.css"></head>
+<body class="player-document">{{with .Viewer}}{{if .StillURL}}<div id="terminal" data-source="{{.StillURL}}" data-mode="still" data-at="0" data-theme-default="{{$.Theme}}"></div><p id="player-error" role="status"></p>{{else}}<div id="terminal" data-source="{{.Source}}" data-mode="{{.Mode}}" data-at="{{.At}}" data-theme-default="{{$.Theme}}"{{if and (ne .Mode "live") .LiveURL}} data-live-url="{{.LiveURL}}"{{end}}{{if .KeysAPI}} data-keys-api="{{.KeysAPI}}"{{end}}></div><p id="player-error" role="status">{{if not .Source}}{{.Notice}}{{end}}</p>{{end}}{{end}}
+<script src="/assets/player.js"></script><script type="module" src="/assets/player-adapter.mjs"></script></body></html>

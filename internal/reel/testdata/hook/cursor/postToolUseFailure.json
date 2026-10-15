@@ -1,0 +1,18 @@
+{
+  "conversation_id": "cursor-conv-1",
+  "generation_id": "gen-1",
+  "session_id": "cursor-session-1",
+  "model": "SECRET-7c1f",
+  "cursor_version": "1.7.2",
+  "workspace_roots": [
+    "/home/u/SECRET-7c1f"
+  ],
+  "user_email": "SECRET-7c1f@example.com",
+  "transcript_path": "SECRET-7c1f",
+  "hook_event_name": "postToolUseFailure",
+  "tool_name": "Edit",
+  "tool_input": {
+    "path": "SECRET-7c1f"
+  },
+  "error_message": "SECRET-7c1f"
+}

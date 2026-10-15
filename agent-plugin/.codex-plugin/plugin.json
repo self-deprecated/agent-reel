@@ -1,0 +1,10 @@
+{
+  "name": "agent-reel",
+  "version": "0.1.0",
+  "description": "Record Codex activity and marks into the live AgentReel recording of this terminal.",
+  "hooks": "./hooks/codex.json",
+  "interface": {
+    "displayName": "AgentReel",
+    "shortDescription": "Record activity and marks into AgentReel"
+  }
+}

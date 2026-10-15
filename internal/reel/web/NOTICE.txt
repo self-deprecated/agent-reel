@@ -1,0 +1,24 @@
+AgentReel local player distribution
+
+asciinema-player 3.17.0
+Copyright 2011 Marcin Kulik (upstream README attribution).
+Unmodified published monolithic JS and CSS, including its embedded WASM.
+Apache License, Version 2.0: LICENSE-player.txt.
+https://github.com/asciinema/asciinema-player
+No renderer source or terminal-event bytes are patched or rewritten here.
+
+DejaVu Sans Mono 2.37
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved.
+DejaVu changes are in public domain.
+The complete license is copied verbatim from the pinned font's TrueType nameID13
+in LICENSE-font.txt. Font bytes are unmodified; AgentReelMono is only a CSS alias.
+https://dejavu-fonts.github.io/
+
+manifest.json records the shipped asset/license byte hashes. Runtime assets are
+embedded and local. The root pnpm development dependency graph is not a claim
+that it reconstructs the official prebuilt bundle's original build environment.
+Go-driven Chromium tests qualify representative rendering, continuation, inert
+preview/link behavior and measured synthetic performance; see LIBRARY.md and
+MIGRATION.md in the source distribution for scope and provenance. This is not
+exhaustive terminal/OSC/link/clipboard conformance or browser isolation. No fake
+DOM or Node test wrapper substitutes for the real-browser checks.

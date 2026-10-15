@@ -1,0 +1,26 @@
+name: Install check
+
+# Installs the published release the way users do and checks its prerequisites.
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  homebrew:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: macos-latest
+    steps:
+      - run: brew install --cask self-deprecated/tap/agent-reel
+      - run: areel version
+      - name: Doctor finds the capture prerequisites
+        run: |
+          areel doctor | tee doctor.txt || true
+          for tool in zellij asciinema 'avt helper'; do
+            grep -Eq "^$tool +ok" doctor.txt || { echo "doctor: $tool not ok"; exit 1; }
+          done
+      - run: test -f "$(brew --prefix)/share/agent-reel/agent-plugin/.claude-plugin/plugin.json"

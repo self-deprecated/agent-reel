@@ -1,0 +1,16 @@
+{
+  "session_id": "codex-session-1",
+  "transcript_path": "/home/u/.codex/sessions/SECRET-7c1f",
+  "cwd": "/home/u/SECRET-7c1f",
+  "model": "SECRET-7c1f",
+  "hook_event_name": "PostToolUse",
+  "turn_id": "turn-1",
+  "tool_name": "apply_patch",
+  "tool_input": {
+    "input": "SECRET-7c1f"
+  },
+  "tool_response": {
+    "output": "SECRET-7c1f"
+  },
+  "tool_use_id": "call_2"
+}

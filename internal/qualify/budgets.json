@@ -1,0 +1,1868 @@
+{
+  "schema": "agent-reel/qualification-budgets/1",
+  "note": "Frozen V8 budgets. Declared from prior evidence (V2/V3/V4/V5/V6/V7) and requirements before any V8 measurement existed. Changing this file requires a user-approved amendment entry and a new pinned hash in TestBudgetsFrozen.",
+  "budgets": [
+    {
+      "id": "B01",
+      "metric": "Helper peak RSS per target (80x24 workloads)",
+      "budget": "≤ 8 MiB",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W8",
+          "W9"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B01",
+          "metric": "helper.peak_rss",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 8,
+          "unit": "MiB",
+          "basisKind": "measured-prior"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V2 measured 2.5–2.6 MiB (×3)",
+        "derivation": "docs/visual-recording-readout-benchmarks.md: ~2.5 MiB resident per 80x24 helper at 1/10/32 helpers (2.480-2.625 MiB/helper across the benchmark rows). 8 MiB / 2.6 MiB = 3.08."
+      }
+    },
+    {
+      "id": "B02",
+      "metric": "Helper peak RSS per target, W7 (≤120x40)",
+      "budget": "≤ 12 MiB",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W7"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B02",
+          "metric": "helper.peak_rss",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 12,
+          "unit": "MiB",
+          "basisKind": "measured-prior"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V2 3.6–4.5 MiB at 512x64 envelope",
+        "derivation": "docs/visual-recording-readout-benchmarks.md: 3.6-4.5 MiB/helper at 512x64 (32,768 cells), which bounds 120x40 (4,800 cells). 12 MiB / 4.5 MiB = 2.67."
+      }
+    },
+    {
+      "id": "B03",
+      "metric": "Sum of helper peak RSS at 32 targets",
+      "budget": "≤ 256 MiB",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8",
+          "W9"
+        ],
+        "targets": [
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B03",
+          "metric": "helper.peak_rss_sum",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 256,
+          "unit": "MiB",
+          "basisKind": "measured-prior"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V2 81–83 MiB at 32 (×3)",
+        "derivation": "docs/visual-recording-readout-benchmarks.md: 80.3-83.5 MiB summed VmRSS of 32 80x24 helpers. 256 MiB / 83 MiB = 3.08."
+      }
+    },
+    {
+      "id": "B04",
+      "metric": "Tier A worker peak RSS per target",
+      "budget": "≤ 96 MiB",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8",
+          "W9"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B04",
+          "metric": "worker.peak_rss",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 96,
+          "unit": "MiB",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "V3 HeapInuse < 8 MiB measured; 8 MiB SQLite cache per connection × 2; requirement headroom",
+        "derivation": "Measured: V3 HeapInuse < 8 MiB. Modelled: 8 MiB SQLite page cache per connection x 2 connections. 8 + 2 x 8 = 24 MiB; 96 MiB = 4 x 24 MiB, the headroom being a requirement."
+      }
+    },
+    {
+      "id": "B05",
+      "metric": "Worker VmRSS slope (last ⅔ of 3-day)",
+      "budget": "≤ 1 MiB per logical day",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.timeline.3d",
+          "A.nongrowth"
+        ],
+        "workloads": [],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B05",
+          "metric": "worker.rss_slope",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "MiB/logical-day",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V3 bounded working memory",
+        "derivation": "V3 establishes bounded working memory qualitatively; the numeric slope is a requirement. Least squares over samples in the last two-thirds of the 3-day span."
+      }
+    },
+    {
+      "id": "B06",
+      "metric": "Helper VmRSS slope (last ⅔ of 3-day)",
+      "budget": "≤ 0.5 MiB per logical day",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.timeline.3d",
+          "A.nongrowth"
+        ],
+        "workloads": [],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B06",
+          "metric": "helper.rss_slope",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0.5,
+          "unit": "MiB/logical-day",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V2 \"flat in event count\"",
+        "derivation": "V2 reports helper memory flat in the event count (qualitative); the numeric slope is a requirement. Least squares over samples in the last two-thirds of the 3-day span."
+      }
+    },
+    {
+      "id": "B07",
+      "metric": "Worker+helper CPU-s per logical hour, per target",
+      "budget": "W1 ≤ 53; W2 ≤ 1; W3 ≤ 1000; W4 ≤ 71; W5 ≤ 101; W6 ≤ 185; W7 ≤ 75; W8 ≤ 60; W9 ≤ 215",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8",
+          "W9"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B07.W1",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 53,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "measured-prior",
+          "workloads": [
+            "W1"
+          ]
+        },
+        {
+          "key": "B07.W2",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "requirement",
+          "workloads": [
+            "W2"
+          ]
+        },
+        {
+          "key": "B07.W3",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1000,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "measured-prior",
+          "workloads": [
+            "W3"
+          ]
+        },
+        {
+          "key": "B07.W4",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 71,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "measured-prior",
+          "workloads": [
+            "W4"
+          ]
+        },
+        {
+          "key": "B07.W5",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 101,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "measured-prior",
+          "workloads": [
+            "W5"
+          ]
+        },
+        {
+          "key": "B07.W6",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 185,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "measured-prior",
+          "workloads": [
+            "W6"
+          ]
+        },
+        {
+          "key": "B07.W7",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 75,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "measured-prior",
+          "workloads": [
+            "W7"
+          ]
+        },
+        {
+          "key": "B07.W8",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 60,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "requirement",
+          "workloads": [
+            "W8"
+          ]
+        },
+        {
+          "key": "B07.W9",
+          "metric": "cpu.per_logical_hour",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 215,
+          "unit": "CPU-s/logical-h",
+          "basisKind": "requirement",
+          "workloads": [
+            "W9"
+          ]
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "`5 × V2 changed-mode p99@32 × events/h + 1,800 commits/h × 5 ms`. W1 uses redraw-unchanged (2.446 ms), W4/W5 typing-sparse (0.513 ms), W3 scroll-dense (2.754 ms), W6 redraw-unchanged. W7 = W4 + 5 × 240 × 3.11 ms. W8 = W1 + 7 s scanner allowance (requirement). W9 = W4 + 28,800 × 5 ms (requirement). W2 is a requirement.",
+        "derivation": "5 x p99 x events/h + 1,800 commits/h x 5 ms (= 9 s; the 5 ms per commit is an allowance). W1: 5 x 2.446 ms x 3,600 = 44.03 + 9 = 53.03 -> 53. W3: 5 x 2.754 ms x 72,000 = 991.44 + 9 = 1,000.44 -> 1000. W4: 5 x 0.513 ms x 24,000 = 61.56 + 9 = 70.56 -> 71. W5: 5 x 0.513 ms x 36,000 = 92.34 + 9 = 101.34 -> 101. W6: 5 x 2.446 ms x 14,400 = 176.11 + 9 = 185.11 -> 185. W7: 71 + 5 x 240 x 3.11 ms = 71 + 3.73 = 74.73 -> 75. W8: 53 + 7 = 60 (7 s scanner allowance is a requirement). W9: 71 + 28,800 x 5 ms = 71 + 144 = 215 (activity allowance is a requirement). W2: requirement."
+      }
+    },
+    {
+      "id": "B08",
+      "metric": "Aggregate Tier A CPU for the mixed profile at 32 targets",
+      "budget": "≤ 4.0 cores-equivalent (Σ CPU-s ÷ logical s)",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.timeline.8h",
+          "A.timeline.3d"
+        ],
+        "workloads": [
+          "mixed"
+        ],
+        "targets": [
+          32
+        ],
+        "timelines": [
+          "8h",
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B08",
+          "metric": "cpu.aggregate_cores",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 4.0,
+          "unit": "cores",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement (12.5% of host)",
+        "derivation": "4.0 cores / 32 host cores = 12.5%."
+      }
+    },
+    {
+      "id": "B09a",
+      "metric": "Tier B total recorder+helper+capture CPU at 32 targets, real-time mix",
+      "budget": "≤ 4.0 cores",
+      "scope": {
+        "tier": "B",
+        "scenarios": [
+          "B.scale"
+        ],
+        "workloads": [],
+        "targets": [
+          32
+        ],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B09a",
+          "metric": "tierb.total_cpu_cores",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 4.0,
+          "unit": "cores",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement",
+        "derivation": "Requirement: recorder + helper + capture CPU summed over all 32 targets, divided by wall seconds."
+      }
+    },
+    {
+      "id": "B09b",
+      "metric": "Tier B total recorder+helper+capture peak RSS at 32 targets",
+      "budget": "≤ 4 GiB",
+      "scope": {
+        "tier": "B",
+        "scenarios": [
+          "B.scale"
+        ],
+        "workloads": [],
+        "targets": [
+          32
+        ],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B09b",
+          "metric": "tierb.total_peak_rss",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 4,
+          "unit": "GiB",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement",
+        "derivation": "Requirement: sum of per-process peak RSS (VmHWM) of recorders, helpers and capture holders at 32 targets."
+      }
+    },
+    {
+      "id": "B10",
+      "metric": "W2 3-day: growth after the first commit",
+      "budget": "views, rows, screens +0; `visual.sqlite` +≤ 64 KiB; allocated +≤ 64 KiB",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.nongrowth",
+          "A.timeline.3d"
+        ],
+        "workloads": [
+          "W2"
+        ],
+        "targets": [],
+        "timelines": [
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B10.views",
+          "metric": "views.growth_after_first_commit",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B10.rows",
+          "metric": "rows.growth_after_first_commit",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B10.screens",
+          "metric": "screens.growth_after_first_commit",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B10.db",
+          "metric": "db.growth_after_first_commit",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 64,
+          "unit": "KiB",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B10.allocated",
+          "metric": "allocated.growth_after_first_commit",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 64,
+          "unit": "KiB",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V5 \"a quiet segment commits nothing\"",
+        "derivation": "V5 documents that a quiet segment commits nothing, hence +0 for views/rows/screens; the 64 KiB byte allowances are a requirement."
+      }
+    },
+    {
+      "id": "B11",
+      "metric": "W1 (8 h and 3-day): growth",
+      "budget": "views = analytic distinct count (1); rows/screens +0 after the first repaint; db file +≤ 256 KiB after logical hour 1; db slope ≤ 4 KiB per logical hour; end allocated ≤ allocated at hour 1 + 16 MiB",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.nongrowth"
+        ],
+        "workloads": [
+          "W1"
+        ],
+        "targets": [],
+        "timelines": [
+          "8h",
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B11.views",
+          "metric": "views.total",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "measured-prior",
+          "terms": [
+            {
+              "metric": "views.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        },
+        {
+          "key": "B11.rows",
+          "metric": "rows.growth_after_first_repaint",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "measured-prior"
+        },
+        {
+          "key": "B11.screens",
+          "metric": "screens.growth_after_first_repaint",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "measured-prior"
+        },
+        {
+          "key": "B11.db",
+          "metric": "db.growth_after_hour1",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 256,
+          "unit": "KiB",
+          "basisKind": "measured-prior"
+        },
+        {
+          "key": "B11.db_slope",
+          "metric": "db.slope",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 4,
+          "unit": "KiB/logical-h",
+          "basisKind": "measured-prior"
+        },
+        {
+          "key": "B11.allocated",
+          "metric": "allocated.end",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 16,
+          "unit": "MiB",
+          "basisKind": "measured-prior",
+          "terms": [
+            {
+              "metric": "allocated.hour1",
+              "factor": 1,
+              "unit": "MiB"
+            }
+          ]
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V3 10,000 idle commits within 8 MiB, WAL peak 1.4 MiB",
+        "derivation": "V3 measured 10,000 idle commits within 8 MiB and a WAL peak of 1.4 MiB. views.analytic is the Expectation.Views of the workload: the header's initial view plus the one distinct repainted screen."
+      }
+    },
+    {
+      "id": "B12",
+      "metric": "W5",
+      "budget": "rows/screens +0 after the first cycle; views ≤ analytic changes; allocated per view (slope) ≤ 200 B",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W5"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B12.rows",
+          "metric": "rows.growth_after_first_cycle",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "schema-estimate"
+        },
+        {
+          "key": "B12.screens",
+          "metric": "screens.growth_after_first_cycle",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "schema-estimate"
+        },
+        {
+          "key": "B12.views",
+          "metric": "views.total",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "schema-estimate",
+          "terms": [
+            {
+              "metric": "views.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        },
+        {
+          "key": "B12.per_view",
+          "metric": "allocated.per_view_slope",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 200,
+          "unit": "B/view",
+          "basisKind": "schema-estimate"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "schema-estimate"
+        ],
+        "cite": "schema estimate (~130 B per view row + `views_at` entry)",
+        "derivation": "~130 B per view row + its views_at index entry, rounded up to 200 B. views.analytic is Expectation.Views (1 + one change per spinner frame)."
+      }
+    },
+    {
+      "id": "B13",
+      "metric": "W3",
+      "budget": "allocated slope ≤ 200 B × views + 512 B × screens + 1,024 B × rows, per logical hour",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W3"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B13",
+          "metric": "allocated.slope",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "B/logical-h",
+          "basisKind": "schema-estimate",
+          "terms": [
+            {
+              "metric": "views.slope",
+              "factor": 200,
+              "unit": "count/logical-h"
+            },
+            {
+              "metric": "screens.slope",
+              "factor": 512,
+              "unit": "count/logical-h"
+            },
+            {
+              "metric": "rows.slope",
+              "factor": 1024,
+              "unit": "count/logical-h"
+            }
+          ]
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "schema-estimate",
+          "measured-prior"
+        ],
+        "cite": "schema estimate + V2 960 B raw 80-col coloured row",
+        "derivation": "Threshold = 200 B x views/h + 512 B x screens/h + 1,024 B x rows/h, each a slope over the same window. 1,024 B per row covers V2's measured 960 B raw 80-column coloured row."
+      }
+    },
+    {
+      "id": "B14",
+      "metric": "W6, W7",
+      "budget": "rows/screens after the first cycle ≤ the analytic distinct set; views ≤ analytic changes",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W6",
+          "W7"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B14.rows",
+          "metric": "rows.total",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "rows.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        },
+        {
+          "key": "B14.screens",
+          "metric": "screens.total",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "screens.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        },
+        {
+          "key": "B14.views",
+          "metric": "views.total",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "views.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V3 dedup contract",
+        "derivation": "rows/screens/views analytic = Expectation.RowsMax / ScreensMax / Views of the workload; the V3 dedup contract means nothing beyond the distinct set is stored."
+      }
+    },
+    {
+      "id": "B15",
+      "metric": "W8",
+      "budget": "findings = analytic transitions (repeats add 0); allocated per finding ≤ 256 B",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W8"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B15.findings",
+          "metric": "fidelity.total",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "fidelity.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        },
+        {
+          "key": "B15.per_finding",
+          "metric": "allocated.per_finding",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 256,
+          "unit": "B/finding",
+          "basisKind": "schema-estimate"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement",
+          "schema-estimate"
+        ],
+        "cite": "V2 sparse-warning contract; schema estimate",
+        "derivation": "fidelity.analytic = Expectation.FidelityTotal, the exact fidelity.Scanner count over the W8 stream (intervals and unknown-sequence repeats add nothing; hyperlink and sync-output are per-occurrence points per docs/visual-recording-fidelity.md). 256 B per finding is a schema estimate."
+      }
+    },
+    {
+      "id": "B16",
+      "metric": "W9",
+      "budget": "activity allocated per event ≤ 1.5 × envelope + 512 B; visual view count = the W4-only analytic count",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W9"
+        ],
+        "targets": [
+          1,
+          10,
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B16.activity",
+          "metric": "activity.allocated_per_event",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 512,
+          "unit": "B/event",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "activity.envelope_bytes",
+              "factor": 1.5,
+              "unit": "B/event"
+            }
+          ]
+        },
+        {
+          "key": "B16.views",
+          "metric": "views.total",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "views.analytic",
+              "factor": 1,
+              "unit": "count"
+            }
+          ]
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement; V4 contract",
+        "derivation": "Threshold = 1.5 x envelope bytes + 512 B per activity event. views.analytic is the W4-only Expectation.Views (W9's visuals are W4's)."
+      }
+    },
+    {
+      "id": "B17",
+      "metric": "Every `visual.sqlite-wal` and activity WAL, every scenario, every sample",
+      "budget": "≤ 20 MiB",
+      "scope": {
+        "tier": "any",
+        "scenarios": [
+          "*"
+        ],
+        "workloads": [],
+        "targets": [],
+        "timelines": [],
+        "profile": "full",
+        "excludeWorkloads": [
+          "W3-200x50"
+        ]
+      },
+      "limits": [
+        {
+          "key": "B17",
+          "metric": "wal.peak",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 20,
+          "unit": "MiB",
+          "basisKind": "measured-prior"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior"
+        ],
+        "cite": "V3 test bound (16 MiB `journal_size_limit` + 4 MiB)",
+        "derivation": "16 MiB journal_size_limit + 4 MiB = 20 MiB. wal.peak is the maximum over every sample of both visual.sqlite-wal and the activity WAL. W3@200x50 is report-only (U10)."
+      }
+    },
+    {
+      "id": "B18",
+      "metric": "Exported recording's WAL peak during export",
+      "budget": "≤ max(peak in the equal-length window before export, 4 MiB) + 1 MiB, and ≤ B17",
+      "scope": {
+        "tier": "C",
+        "scenarios": [
+          "C.export-under-capture"
+        ],
+        "workloads": [],
+        "targets": [],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B18.relative",
+          "metric": "export.source_wal_peak",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "MiB",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "export.source_wal_pre_peak",
+              "factor": 1,
+              "unit": "MiB"
+            }
+          ],
+          "floor": 4
+        },
+        {
+          "key": "B18.absolute",
+          "metric": "export.source_wal_peak",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 20,
+          "unit": "MiB",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V3/V7 short-transaction design",
+        "derivation": "Threshold = max(peak in the equal-length window before export, 4 MiB) + 1 MiB, and never above B17's 20 MiB."
+      }
+    },
+    {
+      "id": "B19",
+      "metric": "Commit latency per target (non-fault scenarios)",
+      "budget": "p99 ≤ 250 ms; p99.9 ≤ 1 s; max ≤ 5 s; 0 backlog failures",
+      "scope": {
+        "tier": "any",
+        "scenarios": [
+          "A.matrix",
+          "A.timeline.8h",
+          "A.timeline.3d",
+          "A.nongrowth",
+          "B.scale",
+          "C.export-under-capture",
+          "C.readers"
+        ],
+        "workloads": [],
+        "targets": [],
+        "timelines": [],
+        "profile": "full",
+        "excludeWorkloads": [
+          "W3-200x50"
+        ]
+      },
+      "limits": [
+        {
+          "key": "B19.commit_p99",
+          "metric": "commit.p99",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 250,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B19.commit_p999",
+          "metric": "commit.p999",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B19.commit_max",
+          "metric": "commit.max",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 5,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B19.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement: FlushAge/8, StallAge/3",
+        "derivation": "FlushAge 2 s / 8 = 250 ms; StallAge 15 s / 3 = 5 s. Latency = BatchSample.Acknowledged - Start, nearest-rank percentiles."
+      }
+    },
+    {
+      "id": "B20",
+      "metric": "Tier B durable lag at 32 targets",
+      "budget": "p99 ≤ 3 s; max ≤ 5 s",
+      "scope": {
+        "tier": "B",
+        "scenarios": [
+          "B.scale"
+        ],
+        "workloads": [],
+        "targets": [
+          32
+        ],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B20.p99",
+          "metric": "durable_lag.p99",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 3,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B20.max",
+          "metric": "durable_lag.max",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 5,
+          "unit": "s",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V5 FlushAge 2 s + 1 s",
+        "derivation": "FlushAge 2 s + 1 s = 3 s."
+      }
+    },
+    {
+      "id": "B21",
+      "metric": "Tier B live lag at 32 targets with capture running",
+      "budget": "p99 ≤ 1 s; max ≤ 2 s",
+      "scope": {
+        "tier": "B",
+        "scenarios": [
+          "B.scale"
+        ],
+        "workloads": [],
+        "targets": [
+          32
+        ],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B21.p99",
+          "metric": "live_lag.p99",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B21.max",
+          "metric": "live_lag.max",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 2,
+          "unit": "s",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement",
+        "derivation": "Requirement."
+      }
+    },
+    {
+      "id": "B22",
+      "metric": "Helper handshake latency at 32 concurrent starts",
+      "budget": "p99 ≤ 2 s",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.matrix"
+        ],
+        "workloads": [
+          "W1",
+          "W2",
+          "W3",
+          "W4",
+          "W5",
+          "W6",
+          "W7",
+          "W8",
+          "W9"
+        ],
+        "targets": [
+          32
+        ],
+        "timelines": [
+          "matrix"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B22",
+          "metric": "helper.handshake_p99",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 2,
+          "unit": "s",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "`helperStartTimeout` 10 s ÷ 5",
+        "derivation": "helperStartTimeout 10 s / 5 = 2 s, over 32 concurrent starts."
+      }
+    },
+    {
+      "id": "B23",
+      "metric": "Seek on 3-day stores",
+      "budget": "process-cold first seek ≤ 250 ms; random p99 ≤ 50 ms, max ≤ 250 ms; p99(latest 10%) ÷ p99(earliest 10%) ≤ 2; plan uses `views_at`, no `SCAN views`",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.seek"
+        ],
+        "workloads": [],
+        "targets": [],
+        "timelines": [
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B23.cold",
+          "metric": "seek.cold_first",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 250,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B23.random_p99",
+          "metric": "seek.random_p99",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 50,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B23.random_max",
+          "metric": "seek.random_max",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 250,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B23.late_early",
+          "metric": "seek.late_early_p99_ratio",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 2,
+          "unit": "ratio",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B23.plan_index",
+          "metric": "seek.plan_uses_views_at",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 1,
+          "unit": "bool",
+          "basisKind": "measured-prior"
+        },
+        {
+          "key": "B23.plan_scan",
+          "metric": "seek.plan_scan_views",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "measured-prior"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "V3 query-plan assertion; latency requirement",
+        "derivation": "Query-plan limits mirror V3's plan assertion (uses views_at, no SCAN views); latency limits are requirements. Cold = process-cold, OS page cache not dropped."
+      }
+    },
+    {
+      "id": "B24",
+      "metric": "GUI history pin and window per segment, 8 h / 3-day",
+      "budget": "pin ≤ 10 s, within V6 budgets or a visible refusal; late window first render p99 ≤ 2 s; cached window p99 ≤ 100 ms",
+      "scope": {
+        "tier": "C",
+        "scenarios": [
+          "C.history-budgets"
+        ],
+        "workloads": [
+          "mixed",
+          "W5"
+        ],
+        "targets": [],
+        "timelines": [
+          "8h",
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B24.pin",
+          "metric": "history.pin",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 10,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B24.refusal",
+          "metric": "history.over_budget_without_refusal",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B24.late_window",
+          "metric": "history.late_window_first_render_p99",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 2,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B24.cached_window",
+          "metric": "history.cached_window_p99",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 100,
+          "unit": "ms",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V6 declared budgets; requirement",
+        "derivation": "V6 declared budgets must hold or be refused visibly; latency limits are requirements. Per-target values are per segment."
+      }
+    },
+    {
+      "id": "B25",
+      "metric": "Readers: 16 viewers on 10 capturing recordings",
+      "budget": "served (non-503) p99 ≤ 5 s; 503 rate ≤ 10%; 0 other 5xx; 0 truncated bodies; B17/B19 hold",
+      "scope": {
+        "tier": "C",
+        "scenarios": [
+          "C.readers"
+        ],
+        "workloads": [
+          "readers-16"
+        ],
+        "targets": [
+          10
+        ],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B25.served_p99",
+          "metric": "readers.served_p99",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 5,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.503_rate",
+          "metric": "readers.503_rate",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 10,
+          "unit": "percent",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.other_5xx",
+          "metric": "readers.other_5xx",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.truncated",
+          "metric": "readers.truncated",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.wal",
+          "metric": "wal.peak",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 20,
+          "unit": "MiB",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.commit_p99",
+          "metric": "commit.p99",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 250,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.commit_p999",
+          "metric": "commit.p999",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.commit_max",
+          "metric": "commit.max",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 5,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B25.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "V6 permit 2 + 5 s wait",
+        "derivation": "V6: 2 permits + 5 s wait, so a served request completes within 5 s. B17 and B19 limits are repeated for the capturing targets during the reader load."
+      }
+    },
+    {
+      "id": "B26",
+      "metric": "Recovery after SIGKILL",
+      "budget": "doctor verdict ≤ 30 s (8 h store), ≤ 120 s (3-day store), within **default** work limits (no `unverified`); salvage ≤ 2 × doctor time",
+      "scope": {
+        "tier": "A",
+        "scenarios": [
+          "A.recovery"
+        ],
+        "workloads": [],
+        "targets": [],
+        "timelines": [
+          "8h",
+          "3d"
+        ],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B26.doctor_8h",
+          "metric": "recovery.doctor",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 30,
+          "unit": "s",
+          "basisKind": "requirement",
+          "timelines": [
+            "8h"
+          ]
+        },
+        {
+          "key": "B26.doctor_3d",
+          "metric": "recovery.doctor",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 120,
+          "unit": "s",
+          "basisKind": "requirement",
+          "timelines": [
+            "3d"
+          ]
+        },
+        {
+          "key": "B26.unverified",
+          "metric": "recovery.doctor_unverified",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B26.salvage",
+          "metric": "recovery.salvage",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 0,
+          "unit": "s",
+          "basisKind": "requirement",
+          "terms": [
+            {
+              "metric": "recovery.doctor",
+              "factor": 2,
+              "unit": "s"
+            }
+          ]
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "requirement; V5 flagged `--work` defaults",
+        "derivation": "Default doctor work limits; an unverified verdict fails. Salvage threshold = 2 x the doctor time."
+      }
+    },
+    {
+      "id": "B27",
+      "metric": "Export under capture (10 dense + 32 mixed targets)",
+      "budget": "1280x720 H.264 30 fps course recipe ≥ 10 frames/s; 640x480 ≥ 10 frames/s; export peak RSS ≤ 1,536 MiB; B19 holds during export",
+      "scope": {
+        "tier": "C",
+        "scenarios": [
+          "C.export-under-capture"
+        ],
+        "workloads": [],
+        "targets": [
+          10,
+          32
+        ],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B27.fps_720p",
+          "metric": "export.fps_1280x720_h264",
+          "perTarget": false,
+          "comparator": ">=",
+          "value": 10,
+          "unit": "frames/s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B27.fps_480p",
+          "metric": "export.fps_640x480",
+          "perTarget": false,
+          "comparator": ">=",
+          "value": 10,
+          "unit": "frames/s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B27.rss",
+          "metric": "export.peak_rss",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 1536,
+          "unit": "MiB",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B27.commit_p99",
+          "metric": "commit.p99",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 250,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B27.commit_p999",
+          "metric": "commit.p999",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B27.commit_max",
+          "metric": "commit.max",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 5,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B27.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "requirement"
+        ],
+        "cite": "legacy 10 fps target; `MaxJobAge` (18,000 frames in 30 min); `MaxRSSBytes`",
+        "derivation": "10 frames/s is the legacy throughput target; MaxJobAge 30 min x 10 frames/s = 18,000 frames; MaxRSSBytes = 1,536 MiB. B19 limits are repeated for every capturing target during export."
+      }
+    },
+    {
+      "id": "B29",
+      "metric": "Activity overload: 8 producers flooding one target for 60 s",
+      "budget": "every `durable:true` receipt present after reopen/verify; every overload/reject receipt absent; counters equal rejects; that target's B19/B21 hold; others unaffected; holder heap ≤ 64 MiB",
+      "scope": {
+        "tier": "B",
+        "scenarios": [
+          "B.metadata-overload"
+        ],
+        "workloads": [],
+        "targets": [],
+        "timelines": [],
+        "profile": "full"
+      },
+      "limits": [
+        {
+          "key": "B29.durable_missing",
+          "metric": "activity.durable_missing",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.rejected_present",
+          "metric": "activity.rejected_present",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.counter_mismatch",
+          "metric": "activity.overload_counter_mismatch",
+          "perTarget": false,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.live_p99",
+          "metric": "live_lag.p99",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.live_max",
+          "metric": "live_lag.max",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 2,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.heap",
+          "metric": "holder.heap_peak",
+          "perTarget": false,
+          "comparator": "<=",
+          "value": 64,
+          "unit": "MiB",
+          "basisKind": "measured-prior"
+        },
+        {
+          "key": "B29.commit_p99",
+          "metric": "commit.p99",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 250,
+          "unit": "ms",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.commit_p999",
+          "metric": "commit.p999",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 1,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.commit_max",
+          "metric": "commit.max",
+          "perTarget": true,
+          "comparator": "<=",
+          "value": 5,
+          "unit": "s",
+          "basisKind": "requirement"
+        },
+        {
+          "key": "B29.backlog_failures",
+          "metric": "commit.backlog_failures",
+          "perTarget": true,
+          "comparator": "==",
+          "value": 0,
+          "unit": "count",
+          "basisKind": "requirement"
+        }
+      ],
+      "basis": {
+        "kinds": [
+          "measured-prior",
+          "requirement"
+        ],
+        "cite": "V4 queue design; V4 heap bound",
+        "derivation": "Receipt and counter checks follow the V4 queue design; the 64 MiB heap bound is V4's. B19 limits apply per target (the flooded one and the others); B21 limits apply to the flooded target."
+      }
+    }
+  ],
+  "amendments": []
+}

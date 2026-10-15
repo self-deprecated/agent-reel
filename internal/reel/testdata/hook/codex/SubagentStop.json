@@ -1,0 +1,10 @@
+{
+  "session_id": "codex-session-1",
+  "transcript_path": "/home/u/.codex/sessions/SECRET-7c1f",
+  "cwd": "/home/u/SECRET-7c1f",
+  "model": "SECRET-7c1f",
+  "hook_event_name": "SubagentStop",
+  "agent_id": "thread-2",
+  "agent_type": "worker",
+  "last_assistant_message": "SECRET-7c1f"
+}

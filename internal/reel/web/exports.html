@@ -1,0 +1,70 @@
+{{define "job"}}<article class="job{{if eq .State "failed"}} job-failed{{end}}{{if eq .State "complete"}} job-inline{{end}}" data-export-job="{{.ID}}" data-state="{{.State}}">
+<div class="job-head"><span class="job-title">{{.Title}}</span><span class="job-sub">{{.Scope}}</span>
+{{if eq .State "running"}}<span class="job-state" data-job-progress title="{{.Progress.Label}}">{{.ProgressText}}</span>
+{{else if eq .State "failed"}}<span class="job-state job-state-failed"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Failed</span>
+{{else if eq .State "complete"}}{{else}}<span class="job-state">{{if eq .State "cancelled"}}Cancelled{{else}}{{.State}}{{end}}</span>{{end}}</div>
+{{if eq .State "running"}}<div class="job-progress{{if lt .Percent 0}} job-progress-indeterminate{{end}}" role="progressbar" aria-label="Export progress"{{if ge .Percent 0}} aria-valuenow="{{.Percent}}" aria-valuemin="0" aria-valuemax="100"{{end}}><span data-job-bar{{if ge .Percent 0}} style="width: {{.Percent}}%"{{end}}></span></div>
+<div class="job-actions"><form method="post" action="/exports/{{.ID}}/cancel"><button class="btn btn-small" type="submit">Cancel</button></form></div>
+{{else if eq .State "failed"}}{{with .Message}}<p class="job-message export-message" data-export-message>{{.}}</p>{{end}}
+<div class="job-actions"><button class="btn btn-small" type="button" data-copy="{{.Details}}" hidden>Copy details</button><a class="btn btn-small btn-primary" href="{{.ChangeURL}}">Change settings</a></div>
+{{else if eq .State "complete"}}<a class="btn btn-small" href="/exports/{{.ID}}/download"><svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download</a>
+{{else}}{{with .Message}}<p class="job-message">{{.}}</p>{{end}}<div class="job-actions"><a class="btn btn-small" href="{{.ChangeURL}}">Export again</a></div>{{end}}
+</article>{{end}}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{if .New}}Export recording{{else}}Exports{{end}} · AgentReel</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/app.css">
+{{if .Refresh}}<noscript><meta http-equiv="refresh" content="3"></noscript>{{end}}
+</head>
+{{if .New}}<body class="page-dialog">
+<main id="app" class="dialog-backdrop">
+<form class="dialog" method="post" action="/exports">
+<input type="hidden" name="recording" value="{{.Spec.Recording}}"><input type="hidden" name="segment" value="{{.Spec.Segment}}"><input type="hidden" name="cutoff" value="{{.Spec.Cutoff}}">
+<div class="dialog-head"><h1>Export recording</h1>
+<span class="dialog-sub">{{with .Recording}}{{with .Session}}{{.}} · {{end}}{{.Identity.Repository.Label}}{{with .Identity.Workspace}} / {{.Label}}{{end}}{{with .Clock}} · {{.}}{{end}}{{else}}Recording{{end}}{{if .Spec.Segment}} · segment {{.Spec.Segment}}{{end}}</span></div>
+<fieldset><legend>Range</legend>
+<div class="choice-row"><label class="choice"><input type="radio" name="range" value="whole"{{if .Whole}} checked{{end}}>Whole recording</label><label class="choice"><input type="radio" name="range" value="part"{{if not .Whole}} checked{{end}}>From</label></div>
+<div class="range-times"><input class="time-input" type="text" name="start" value="{{.StartClock}}" aria-label="Start (mm:ss)" inputmode="decimal" pattern="[0-9:.]*">to<input class="time-input" type="text" name="end" value="{{.EndClock}}" aria-label="End (mm:ss)" inputmode="decimal" pattern="[0-9:.]*"><span>mm:ss, pauses excluded</span></div>
+</fieldset>
+<fieldset><legend>Format</legend>
+<label class="choice choice-card"><input type="radio" name="format" value="h264"{{if eq .Spec.Format "h264"}} checked{{end}}><span class="choice-text"><span class="choice-name">MP4 video</span><span class="choice-note">H.264 · plays anywhere, easy to share</span></span></label>
+<label class="choice choice-card"><input type="radio" name="format" value="prores"{{if eq .Spec.Format "prores"}} checked{{end}}><span class="choice-text"><span class="choice-name">ProRes video</span><span class="choice-note">For editing in Resolve or Final Cut</span></span></label>
+<label class="choice choice-card"><input type="radio" name="format" value="cast"{{if eq .Spec.Format "cast"}} checked{{end}}><span class="choice-text"><span class="choice-name">Cast file</span><span class="choice-note">Replays as text in any asciinema player</span></span></label>
+<label class="choice choice-card"><input type="radio" name="format" value="web"{{if eq .Spec.Format "web"}} checked{{end}}><span class="choice-text"><span class="choice-name">Web embed</span><span class="choice-note">Interactive, selectable-text player for a course site or blog · ZIP to upload, works offline</span></span></label>
+</fieldset>
+<div class="field-grid">
+<label class="field">Size<select class="control" name="size">{{$size := .SizeChoice}}<option value="auto"{{if eq $size "auto"}} selected{{end}}>{{.AutoLabel}}</option>{{range .Sizes}}{{$value := printf "%dx%d" .Width .Height}}<option value="{{$value}}"{{if eq $size $value}} selected{{end}}>{{.Label}}</option>{{end}}<option value="custom"{{if eq $size "custom"}} selected{{end}}>Custom (under Advanced)</option></select></label>
+<label class="field">Frame rate<select class="control" name="fps">{{$fps := .Spec.FPS}}{{range .FrameRates}}<option value="{{.FPS}}"{{if eq .FPS $fps}} selected{{end}}>{{.Label}}</option>{{end}}</select></label>
+<label class="field field-wide">Colours<select class="control" name="theme" data-export-theme>{{range .ThemeChoices}}<option value="{{.Value}}"{{if .Selected}} selected{{end}}>{{.Label}}</option>{{end}}</select><span class="field-note">Recolours the default colours and 16-colour palette. Colours an app set explicitly (true colour or 256-colour) are kept as recorded.</span></label>
+</div>
+<details class="advanced"{{if or .Recipe (eq .SizeChoice "custom")}} open{{end}}><summary>Advanced: recipe, limits, provenance</summary>
+<div class="advanced-body">
+<div class="field-grid"><label>Custom width<input class="control" name="width" type="number" min="160" max="1920" step="2" value="{{.Spec.Width}}"></label><label>Custom height<input class="control" name="height" type="number" min="120" max="1080" step="2" value="{{.Spec.Height}}"></label></div>
+<label>Recipe (optional agent-reel/recipe/1 JSON; replaces the range)<textarea class="control" name="recipe" rows="8" spellcheck="false">{{.Recipe}}</textarea></label>
+<p>Recipe schema: <code>docs/visual-recording-export.md</code> (section "Recipe"). Omit a clip's <code>title</code> to get the default title; an empty title is refused. The whole form must fit 4096 bytes; larger recipes (up to 64 KiB, 256 clips) use <code>areel export --recipe FILE</code>, and <code>areel export --plan</code> previews the time map. A recipe's rate, output size, framing, cursor and theme override the fields above.</p>
+<p>{{if .Spec.Cutoff}}Uses the exact history cutoff you were viewing; an expired or mismatched cutoff is refused, never silently refreshed.{{else}}A fresh fixed cutoff is taken when the job starts.{{end}} Exports never pause or stop capture. Only durable committed views are included; later views and uncommitted tails are excluded. Pause gaps are omitted, with approximate wall-clock provenance in metadata. Range times use the recording's (or segment's) footage clock, which excludes pauses.</p>
+<p class="derived-notice">Visual recording (visual/1): exports are derived from the frozen visual selection. Casts in the bundle are repaint projections of stored screens, derived and not byte-exact source; their header carries the chosen colours (term.theme), which a player applies to the default colours and 16-colour palette. Video frames come from the same projection. A web embed is a ZIP of index.html with the pinned player, fonts and their licenses (no metadata.json, IDs or paths), with chapters and manual marks as player markers; size and frame rate do not apply to it (the frame rate only rounds each clip's end). Chapters are edit navigation; resolve-markers.json is metadata that has not been verified in DaVinci Resolve. Estimated tails are never exported.</p>
+<p>Limits: 256 clips, 108,000 output frames, 512 MiB render input, 512 MiB and 2,000,000 events of clip casts, 65,536 events, activity rows and fidelity findings, 16 distinct terminal sizes; two active jobs (one video), four retained jobs, a job deadline of 30 minutes plus 0.2 s per video frame (at most 6 hours), 2 GiB bundle, video at most 1 GiB. Exceeding a limit refuses the job without publishing a file. Video needs Chromium, FFmpeg and FFprobe.</p>
+</div>
+</details>
+<div class="dialog-actions"><a class="btn" href="{{.ReturnURL}}">Cancel</a><button class="btn btn-primary" type="submit">Export</button></div>
+</form>
+</main>
+</body>{{else}}<body class="page-plain">
+<main id="app" class="plain" data-exports{{if .Refresh}} data-refresh{{end}}>
+<div class="plain-head"><a class="back" href="/"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Library</a><h1>Exports</h1></div>
+{{if .List}}{{range .Jobs}}{{template "job" .}}
+{{else}}<p class="empty">No exports yet. Export a recording from its page.</p>{{end}}
+<p class="plain-note">Finished exports are kept for up to 30 minutes, or until newer exports need the space.</p>
+{{else}}{{range .Jobs}}{{template "job" .}}{{end}}
+{{with .Warnings}}<ul class="job-warnings export-warnings">{{range .}}<li>Warning: {{.}}</li>{{end}}</ul>{{end}}
+<div class="plain-note"><p class="derived-notice">Casts in this export are repaint projections of the saved screens, derived and not byte-exact source. Finished exports are kept for up to 30 minutes.</p></div>
+<p class="plain-note"><a href="{{.ReturnURL}}">Back to the recording</a> · <a href="/exports">All exports</a></p>{{end}}
+</main>
+<script type="module" src="/assets/exports-adapter.mjs"></script>
+</body>{{end}}
+</html>

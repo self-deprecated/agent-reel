@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="AgentReel visual recording: decisions, concrete examples, implementation proposal, and evidence boundaries.">
+  <title>AgentReel · Visual recording proposal</title>
+  <style>
+    :root { --ink:#172c39; --muted:#526774; --paper:#f6f5f0; --white:#fff; --line:#d6dfde; --teal:#075f57; --teal-light:#e5f3ed; --amber:#80501c; --amber-light:#fff2df; --blue:#234f88; --blue-light:#edf3fc; --radius:16px; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; scroll-padding-top:85px; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:17px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    a { color:var(--teal); text-underline-offset:3px; }
+    a:hover { text-decoration-thickness:2px; }
+    :focus-visible { outline:3px solid #ba5d19; outline-offset:4px; }
+    h1,h2,h3,h4 { line-height:1.2; letter-spacing:-.025em; }
+    h1 { font-size:clamp(2.3rem,5.5vw,4.2rem); margin:14px 0 20px; max-width:760px; }
+    h2 { font-size:clamp(1.6rem,3vw,2.3rem); margin:0 0 14px; }
+    h3 { font-size:1.16rem; margin:0 0 12px; }
+    h4 { font-size:1rem; margin:22px 0 10px; }
+    p { margin:0 0 16px; }
+    ul,ol { padding-left:23px; margin:10px 0 18px; }
+    li { margin:7px 0; }
+    code { font: .88em/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; overflow-wrap:anywhere; }
+    p code,li code,td code { background:#eaf0ef; padding:2px 5px; border-radius:4px; }
+    pre { white-space:pre-wrap; overflow-wrap:anywhere; margin:0; }
+    button { font:inherit; cursor:pointer; }
+    .skip { position:fixed; top:-80px; left:16px; z-index:5; padding:10px 20px; background:var(--white); }
+    .skip:focus { top:8px; }
+    .wrap { max-width:1160px; padding:0 28px; margin:auto; }
+    .masthead { border-bottom:1px solid var(--line); }
+    .masthead .wrap { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:20px; padding-bottom:20px; }
+    .brand { font-size:1.04rem; font-weight:800; letter-spacing:.03em; }
+    .brand span { color:var(--teal); }
+    .eyebrow { text-transform:uppercase; font-size:.75rem; font-weight:750; letter-spacing:.12em; color:var(--teal); }
+    .muted { color:var(--muted); }
+    .small { font-size:.88rem; }
+    .hero { padding-top:48px; padding-bottom:30px; }
+    .lead { font-size:1.22rem; line-height:1.6; max-width:850px; }
+    .tag { display:inline-block; border-radius:6px; font-size:.72rem; letter-spacing:.04em; font-weight:800; padding:4px 9px; line-height:1.5; text-transform:uppercase; vertical-align:middle; }
+    .confirmed { color:var(--teal); background:var(--teal-light); }
+    .proposed { color:var(--blue); background:var(--blue-light); }
+    .unproven { color:var(--amber); background:var(--amber-light); }
+    .neutral { color:var(--muted); background:#e9edef; }
+    .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:26px 0; }
+    .card,.panel { background:var(--white); border:1px solid var(--line); border-radius:var(--radius); padding:24px; }
+    .card p:last-child,.panel p:last-child,.callout p:last-child { margin-bottom:0; }
+    .card h3 { margin-top:16px; }
+    .callout { border-left:4px solid var(--teal); padding:18px 22px; background:var(--teal-light); border-radius:0 12px 12px 0; margin:22px 0; }
+    .callout.warning { background:var(--amber-light); border-left-color:var(--amber); }
+    .nav { position:sticky; top:0; z-index:3; background:#f6f5f0f7; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .nav .wrap { display:flex; gap:25px; overflow-x:auto; padding-top:13px; padding-bottom:13px; }
+    .nav a { color:var(--ink); white-space:nowrap; text-decoration:none; font-size:.87rem; font-weight:650; }
+    .nav a:hover { color:var(--teal); text-decoration:underline; }
+    section { padding-top:52px; padding-bottom:8px; }
+    .section-head { display:flex; align-items:baseline; gap:16px; margin-bottom:14px; }
+    .number { font-family:ui-monospace,monospace; color:var(--teal); font-size:.85rem; font-weight:700; }
+    .section-intro { max-width:840px; color:var(--muted); }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:22px 0; }
+    .flow { display:flex; align-items:stretch; gap:8px; margin:25px 0; }
+    .flow > div { flex:1; min-width:0; border:1px solid var(--line); background:var(--white); border-radius:10px; padding:15px; font-weight:700; font-size:.94rem; }
+    .flow small { display:block; font-weight:400; color:var(--muted); margin-top:7px; line-height:1.4; }
+    .flow .arrow { flex:0; border:0; background:transparent; padding:15px 0; color:var(--teal); align-self:center; }
+    .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--white); margin:20px 0; }
+    table { width:100%; border-collapse:collapse; text-align:left; font-size:.94rem; }
+    th { background:#edf1ef; color:var(--muted); font-size:.76rem; letter-spacing:.055em; text-transform:uppercase; }
+    td,th { padding:15px 18px; vertical-align:top; border-bottom:1px solid var(--line); }
+    tbody tr:last-child td { border-bottom:0; }
+    td:first-child { font-weight:650; }
+    .code { background:#132b37; color:#e3eee9; border-radius:12px; padding:20px; font: .86rem/1.7 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .code .soft { color:#a1b7bf; }
+    .example { margin:22px 0; }
+    .example-head { display:flex; justify-content:space-between; gap:15px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+    .example-head h3 { margin:0; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:20px 0; }
+    .metric { background:#edf4f0; border-radius:10px; padding:17px; }
+    .metric strong { display:block; font-size:1.4rem; line-height:1.3; }
+    .metric span { font-size:.78rem; color:var(--muted); }
+    details { border:1px solid var(--line); border-radius:12px; background:var(--white); margin:14px 0; }
+    summary { padding:17px 21px; cursor:pointer; font-weight:650; line-height:1.45; }
+    summary::marker { color:var(--teal); }
+    details[open] > summary { border-bottom:1px solid var(--line); }
+    .detail-body { padding:22px; }
+    .detail-body > :last-child { margin-bottom:0; }
+    .detail-body h3:not(:first-child) { margin-top:25px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin:20px 0; align-items:center; }
+    .button { border:1px solid var(--line); background:var(--white); color:var(--ink); padding:9px 15px; border-radius:8px; font-size:.86rem; font-weight:650; text-decoration:none; display:inline-block; }
+    .button:hover { border-color:var(--teal); background:var(--teal-light); }
+    .button.primary { background:var(--teal); color:white; border-color:var(--teal); }
+    .terminal { background:#142932; color:#d9e8df; border-radius:12px; overflow:hidden; font: .87rem/1.75 ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .terminal-bar { background:#223d48; padding:10px 17px; color:#c1d5d6; font-size:.73rem; display:flex; justify-content:space-between; gap:10px; }
+    .terminal pre { padding:24px; min-height:180px; }
+    .terminal-foot { padding:12px 18px; color:#b8d6cd; border-top:1px solid #36545b; font-size:.75rem; }
+    .demo { border:1px solid var(--line); background:var(--white); padding:24px; border-radius:16px; margin:20px 0; }
+    .demo label { font-size:.9rem; font-weight:650; display:block; }
+    .demo input { width:100%; accent-color:var(--teal); margin:19px 0 4px; min-height:28px; }
+    .ticks { display:flex; justify-content:space-between; font-size:.77rem; color:var(--muted); }
+    .demo-readout { min-height:56px; margin-top:17px; font-size:.94rem; }
+    .demo-readout strong { color:var(--teal); }
+    .decision { display:grid; grid-template-columns:135px 1fr; gap:18px; padding:20px 0; border-bottom:1px solid var(--line); }
+    .decision:last-child { border-bottom:0; }
+    .decision p { margin:7px 0 0; }
+    .milestone { display:grid; grid-template-columns:40px 1fr; gap:14px; padding:22px 0; border-bottom:1px solid var(--line); }
+    .milestone:last-child { border-bottom:0; }
+    .step { width:33px; height:33px; display:grid; place-items:center; border-radius:50%; background:var(--teal-light); color:var(--teal); font-weight:800; font-size:.86rem; }
+    .milestone h3 { margin-bottom:7px; }
+    .milestone p { margin-bottom:9px; }
+    .gate { font-size:.9rem; color:var(--muted); }
+    .gate b { color:var(--ink); }
+    footer { margin-top:48px; padding:30px 0 50px; border-top:1px solid var(--line); font-size:.88rem; color:var(--muted); }
+    .noscript { display:none; }
+    @media (max-width:800px) {
+      .cards,.metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .cards .card:last-child { grid-column:1/-1; }
+      .flow { flex-wrap:wrap; }
+      .flow > div { flex-basis:42%; }
+      .flow .arrow { display:none; }
+      .two { grid-template-columns:1fr; }
+    }
+    @media (max-width:520px) {
+      body { font-size:16px; }
+      .wrap { padding-left:18px; padding-right:18px; }
+      .masthead .wrap { align-items:flex-start; }
+      .masthead .tag { max-width:150px; }
+      .hero { padding-top:30px; }
+      .cards { grid-template-columns:1fr; }
+      .card,.panel,.demo { padding:19px; }
+      .decision { grid-template-columns:1fr; gap:10px; }
+      .metrics { gap:8px; }
+      .metric { padding:12px; }
+      .metric strong { font-size:1.18rem; }
+      .terminal pre { padding:17px; }
+      .section-head { gap:10px; }
+      td,th { padding:12px; }
+    }
+    @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+    @media print {
+      body { background:white; color:#111; font-size:10pt; }
+      .wrap { max-width:none; padding:0; }
+      .nav,.toolbar,.skip,.demo input,.demo label,.ticks { display:none; }
+      .hero,section { padding-top:20px; }
+      h1 { font-size:28pt; }
+      h2 { font-size:19pt; }
+      .card,.callout,details,.terminal,.metric { break-inside:avoid; }
+      details > .detail-body { display:block !important; }
+      .code,.terminal { background:#f0f0f0; color:#111; }
+      .terminal-bar,.terminal-foot { color:#111; background:#eee; }
+      .table-wrap { overflow:visible; }
+      a { color:inherit; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to proposal</a>
+  <header class="masthead">
+    <div class="wrap"><div class="brand">Agent<span>Reel</span> / decision brief</div><span class="tag neutral">Review draft · not approved</span></div>
+  </header>
+  <main id="main">
+    <div class="wrap hero">
+      <div class="eyebrow">Visual recording · architecture &amp; delivery plan</div>
+      <h1>Store the view.<br>Not every repaint.</h1>
+      <p class="lead">Record many terminals for days. Keep the meaningful visual changes and the events that explain them. Watch live, rewind, and export course footage <strong>without stopping capture.</strong></p>
+      <div class="cards">
+        <div class="card"><span class="tag confirmed">Your goal</span><h3>An idle screen stays small</h3><p>One unchanged view can last eight hours. Repainting it 30,000 times should not store 30,000 copies.</p></div>
+        <div class="card"><span class="tag proposed">Recommended design</span><h3>Visual states + event timeline</h3><p>Reusable screen rows, timed state references, and indexed activity in a private SQLite recording.</p></div>
+        <div class="card"><span class="tag confirmed">Your latest decision</span><h3>Keep recording; show fidelity gaps</h3><p>If detected visuals cannot be reproduced, continue supported recording and explicitly mark affected intervals incomplete.</p></div>
+      </div>
+      <div class="callout warning"><strong>The main risk is fidelity and timing—not compression.</strong><p>We need to prove the terminal engine reproduces supported visuals, and place events correctly even when the screen has been idle for hours. Those are the first gates, not work left until the end.</p></div>
+      <div class="toolbar">
+        <a class="button primary" href="#examples">See concrete examples</a>
+        <a class="button" href="#decisions">Review the decisions</a>
+        <button class="button" id="expand" type="button" hidden>Expand technical details</button>
+        <button class="button" id="print" type="button" hidden>Print / save PDF</button>
+      </div>
+      <p class="small muted">Planning only. This page does not approve a plan, start recording, change settings, or contact any service. It contains illustrative terminal text, not captured private screen contents.</p>
+    </div>
+    <nav class="nav" aria-label="Proposal sections"><div class="wrap">
+      <a href="#outcome">What you get</a><a href="#examples">Examples</a><a href="#decisions">Decisions</a><a href="#system">System design</a><a href="#plan">Delivery plan</a><a href="#risks">Risks &amp; evidence</a>
+    </div></nav>
+
+    <div class="wrap">
+      <section id="outcome" aria-labelledby="outcome-title">
+        <div class="section-head"><span class="number">01</span><h2 id="outcome-title">What this is designed to give you</h2></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th scope="col">Your requirement</th><th scope="col">How the proposal meets it</th></tr></thead>
+          <tbody>
+            <tr><td>Hours or days of continuous recording</td><td>Headless capture independent of the GUI. Bounded working memory; indexed history on disk, not accumulated in RAM.</td></tr>
+            <tr><td>Agent, user, and recording moments</td><td>A separate event timeline linked to footage time and actor identity, including events during visually unchanged intervals.</td></tr>
+            <tr><td>Live view and rewind</td><td>Fetch a stored state at time T. Scrubbing changes your viewing position, never the capture position.</td></tr>
+            <tr><td>Course-ready video while recording</td><td>Freeze an export cutoff, render selected ranges with an explicit layout recipe, and keep accepting new footage.</td></tr>
+            <tr><td>Small recordings</td><td>No new visual payload for unchanged views. Reuse unchanged rows across different views. Keep tiny timing and progress metadata.</td></tr>
+            <tr><td>Repeating throbbers</td><td>Reuse their screen content immediately. Add exact cycle compression later only if timeline growth warrants it.</td></tr>
+            <tr><td>Tens of terminals</td><td>Independent capture engines and stores; shared bounded thumbnail/export workers. Qualify at 1, 10, and 32 terminals.</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small muted"><strong>Not a promise yet:</strong> these are design targets. Current live capture qualification is still incomplete; existing Go/UI checks do not establish multi-day fidelity or capacity.</p>
+      </section>
+
+      <section id="examples" aria-labelledby="examples-title">
+        <div class="section-head"><span class="number">02</span><h2 id="examples-title">Four examples that make the trade-off concrete</h2></div>
+        <article class="panel example">
+          <div class="example-head"><h3>A. You leave a terminal overnight</h3><span class="tag neutral">Illustrative</span></div>
+          <div class="two">
+            <div><h4>Current archive</h4><div class="code">00:00  paint view A<br>00:01  repaint view A<br>00:02  repaint view A<br>…<br>08:00  repaint view A</div><p class="small muted" style="margin-top:12px">Each entry represents arriving instructions, not a screenshot. Zstd shrinks them, but more chunks and manifests still accumulate.</p></div>
+            <div><h4>Proposed visual archive</h4><div class="code">view A: stored once<br><br>visible from: 00:00<br>committed through: 08:00<br><br>new visual content: none</div><p class="small muted" style="margin-top:12px">The time endpoint advances only under the qualified capture-clock contract. A heartbeat alone does not prove source coverage.</p></div>
+          </div>
+          <p><strong>Eight hours of identical footage needs one view and its duration.</strong> Sparse activity events and bounded progress writes still exist; “no new image” does not mean “never write to disk.”</p>
+        </article>
+
+        <div class="demo" id="demo">
+          <div class="example-head"><h3>Try scrubbing an unchanged view</h3><span class="tag neutral">Local mock-up · not real footage</span></div>
+          <p class="small muted">The screen stays identical for eight hours. An agent event at 02:00 remains navigable even though it produces no new visual state. At 08:00, one line changes.</p>
+          <div class="terminal" aria-label="Illustrative recorded terminal">
+            <div class="terminal-bar"><span>project / agent terminal</span><span>capture continues →</span></div>
+            <pre id="demo-screen">$ agent run verification
+Verification complete.
+Waiting for your next instruction.</pre>
+            <div class="terminal-foot" id="demo-storage">View A · shared unchanged screen content</div>
+          </div>
+          <div class="toolbar" id="demo-controls" hidden>
+            <button class="button" type="button" data-minute="0">Beginning</button>
+            <button class="button" type="button" data-minute="120">02:00 · agent event</button>
+            <button class="button" type="button" data-minute="479">07:59 · still unchanged</button>
+            <button class="button" type="button" data-minute="480">08:00 · one line changes</button>
+          </div>
+          <div id="slider-controls" hidden>
+            <label for="playhead">Viewing position — independent of the recording position</label>
+            <input id="playhead" type="range" min="0" max="480" step="1" value="0" aria-describedby="demo-readout">
+            <div class="ticks"><span>00:00</span><span>04:00</span><span>08:00</span></div>
+          </div>
+          <p class="demo-readout" id="demo-readout" aria-live="polite"><strong>00:00</strong> · View A. Advancing time alone does not add screen content.</p>
+          <noscript><p class="small muted">Interactive scrubbing needs JavaScript. All proposal content and collapsed sections remain available without it.</p></noscript>
+        </div>
+
+        <article class="panel example">
+          <div class="example-head"><h3>B. One line changes in a 62-row terminal</h3><span class="tag proposed">Storage example</span></div>
+          <div class="code">View A = [row 1, row 2, …, row 60,     row 61, row 62]<br>View B = [row 1, row 2, …, NEW row 60, row 61, row 62]</div>
+          <p style="margin-top:16px">Store the <strong>new row</strong>, a small complete list of row references, and a presentation timestamp. Reuse the other 61 rows. Cursor changes use separate presentation metadata.</p>
+          <details><summary>Why not a long chain of “change this cell” patches?</summary><div class="detail-body"><p>A long patch chain makes a late seek depend on replaying earlier changes. Each proposed screen state instead contains a complete ordered row-reference list. Loading a state costs a bounded number of row lookups, independent of whether it occurred ten minutes or three days into the recording.</p><p>Rows and state definitions are compressed and deduplicated within one recording. The lookup cache is bounded; the full content index lives on disk. No shared dictionary across private recordings is needed.</p></div></details>
+        </article>
+
+        <article class="panel example">
+          <div class="example-head"><h3>C. A spinner repeats while the agent works</h3><span class="tag proposed">Baseline + stretch goal</span></div>
+          <div class="two">
+            <div><h4>First version</h4><div class="code">Store A, B, C once.<br><br>Timeline:<br>A → B → C → A → B → C …</div><p class="small muted" style="margin-top:12px">The pixels/cells do not keep duplicating. Small timed references still grow with each visible transition.</p></div>
+            <div><h4>Optional later optimization</h4><div class="code">Pattern: A → B → C<br>Repeat: 900 times<br>Tail: A → B<br><br>Preserve observed timing.</div><p class="small muted" style="margin-top:12px">Exact repeats can become a compact loop. Jitter needs timing residuals or ordinary references; we never invent a fixed period.</p></div>
+          </div>
+          <p><strong>Reuse first. Loop detection second.</strong> No promise of constant storage for genuinely changing content or irregular animation.</p>
+        </article>
+
+        <article class="panel example">
+          <div class="example-head"><h3>D. Export a lesson without ending the recording</h3><span class="tag proposed">Concurrent export</span></div>
+          <div class="code">Export range:      10:15–10:27<br>Visual cutoff:     committed sequence 48,210<br>Event cutoff:      event sequence 1,953<br>Render recipe:     1440p · selected font · cursor steady<br><br>Capture meanwhile: sequence 48,211 → 48,212 → …</div>
+          <p style="margin-top:16px">The export reads a fixed selection of immutable content. Later footage and events do not change that export. Its recipe can change size, framing, padding, cursor policy, cuts, or speed without modifying the recording.</p>
+          <p class="small muted">Later-arriving events are not silently inserted into an existing export. Exporting “up to now” stops at a trustworthy committed boundary, not an optimistic live estimate.</p>
+        </article>
+
+        <details><summary>Real evidence: what the existing idle recording actually stored</summary><div class="detail-body">
+          <p><span class="tag confirmed">Measured existing sample</span></p>
+          <p>A fixed ten-minute sample of <code>sparkling-tomato</code>, archive chunks <code>003032–003331</code>, was decompressed and its raw/compressed hashes checked.</p>
+          <div class="metrics"><div class="metric"><strong>600.239 s</strong><span>sampled source duration</span></div><div class="metric"><strong>861</strong><span>identical complete redraws</span></div><div class="metric"><strong>20.64 MB</strong><span>uncompressed cast data</span></div><div class="metric"><strong>2.46 MB</strong><span>allocated archive file space</span></div></div>
+          <p>Those redraws were split into 4,065 output events. Each full redraw was the same 18,951-byte sequence: hide the cursor; visit all 62 rows; issue 692 styling instructions and 86 hyperlink resets; repaint the same text; finish with a hidden cursor at row 57, column 1. There were no clear-screen or clear-line commands in that sequence.</p>
+          <p>The repeated redraw produced <strong>zero changed cells</strong> in the pyte check. Compressed files plus manifests totaled 928,287 logical bytes; allocation was 2,457,600 bytes. These are different measures, not interchangeable compression ratios.</p>
+          <p><strong>Evidence boundary:</strong> this is a verified sample and a diagnostic emulator result—not an eight-hour audit, official-renderer qualification, or a measured size for the proposed format.</p>
+        </div></details>
+      </section>
+
+      <section id="decisions" aria-labelledby="decisions-title">
+        <div class="section-head"><span class="number">03</span><h2 id="decisions-title">Decision ledger</h2></div>
+        <p class="section-intro">The visual-recording epic is approved for development on the merged Go-first UX. Design descriptions below are not claims of implementation or qualification. <a href="visual-recording-baseline.md">Baseline evidence and scope ownership</a> distinguish completed raw-history features from remaining visual-format work.</p>
+        <div class="panel">
+          <div class="decision"><div><span class="tag confirmed">Confirmed</span></div><div><strong>Visual footage is the preservation goal.</strong><p>Keep what a supported terminal view looks like over time, not every redundant byte emitted to repaint it. Exact original asciicast reconstruction is not a requirement for the new visual format.</p></div></div>
+          <div class="decision"><div><span class="tag confirmed">Confirmed</span></div><div><strong>Continue through detected fidelity limitations.</strong><p>Preserve supported text/cursor footage, flag affected intervals incomplete, and continue other captures normally. Unsupported visuals may be permanently absent. No automatic raw fallback has been selected.</p></div></div>
+          <div class="decision"><div><span class="tag confirmed">Confirmed</span></div><div><strong>Capture, viewing, and export are independent.</strong><p>Days-long capture, concurrent historical navigation, export without stopping, and tens of terminals are core requirements.</p></div></div>
+          <div class="decision"><div><span class="tag proposed">Proposed</span></div><div><strong>SQLite/WAL per recording; zstd-compressed reusable rows.</strong><p>Use an established transactional store for indexes, concurrent readers, durable ordering, and events. Avoid designing another low-level container and index from scratch.</p></div></div>
+          <div class="decision"><div><span class="tag proposed">Proposed</span></div><div><strong>Extend the existing avt helper; retain the official renderer.</strong><p>Reuse the packaged avt 0.18 helper, completed Go application and four thin browser adapters. Prove canonical visible readout AND a bounded ANSI repaint projection into the unmodified player before freezing the schema. No new GUI, emulator or independent Go pixel renderer.</p></div></div>
+          <div class="decision"><div><span class="tag proposed">Proposed</span></div><div><strong>No silent temporal thinning.</strong><p>Initially preserve distinct source-timed visual states and ordering. Repaint grouping and synchronized-output rules must be explicit and tested; do not quietly drop short-lived states using a guessed debounce window.</p></div></div>
+          <div class="decision"><div><span class="tag proposed">Proposed</span></div><div><strong>Keep old archives; switch new writes only after qualification.</strong><p>Existing raw archives remain readable and untouched. New-format capture becomes the normal writer only after synthetic, reference-renderer, actual-backend, and scale checks. No active archive migration.</p></div></div>
+          <div class="decision"><div><span class="tag unproven">Must prove</span></div><div><strong>Timing, source coverage, and scale.</strong><p>Accurate idle-period event placement, terminal feature support, supported capture geometry, bounded 32-terminal resource use, and non-growing WAL files require evidence.</p></div></div>
+        </div>
+        <details><summary>What “continue best-effort” means in the UI, export, and failure handling</summary><div class="detail-body">
+          <ul>
+            <li><strong>Live view:</strong> keep displaying supported content. Show a visible “fidelity incomplete” badge with the detected feature and affected interval.</li>
+            <li><strong>Timeline:</strong> store sparse fidelity events. Repeated identical warnings can update an open interval rather than flood the activity store.</li>
+            <li><strong>Export:</strong> include fidelity intervals in the export manifest and warn before export. Do not call the result fully faithful. Whether to burn a warning into the video is a presentation choice, not an automatic mutation of footage.</li>
+            <li><strong>Recovery:</strong> do not clear a warning merely because output continues. An unsupported stateful sequence may affect later interpretation; keep uncertainty until a justified reset/reinitialization or recovery condition.</li>
+            <li><strong>Actual failure:</strong> disk-full, corruption, or an unusable parser remains an interruption/failure, not a reason to claim best-effort success. Other recordings stay independent.</li>
+          </ul>
+          <p>A converter can flag detected unsupported input. It cannot detect every visual omitted by an upstream watch stream. Capture qualification and source limitations must remain separately visible.</p>
+        </div></details>
+      </section>
+
+      <section id="system" aria-labelledby="system-title">
+        <div class="section-head"><span class="number">04</span><h2 id="system-title">The system, without the plumbing first</h2></div>
+        <div class="flow" aria-label="Proposed recording pipeline">
+          <div>Capture<small>Observe the selected terminal target.</small></div><div class="arrow" aria-hidden="true">→</div>
+          <div>Interpret<small>Maintain terminal state in a headless engine.</small></div><div class="arrow" aria-hidden="true">→</div>
+          <div>Store changes<small>Rows, views, timed references, events.</small></div><div class="arrow" aria-hidden="true">→</div>
+          <div>Read independently<small>Live GUI, history, thumbnails, export.</small></div>
+        </div>
+        <div class="two">
+          <div class="panel"><h3>What stays in memory</h3><p>One current terminal state per target: visible cells plus hidden parser/mode state required to interpret future output. Bounded queues and caches.</p><p class="small muted">No browser per recording. No history-sized replay buffer. Deduplication reduces storage, but repeated source output still costs parsing CPU.</p></div>
+          <div class="panel"><h3>What stays on disk</h3><p>Compressed reusable rows, complete row-reference views, timed presentation records, sparse events, segment metadata, and durable progress.</p><p class="small muted">No permanent raw duplicate by default after qualification. No global cross-recording content dictionary. No automatic deletion.</p></div>
+        </div>
+
+        <details><summary>Storage model: an application format on SQLite, not a new binary container</summary><div class="detail-body">
+          <p>“Our format” means our documented visual schema and interpretation rules. SQLite supplies the underlying file structure and transactions. Zstd compresses content, as it already does today.</p>
+          <div class="table-wrap"><table><thead><tr><th scope="col">Logical record</th><th scope="col">Stored information</th></tr></thead><tbody>
+            <tr><td>Row content</td><td>Canonical cell text/graphemes, widths, styling and color references; compressed payload, content hash, decoded size.</td></tr>
+            <tr><td>Screen definition</td><td>Dimensions and complete ordered row IDs; relevant palette/theme state and schema identity.</td></tr>
+            <tr><td>Presentation entry</td><td>Segment, sequence, start time, screen ID, visible cursor and supported overlay/animation state.</td></tr>
+            <tr><td>Activity event</td><td>Event identity, producer/agent attribution, kind, bounded metadata, receipt/source times and footage placement uncertainty.</td></tr>
+            <tr><td>Segment / progress</td><td>Clock mapping, lifecycle boundaries, verified committed endpoint, fidelity intervals and interruption status.</td></tr>
+          </tbody></table></div>
+          <p>Unchanged states extend a hold rather than append another visual record. The current hold endpoint/progress is a small mutable record; finalized content remains immutable. Hash matches must be checked against canonical content rather than trusted as permission to merge arbitrary payloads.</p>
+          <p>Use a distinct format identifier and explicit reader dispatch. Do not repurpose the old archive's inert legacy version field. Keep existing raw readers for existing recordings.</p>
+          <p><strong>Implementation qualification:</strong> the current Go package disables cgo. A maintained pure-Go SQLite driver or another packaging-compatible binding must be selected and tested. WAL checkpoints, database/cache limits, dependencies, licenses, and reproducible Nix builds are part of the work.</p>
+        </div></details>
+
+        <details><summary>Timing: how an event at 02:00 lands correctly on an idle screen</summary><div class="detail-body">
+          <p>Current anchors use the latest validated cast timestamp. That clock does not advance until another source event arrives. It cannot directly place an event received long after the last repaint.</p>
+          <p>The new capture-clock contract must establish a shared timing relationship, including an idle coverage boundary. Source times, receipt times, and durable publication times are different facts:</p>
+          <div class="code">source frontier   = coverage established by capture<br>received frontier = input the converter has received<br>durable frontier  = verified data committed to storage<br>live estimate     = labelled extrapolation, not export proof</div>
+          <ul>
+            <li>Use defined integer/rational media time and preserve ordering; do not base edits on floating-point accumulation or wall-clock subtraction.</li>
+            <li>Keep producer-declared time separate from recorder receipt time. Record uncertainty when correlation is approximate.</li>
+            <li>Test delayed FIFO delivery, idle tails, backlog and clock changes. If needed, add capture-side timing/barriers instead of guessing.</li>
+            <li>Pause ends a segment. Events during the gap remain events without invented footage. Resume establishes a fresh segment.</li>
+            <li>Export freezes both content and event cutoffs. Late arrivals cannot alter a frozen result.</li>
+          </ul>
+          <p><strong>Gate:</strong> precise idle source coverage is not yet established. If unavailable, show trailing holds/event placements as estimated or unknown, retain the verified frontier, and continue useful storage/GUI work. Default exports end at verified durable coverage; an estimated-tail export requires separate approval. Heartbeats and live process checks never prove “all source footage observed through now.”</p>
+        </div></details>
+
+        <details><summary>Event coverage, privacy, selections, and panel actions</summary><div class="detail-body">
+          <p>Reuse the existing event ingress and actor attribution. Replace its fixed lifetime record cap with indexed history plus bounded per-request and pending-queue limits.</p>
+          <div class="table-wrap"><table><thead><tr><th scope="col">Example</th><th scope="col">Where the evidence comes from</th></tr></thead><tbody>
+            <tr><td>Agent turn ended</td><td>Agent integration hook. Actor and conversation identity are retained when known.</td></tr>
+            <tr><td>User submitted input</td><td>Application submission hook or appropriate existing message event. Record the action without automatically logging prompt bodies or raw keys.</td></tr>
+            <tr><td>Panel opened / closed</td><td>An application/backend hook if available. A screen change alone cannot prove a named action or its cause.</td></tr>
+            <tr><td>Pause / resume / interruption</td><td>Recorder lifecycle with explicit segment and gap semantics.</td></tr>
+            <tr><td>Text selection / mouse cursor</td><td>Only if represented in the capture source or an explicitly supported overlay adapter. Native terminal-client selection may be absent from the watch stream.</td></tr>
+          </tbody></table></div>
+          <p>Unknown actors, visibility, and timing remain unknown. A hidden-pane event is not hidden-pane footage. Terminal output can itself contain secrets; compression is not redaction. Keep private storage, local assets, and no automatic uploads.</p>
+        </div></details>
+
+        <details><summary>GUI and export: one renderer, bounded reads, no replay from the beginning</summary><div class="detail-body">
+          <h3>Live and historical viewing</h3>
+          <p>Indexed reads select the view at time T and the surrounding activity. Cache immutable content by identity; include theme, layout, font and overlay state in rendered-cache keys. Keep live notifications separate from the user's historical playhead.</p>
+          <p>Cards display cached thumbnails rather than running one full player each. A card can show “unchanged for 8 hours; recording healthy” without falsely claiming its image is stale. Any extrapolated coverage remains labelled.</p>
+          <h3>Presentation and export</h3>
+          <p>The stock player has no public grid importer. The first adapter candidate projects canonical initial views and bounded row changes as ANSI presentation events into the existing segmented history contract and derived cast video input. It must pass rendered parity tests; it does not reconstruct discarded raw instructions or patch the player.</p>
+          <p>Use that same visual renderer for GUI and Chromium-based export; FFmpeg produces the video. Pin fonts, glyph widths, palette behavior and animation rules. Compare rendered frames, not only extracted text.</p>
+          <p>Export recipes can select ranges, alter speed, choose resolution, framing, padding and cursor presentation, and create aligned chapters/metadata. Original geometry is preserved: changing video size must not silently crop, reflow, or make text unreadably small.</p>
+          <h3>Database snapshot discipline</h3>
+          <p>Take a short consistent read to freeze cutoffs and dependencies. Then read immutable records with bounded short transactions. Do not keep a read transaction open throughout a long export; that can pin WAL history and grow disk use.</p>
+          <p>Actual video size is a separate encoding problem. “One stored view held for eight hours” is compact recording storage, not a promise that an eight-hour MP4 is tiny or free to encode.</p>
+        </div></details>
+
+        <details><summary>Failure isolation, best-effort fidelity, and many-terminal resource use</summary><div class="detail-body">
+          <ul>
+            <li>One capture target owns one visual recorder, even when several agents share it. Several targets have independent engines/stores and failure state.</li>
+            <li>Start with the simplest native engine bridge. Benchmark before introducing a shared multiplexing service and its larger failure domain.</li>
+            <li>Batch storage commits within a documented durability budget. Reuse a bounded progress record; do not create a new file per heartbeat.</li>
+            <li>Reserve capture resources. Bound export and thumbnail concurrency, queue sizes, decoded payload sizes, geometry and cache memory.</li>
+            <li>On failure, show the last verified durable endpoint and an explicit gap. Resume requires qualified reinitialization; a visible grid is not a full terminal parser checkpoint.</li>
+            <li>SQLite transactions do not prove semantic integrity. Check payloads, references and ordering. Corrupt or missing data must not be exposed as valid history; salvage only independently validated recoverable content.</li>
+          </ul>
+          <p>Bounded RAM does not imply bounded disk for arbitrary workloads. Genuine output changes and semantic events accumulate. No quota, rolling deletion, or unapproved lifecycle automation is added by this proposal.</p>
+        </div></details>
+      </section>
+
+      <section id="plan" aria-labelledby="plan-title">
+        <div class="section-head"><span class="number">05</span><h2 id="plan-title">Delivery plan, with stop/go evidence</h2></div>
+        <div class="callout"><strong>First useful vertical slice</strong><p>One synthetic terminal → visual database → live view → scrub backward → export a clip while capture continues.</p></div>
+        <p class="section-intro">The Go-first UX is already merged. The approved <code>agent-reel-visual-recording</code> epic now begins with baseline/scope reconciliation, followed by timing and visual-format work beneath the existing UI. Qualification and operator approval precede any default-writer switch. Frontloop owns current task status.</p>
+        <div class="panel">
+          <div class="milestone"><span class="step">1</span><div><h3>Establish timing and presentation rules</h3><p>Build the idle/delayed-input fixture corpus and define visual boundaries, source ordering, clock correlation, and durable cutoffs.</p><p class="gate"><b>Gate:</b> idle events have defensible placement; delayed input cannot rewrite frozen exports; no hidden temporal thinning. Block precise-coverage claims if capture timing cannot support them.</p></div></div>
+          <div class="milestone"><span class="step">2</span><div><h3>Extend and qualify visible readout</h3><p>Extend the existing pinned avt helper; prove its visible readout and renderer projection together. Compare interpreted and rendered views for text, styles, Unicode, resize, cursor, alternate screen, and repeated redraws.</p><p class="gate"><b>Gate:</b> supported visuals agree with the reference path; detected unsupported features produce persistent fidelity annotations while supported recording continues. Early resource measurements at 1/10/32 instances.</p></div></div>
+          <div class="milestone"><span class="step">3</span><div><h3>Build the indexed visual store</h3><p>Add SQLite-backed reusable rows, complete screen definitions, presentation references, event indexes and durable progress.</p><p class="gate"><b>Gate:</b> idle replay creates no new visual records; random late seeks are bounded; crash/corruption tests preserve truthful endpoints; WAL growth stabilizes under readers.</p></div></div>
+          <div class="milestone"><span class="step">4</span><div><h3>Connect capture lifecycle and activity</h3><p>Integrate the visual writer with existing holder ownership. Preserve attribution and privacy, replace lifetime event caps, and retain explicit pause/resume/failure semantics.</p><p class="gate"><b>Gate:</b> synthetic concurrent recordings and actor events remain correctly separated; events during holds and pauses do not invent footage; short approved diagnostic raw fixtures can validate the new path.</p></div></div>
+          <div class="milestone"><span class="step">5</span><div><h3>Adapt visual inputs beneath the existing GUI</h3><p>Retain the completed Go application, four adapters and warm Live path; add bounded visual-history readers. Keep the viewing playhead independent of the live recording position.</p><p class="gate"><b>Gate:</b> browser tests show correct live state, historical event navigation, fidelity warnings, and return-to-live without full-history downloads or capture controls.</p></div></div>
+          <div class="milestone"><span class="step">6</span><div><h3>Export fixed snapshots of ongoing recordings</h3><p>Freeze source/event cutoffs, apply a non-destructive render/edit recipe, and produce video plus aligned chapter/provenance metadata.</p><p class="gate"><b>Gate:</b> capture continues during export; rendered-frame comparisons, full video decode and timing assertions pass; repeat exports of the same frozen recipe agree on frames and timing.</p></div></div>
+          <div class="milestone"><span class="step">7</span><div><h3>Qualify endurance, packaging, and controlled rollout</h3><p>Exercise mixed idle, spinner, dense output, resize and event workloads at 1/10/32 terminals. Use accelerated three-day timelines and a separate real sustained-runtime soak.</p><p class="gate"><b>Gate:</b> report aggregate CPU/RAM, disk and WAL slopes, commit/seek latency, concurrent export impact and recovery. Actual-backend qualification must pass before normal new captures switch format. Existing archives stay intact; operator activation remains explicit.</p></div></div>
+          <div class="milestone"><span class="step">8</span><div><h3>Optional: compress verified animation loops</h3><p>Only pursue if measured presentation-timeline growth is significant after content reuse.</p><p class="gate"><b>Gate:</b> exact observed timing, jitter, resize/divergence boundaries and partial tails survive round-trip and seek tests. Otherwise keep the simpler timed references.</p></div></div>
+        </div>
+        <details><summary>Dependencies, test matrix, and existing Frontloop overlap</summary><div class="detail-body">
+          <p><strong>Order:</strong> timing and engine work establish the format contract; storage enables capture integration; capture/storage enable live GUI; the shared renderer and time map enable export; all feed endurance qualification. Scale probes start early rather than waiting for the final milestone.</p>
+          <p><strong>Fixtures:</strong> unchanged redraws split across source events; typing and scrolling; styled/Unicode cells; cursor and blink; resize; alternate screen; unsupported features; irregular spinner timing; pauses; delayed ingress; queue saturation; disk full; process crashes; corrupt/missing content; old-archive compatibility.</p>
+          <p><strong>Measurements:</strong> per-target and aggregate CPU/RSS, unique-content growth, timed-reference/event growth, commit latency, seek-to-paint, live lag, WAL size, restart/recovery time, and capture behavior while exporting. Proposed performance thresholds must be made explicit against a stated machine/workload; none are measured guarantees today.</p>
+          <p><strong>Queue reconciliation:</strong> V4 owns new-format activity and Pi sender/receiver capacity; V6 adapts the completed GUI; V7 owns remaining selection/speed recipes and aligned chapter/marker handoff; V8 qualifies the visual stack. Older activity/v1 obligations and change identities remain intact without duplicate implementation or automatic completion. See the baseline document for the full mapping. No further UX merge is needed.</p>
+        </div></details>
+      </section>
+
+      <section id="risks" aria-labelledby="risks-title">
+        <div class="section-head"><span class="number">06</span><h2 id="risks-title">What to judge before approving</h2></div>
+        <div class="cards">
+          <div class="card"><span class="tag unproven">Irreversible trade-off</span><h3>No guaranteed raw reconstruction</h3><p>After qualification, the visual format discards redundant instructions. Features the engine cannot represent may be permanently absent—even when capture continues with a warning.</p></div>
+          <div class="card"><span class="tag unproven">Coverage boundary</span><h3>This is terminal-view capture</h3><p>Not desktop video, arbitrary native client overlays, or hidden-pane footage. Supported source content and integration-provided events need an explicit inventory.</p></div>
+          <div class="card"><span class="tag unproven">Measured, not assumed</span><h3>Small storage ≠ free capture</h3><p>The engine still interprets repeated output. Tens of busy terminals, database transactions and export jobs need aggregate benchmarks.</p></div>
+        </div>
+        <div class="callout"><strong>Recommended direction</strong><p>Proceed toward a visual-state recorder with indexed events and concurrent readers. Make timing and supported-rendering evidence the first gates. Keep your best-effort policy explicit, and defer loop compression until it earns its complexity.</p></div>
+        <p><strong>Review status:</strong> no unanswered human questions remain from the previous decision gate. Your best-effort choice is incorporated. The architecture and milestones still await proposal review; opening or interacting with this page does not grant approval.</p>
+        <details><summary>Fable 5.1 advice: what was adopted, and what was not</summary><div class="detail-body">
+          <p>The advisor was invoked through a Luna wrapper using <code>claude -p --model fable</code>, not a direct Anthropic API agent or Cursor. Response metadata identified <code>claude-fable-5-1</code>; the CLI's authentication status reported <code>claude.ai</code>, first-party provider, and <code>max</code> subscription.</p>
+          <ul>
+            <li><strong>Adopt:</strong> indexed SQLite/WAL storage per recording, grid-first recording, bounded reads, explicit idle-time clock work, export snapshots, and early many-terminal qualification.</li>
+            <li><strong>Simplify:</strong> complete row-reference states instead of long keyframe/delta chains. Native avt is the first bridge candidate; the exact binding is a qualification choice.</li>
+            <li><strong>Do not adopt:</strong> independent Go and browser renderers. One shared presentation path reduces visual drift.</li>
+            <li><strong>Do not silently adopt:</strong> a debounce window that omits short-lived visual states. Any temporal reduction needs a stated policy and tests.</li>
+            <li><strong>Correct:</strong> a heartbeat and receipt-time sample cannot by themselves establish source coverage. Separate source, received, durable, and estimated progress.</li>
+          </ul>
+          <p>The advisor's source review and tests do not qualify the proposed architecture or real capture. Existing documentation has stale constraints/status; the visual-footage direction supersedes raw-byte preservation for the new format, but implementation documentation must be reconciled explicitly.</p>
+        </div></details>
+        <details><summary>Source pointers and evidence boundaries</summary><div class="detail-body">
+          <p>Local source references are relative to <code>tools/agent-reel</code>:</p>
+          <ul>
+            <li><a href="../internal/archive/archive.go"><code>internal/archive/archive.go</code></a>: current 1 MiB / two-second chunk defaults, zstd writing, manifests and validated progress.</li>
+            <li><a href="../internal/reel/holder.go"><code>internal/reel/holder.go</code></a> and <a href="../internal/reel/activity.go"><code>activity.go</code></a>: current approximate event anchors and 8,192-record lifetime cap.</li>
+            <li><a href="../internal/archive/playback.go"><code>internal/archive/playback.go</code></a>: current whole-cast playback admission limits.</li>
+            <li><a href="../internal/reel/web/preview.mjs"><code>internal/reel/web/preview.mjs</code></a>: existing renderer-backed preview path. Its cursor-hidden snapshot is not an authoritative archival state format.</li>
+            <li><a href="https://github.com/asciinema/asciinema-player/blob/8ba9c54008ed1f25d2914abe31ea118dbf7da2e4/src/vt/Cargo.toml" rel="noreferrer">Pinned player's terminal dependency</a> and <a href="https://github.com/asciinema/asciinema-player/blob/8ba9c54008ed1f25d2914abe31ea118dbf7da2e4/src/vt/src/lib.rs" rel="noreferrer">terminal readout wrapper</a>: avt 0.16 dependency and cell/line/cursor integration.</li>
+            <li><a href="https://sqlite.org/wal.html" rel="noreferrer">SQLite WAL documentation</a>: concurrent readers/writer and checkpoint behavior.</li>
+          </ul>
+          <p>No raw terminal content is embedded in this page. Measurements above describe a fixed existing sample. The interactive example is invented solely to explain the proposed semantics.</p>
+        </div></details>
+      </section>
+    </div>
+  </main>
+  <footer><div class="wrap"><strong>AgentReel · visual recording proposal</strong><br>Self-contained review document · no external assets, telemetry, or recording controls.<br>Next step: revise this design from your feedback, then submit the structured Frontloop proposal through its separate approval gate.</div></footer>
+  <script>
+    (() => {
+      const details = [...document.querySelectorAll('details')];
+      const expand = document.getElementById('expand');
+      const print = document.getElementById('print');
+      const syncExpand = () => {
+        const allOpen = details.every(item => item.open);
+        expand.textContent = allOpen ? 'Collapse technical details' : 'Expand technical details';
+      };
+      expand.hidden = false;
+      print.hidden = false;
+      expand.addEventListener('click', () => {
+        const open = !details.every(item => item.open);
+        details.forEach(item => { item.open = open; });
+        syncExpand();
+      });
+      details.forEach(item => item.addEventListener('toggle', syncExpand));
+      print.addEventListener('click', () => window.print());
+      let printState = null;
+      window.addEventListener('beforeprint', () => {
+        if (printState === null) printState = details.map(item => item.open);
+        details.forEach(item => { item.open = true; });
+      });
+      window.addEventListener('afterprint', () => {
+        if (printState !== null) details.forEach((item, index) => { item.open = printState[index]; });
+        printState = null;
+        syncExpand();
+      });
+      const slider = document.getElementById('playhead');
+      const screen = document.getElementById('demo-screen');
+      const storage = document.getElementById('demo-storage');
+      const readout = document.getElementById('demo-readout');
+      document.getElementById('demo-controls').hidden = false;
+      document.getElementById('slider-controls').hidden = false;
+      const timeLabel = minutes => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+      const update = () => {
+        const minutes = Number(slider.value);
+        const changed = minutes === 480;
+        screen.textContent = changed
+          ? '$ agent run verification\nVerification complete.\nStarting the next requested task.'
+          : '$ agent run verification\nVerification complete.\nWaiting for your next instruction.';
+        storage.textContent = changed ? 'View B · reuse unchanged rows; store the changed row + timestamp' : 'View A · shared unchanged screen content';
+        const time = document.createElement('strong');
+        time.textContent = timeLabel(minutes);
+        const text = changed
+          ? ' · One line changes. A new view references the existing rows and the new row.'
+          : minutes === 120
+            ? ' · agent.turn-ended is an event on the timeline. The terminal view does not change.'
+            : ' · Still view A. Only the viewing time changed—not the stored screen content.';
+        readout.replaceChildren(time, document.createTextNode(text));
+        slider.setAttribute('aria-valuetext', `${timeLabel(minutes)} elapsed; ${changed ? 'view B' : 'view A'}`);
+      };
+      slider.addEventListener('input', update);
+      document.querySelectorAll('[data-minute]').forEach(button => {
+        button.addEventListener('click', () => { slider.value = button.dataset.minute; update(); });
+      });
+      update();
+    })();
+  </script>
+</body>
+</html>

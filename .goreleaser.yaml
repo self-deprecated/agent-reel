@@ -1,0 +1,122 @@
+version: 2
+
+project_name: agent-reel
+
+# Runs on macOS: the darwin build needs cgo with the macOS SDK (libproc in
+# internal/darwinproc). Linux builds are pure Go and cross-compile from there.
+builds:
+  - id: areel-linux
+    main: ./cmd/areel
+    binary: areel
+    env:
+      - CGO_ENABLED=0
+    goos: [linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w
+
+  - id: areel-darwin
+    main: ./cmd/areel
+    binary: areel
+    env:
+      - CGO_ENABLED=1
+    goos: [darwin]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w
+
+  # The pinned avt terminal emulator that capture needs (tools/avt-checkpoint).
+  # Built with cargo-zigbuild; Linux targets are static musl binaries.
+  - id: areel-avt-checkpoint
+    builder: rust
+    dir: tools/avt-checkpoint
+    binary: areel-avt-checkpoint
+    flags: [--release, --locked]
+    targets:
+      - x86_64-unknown-linux-musl
+      - aarch64-unknown-linux-musl
+      - x86_64-apple-darwin
+      - aarch64-apple-darwin
+
+# Signs and notarizes the macOS binaries with the Developer ID Application
+# certificate once its secrets are set; until then they ship unsigned.
+notarize:
+  macos:
+    - enabled: '{{ isEnvSet "MACOS_SIGN_P12" }}'
+      ids: [areel-darwin, areel-avt-checkpoint]
+      sign:
+        certificate: "{{ .Env.MACOS_SIGN_P12 }}"
+        password: "{{ .Env.MACOS_SIGN_PASSWORD }}"
+      notarize:
+        issuer_id: "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
+        key_id: "{{ .Env.MACOS_NOTARY_KEY_ID }}"
+        key: "{{ .Env.MACOS_NOTARY_KEY }}"
+        wait: true
+        timeout: 20m
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+      - src: tools/avt-checkpoint/licenses/*
+        dst: licenses/areel-avt-checkpoint
+      - src: internal/reel/web/vendor/LICENSE-*.txt
+        dst: licenses/web
+      # The Claude Code / Codex / OpenCode hook plugin, without its tests.
+      - agent-plugin/README.md
+      - agent-plugin/bin/areel-hook
+      - agent-plugin/hooks/*
+      - agent-plugin/.claude-plugin/*
+      - agent-plugin/.codex-plugin/*
+      - agent-plugin/.agents/plugins/*
+      - agent-plugin/opencode/agent-reel.mjs
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+
+release:
+  github:
+    owner: self-deprecated
+    name: agent-reel
+  prerelease: auto
+
+homebrew_casks:
+  - name: agent-reel
+    repository:
+      owner: self-deprecated
+      name: homebrew-tap
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    directory: Casks
+    homepage: https://github.com/self-deprecated/agent-reel
+    description: Terminal recorder for coding-agent sessions
+    binaries: [areel, areel-avt-checkpoint]
+    dependencies:
+      # areel doctor checks both; capture refuses any asciinema but 3.2.1.
+      - formula: asciinema
+      - formula: zellij
+    # A stable plugin path for `claude plugin marketplace add` and friends.
+    custom_block: |
+      artifact "agent-plugin", target: "#{HOMEBREW_PREFIX}/share/agent-reel/agent-plugin"
+    hooks:
+      post:
+        # Unsigned binaries need the quarantine flag dropped for macOS to run
+        # them. Remove this hook after the first notarized release.
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            %w[areel areel-avt-checkpoint].each do |binary|
+              system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/#{binary}"]
+            end
+          end

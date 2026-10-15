@@ -1,0 +1,15 @@
+{
+  "v": 1,
+  "agent": "aider",
+  "event": "tool.error",
+  "session": "generic-session-1",
+  "turn": "SECRET-7c1f",
+  "at": "2026-09-30T10:00:00.5+02:00",
+  "prompt": "SECRET-7c1f",
+  "message": "SECRET-7c1f",
+  "tool": {
+    "name": "Run Shell!",
+    "call": "SECRET-7c1f"
+  },
+  "error": "SECRET-7c1f"
+}

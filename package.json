@@ -1,0 +1,15 @@
+{
+  "name": "agent-reel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AgentReel Pi extension (pi/) and library UI asset tooling",
+  "keywords": ["pi-package"],
+  "pi": {"extensions": ["./pi/extensions/index.ts"]},
+  "engines": {"node": ">=24"},
+  "scripts": {
+    "assets:build": "node scripts/assets.mjs build"
+  },
+  "peerDependencies": {"@earendil-works/pi-coding-agent": "*"},
+  "devDependencies": {"asciinema-player": "3.17.0"}
+}

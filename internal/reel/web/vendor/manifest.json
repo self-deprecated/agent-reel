@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "player": {
+    "name": "asciinema-player",
+    "version": "3.17.0",
+    "license": "Apache-2.0",
+    "source": "https://registry.npmjs.org/asciinema-player/-/asciinema-player-3.17.0.tgz",
+    "integrity": "sha512-JbjNJmA2TLIeYNaOEja+kVSzXadKoqpIzVVmfBGNj2DmdtE/vExBCnkE8NYEcpaQcDvUYg8Ltt0urT80frACmw==",
+    "gitHead": "8ba9c54008ed1f25d2914abe31ea118dbf7da2e4",
+    "packageSHA256": "93a5932f39f24b5a4309fb33ab4dc33fd63e2960c0c623501d942196fe80528d"
+  },
+  "font": {
+    "name": "DejaVu Sans Mono",
+    "version": "2.37",
+    "source": "https://dejavu-fonts.github.io/",
+    "license": "Bitstream Vera / DejaVu public-domain changes; extracted verbatim from nameID13"
+  },
+  "boxFont": {
+    "name": "AgentReel Box",
+    "derivedFrom": "DejaVu Sans Mono 2.37",
+    "generator": "scripts/box-font.py (fonttools)",
+    "unicodeRange": "U+2500-257F",
+    "license": "Bitstream Vera / DejaVu license (LICENSE-font.txt, kept in nameID0/13/14); modified (box-drawing verticals stretched to a 1.3333em line box) and renamed as that license requires"
+  },
+  "files": {
+    "player.js": {
+      "bytes": 349907,
+      "sha256": "4d63cfb88859f158d1eef5d8a5550861abcb7ec195fb5d684f35f6446a29fe11"
+    },
+    "player.css": {
+      "bytes": 19184,
+      "sha256": "f619fe17597043564f03b2c6918b3daf890ee8b912fb408542fba11afade4fdb"
+    },
+    "DejaVuSansMono.ttf": {
+      "bytes": 343096,
+      "sha256": "9d9bfebceb1c3f6f4ad383ded568a6926086208f43f7f92f92f7e93a1383fa38"
+    },
+    "AgentReelBox.ttf": {
+      "bytes": 14116,
+      "sha256": "71ac0c5f25723bd4fad00a57737dc8e964292de50c2b4b320e5bd388a440669c"
+    },
+    "LICENSE-player.txt": {
+      "bytes": 11347,
+      "sha256": "63422284ed65be54ab38d8a94e7518d27e222fbb26c9ae4cd984c63926e91c12"
+    },
+    "LICENSE-font.txt": {
+      "bytes": 2452,
+      "sha256": "6f57fb3cc4e1d62de5ce0ee6444e6ca45eb8a35aaf0bf70a694f9cc133c5881d"
+    }
+  }
+}

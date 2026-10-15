@@ -1,0 +1,9 @@
+{
+  "session_id": "claude-session-1",
+  "transcript_path": "/home/u/.claude/projects/SECRET-7c1f.jsonl",
+  "cwd": "/home/u/SECRET-7c1f",
+  "permission_mode": "default",
+  "hook_event_name": "PostCompact",
+  "trigger": "manual",
+  "compact_summary": "SECRET-7c1f"
+}

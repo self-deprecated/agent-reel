@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Activity log · AgentReel</title><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css"></head><body class="marks-document">
+<header class="page-head"><a class="back" href="/recordings/{{.ID}}{{if .Cutoff}}?mode=history&amp;segment={{.Segment}}&amp;cutoff={{.Cutoff}}{{end}}" target="_top"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Recording</a><h1>Activity log</h1><a class="btn" href="{{.MarksURL}}">Marks</a><a class="btn" href="{{.FirstURL}}">First page</a>{{if .NextURL}}<a class="btn activity-next" href="{{.NextURL}}">Next page</a>{{end}}</header>
+<div class="page-body">
+<p class="muted activity-notice">{{.Notice}}</p>
+<form class="toolbar activity-filters" action="{{.Action}}" method="get"><input type="hidden" name="after" value="{{.After}}">{{if .Cutoff}}<input type="hidden" name="segment" value="{{.Segment}}"><input type="hidden" name="cutoff" value="{{.Cutoff}}">{{end}}{{range .Filters}}<label>{{.Name}} <select name="{{.Name}}" class="control">{{range .Options}}<option value="{{.Value}}"{{if .Selected}} selected{{end}}>{{.Label}}</option>{{end}}</select></label>{{end}}<button class="btn" type="submit">Apply filters</button></form>
+<section class="activity-rows" aria-label="Observed activity">
+{{range .Rows}}<article class="activity-row" data-sequence="{{.Sequence}}"><h3>Sequence {{.Sequence}}: {{.Status}}</h3>
+{{if .AnchorURL}}<a class="activity-anchor" href="{{.AnchorURL}}" target="_top">{{.AnchorLabel}}</a>{{else if .AnchorLabel}}<p class="activity-unanchored">{{.AnchorLabel}}; no seekable footage anchor.</p>{{else}}<p>Unplaced; no seekable footage anchor.</p>{{end}}
+{{with .Record}}<p>Kind: {{.Envelope.Kind}} | Source: {{.Envelope.Source}} | Declared label: {{with .Envelope.Label}}{{.}}{{else}}unknown{{end}}</p>
+<p>Declared identities — producer: {{with .Envelope.Producer}}{{.}}{{else}}unknown{{end}} | agent instance: {{with .Envelope.AgentInstance}}{{.}}{{else}}unknown{{end}} | conversation: {{with .Envelope.Conversation}}{{.}}{{else}}unknown{{end}} | visibility: {{.Visibility}}</p>
+<p>Receiver time: {{.Receipt.At}} (not cast time); metadata marker: {{.Marker}}</p>{{end}}
+{{if .Record}}<details><summary>Parsed extension data (text only; numeric lexemes preserved)</summary><pre class="library-data">{{.Data}}</pre></details>{{end}}</article>
+{{else}}<p class="activity-empty">No matching stored activity on this observed page.</p>{{end}}
+</section>
+<details class="recording-diagnostics"><summary>Recording and segment diagnostics</summary>
+<p>Recording: {{.ID}} · persisted status: {{.Recording.PersistedStatus}} · recorder health not checked · {{.Recording.Duration}} · {{.Recording.Date}}.</p>
+<p>Date source: {{.Recording.DateSource}} · duration source: {{.Recording.DurationSource}}. These are metadata observations, not capture-fidelity or coverage claims.</p>
+{{with .Recording.Context}}<p>Declared working directory: {{.WorkingDirectory}} · JJ main: {{.JJMain}} (declared at start, not current JJ state).</p>{{end}}
+{{range .Segments}}<article><h3>Segment {{.Number}} — {{.Media}}</h3><p>Recorded start: {{.Start}} · end: {{.End}}{{if .Diagnostic}} · diagnostic present{{end}}</p>{{if .Gap}}<p>{{.Gap}}</p>{{end}}{{if .URL}}<a href="{{.URL}}" target="_top">Open segment {{.Number}} from zero</a>{{end}}</article>{{end}}
+<h3>Lifecycle associations — wall clocks are not footage anchors</h3>{{range .Events}}<p>{{.Kind}} · {{.At}} · related segment {{.Segment}}{{if .URL}} · <a href="{{.URL}}" target="_top">Open related segment from zero (not event time)</a>{{end}}</p>{{else}}<p>No lifecycle events observed.</p>{{end}}
+</details>
+</div>
+</body></html>
