@@ -445,3 +445,44 @@ func TestBrowserWebEmbedSelectableBeforePlay(t *testing.T) {
 		})
 	}
 }
+
+// With focus outside the player (the letterbox around the terminal was
+// clicked, or a browser that does not focus clicked buttons), Space still
+// plays and pauses and ] jumps to the next marker; the player's own shortcuts
+// only see keys from inside its wrapper.
+func TestBrowserWebEmbedKeysWithFocusOutsidePlayer(t *testing.T) {
+	parent := embedBrowser(t)
+	b, _ := embedTestBundle(t, true, "asciinema", Options{})
+	dir := filepath.Join(t.TempDir(), "embed")
+	if err := b.WriteDir(dir); err != nil {
+		t.Fatal(err)
+	}
+	ctx, _ := embedOpen(t, parent, (&url.URL{Scheme: "file", Path: dir + "/index.html"}).String())
+	embedWaitText(t, ctx, "welcome to the lesson")
+	run(t, ctx, chromedp.Poll(`!document.querySelector('#player .ap-overlay-start')`, nil, chromedp.WithPollingTimeout(10*time.Second)),
+		chromedp.Evaluate(`document.activeElement.blur(); document.activeElement === document.body`, nil))
+	label := func() string {
+		var s string
+		run(t, ctx, chromedp.Evaluate(`document.querySelector('#player .ap-playback-button').getAttribute('aria-label')`, &s))
+		return s
+	}
+	press := func(key, code string, vk int64) {
+		run(t, ctx, input.DispatchKeyEvent(input.KeyDown).WithKey(key).WithCode(code).WithWindowsVirtualKeyCode(vk).WithText(key),
+			input.DispatchKeyEvent(input.KeyUp).WithKey(key).WithCode(code).WithWindowsVirtualKeyCode(vk), chromedp.Sleep(300*time.Millisecond))
+	}
+	press(" ", "Space", 32)
+	if got := label(); got != "Pause" {
+		t.Fatalf("Space with focus on the page left the player %q, want playing", got)
+	}
+	press(" ", "Space", 32)
+	if got := label(); got != "Play" {
+		t.Fatalf("second Space left the player %q, want paused", got)
+	}
+	run(t, ctx, chromedp.Evaluate(`(async()=>{const p=window.agentReelPlayer;await p.seek(0.5);document.activeElement.blur();return true})()`, nil, await))
+	press("]", "BracketRight", 221)
+	var at float64
+	run(t, ctx, chromedp.Evaluate(`window.agentReelPlayer.getCurrentTime()`, &at, await))
+	if math.Abs(at-1) > 0.05 {
+		t.Fatalf("] with focus on the page seeked to %v, want the next marker at 1", at)
+	}
+}

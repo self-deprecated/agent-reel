@@ -396,7 +396,12 @@ const csp = "default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-
 // covers the terminal with a start overlay that turns any press (a text
 // selection too) into playback from 0, so the text would not be selectable.
 // The poster is reached by a seek backwards from the end: only a backward
-// seek replays from 0, and a forward one would skip the events at 0.
+// seek replays from 0, and a forward one would skip the events at 0. The
+// player's own shortcuts only see keys from inside its wrapper; a key pressed
+// with focus elsewhere in the page (the letterbox around the terminal was
+// clicked, or the browser does not focus clicked buttons) moves focus back
+// and does what the shortcut would: Space plays and pauses, the arrows seek
+// 5 s, [ and ] jump between markers.
 const boot = `(async()=>{
 const config=JSON.parse(document.getElementById('agent-reel-config').textContent);
 const data=document.getElementById('agent-reel-cast').textContent;
@@ -406,6 +411,12 @@ if(config.idleTimeLimit)options.idleTimeLimit=config.idleTimeLimit;
 if(config.poster)options.poster=config.poster;
 const player=AsciinemaPlayer.create({data},document.getElementById('player'),options);
 window.agentReelPlayer=player;
+let playing=false;
+player.addEventListener('play',()=>{playing=true;});
+player.addEventListener('pause',()=>{playing=false;});
+player.addEventListener('ended',()=>{playing=false;});
+const keys={' ':()=>playing?player.pause():player.play(),ArrowLeft:async()=>player.seek(Math.max(0,(await player.getCurrentTime())-5)),ArrowRight:async()=>player.seek((await player.getCurrentTime())+5),'[':()=>player.seek({marker:'prev'}),']':()=>player.seek({marker:'next'})};
+document.addEventListener('keydown',e=>{const w=document.querySelector('#player .ap-wrapper');const act=keys[e.key];if(!w||!act||w.contains(e.target)||e.altKey||e.ctrlKey||e.metaKey)return;e.preventDefault();w.focus({preventScroll:true});act();});
 if(!config.autoPlay){const at=config.poster.slice(4).split(':').reduce((s,v)=>s*60+Number(v),0);await player.play();await player.pause();await player.seek(await player.getDuration());await player.seek(at);}
 })();`
 

@@ -10316,6 +10316,12 @@ if(config.idleTimeLimit)options.idleTimeLimit=config.idleTimeLimit;
 if(config.poster)options.poster=config.poster;
 const player=AsciinemaPlayer.create({data},document.getElementById('player'),options);
 window.agentReelPlayer=player;
+let playing=false;
+player.addEventListener('play',()=>{playing=true;});
+player.addEventListener('pause',()=>{playing=false;});
+player.addEventListener('ended',()=>{playing=false;});
+const keys={' ':()=>playing?player.pause():player.play(),ArrowLeft:async()=>player.seek(Math.max(0,(await player.getCurrentTime())-5)),ArrowRight:async()=>player.seek((await player.getCurrentTime())+5),'[':()=>player.seek({marker:'prev'}),']':()=>player.seek({marker:'next'})};
+document.addEventListener('keydown',e=>{const w=document.querySelector('#player .ap-wrapper');const act=keys[e.key];if(!w||!act||w.contains(e.target)||e.altKey||e.ctrlKey||e.metaKey)return;e.preventDefault();w.focus({preventScroll:true});act();});
 if(!config.autoPlay){const at=config.poster.slice(4).split(':').reduce((s,v)=>s*60+Number(v),0);await player.play();await player.pause();await player.seek(await player.getDuration());await player.seek(at);}
 })();
 </script>
