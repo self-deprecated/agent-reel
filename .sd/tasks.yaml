@@ -167,8 +167,13 @@ tasks:
     run: |
       set -euo pipefail
       : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      # This tree's areel, so the exports carry the current web embed.
+      bin=$(mktemp -d); trap 'rm -rf "$bin"' EXIT
+      go build -o "$bin/areel" ./cmd/areel
+      export PATH="$bin:$PATH"
       python3 tools/demo-record/visuals.py
       go run ./tools/demo-record/screenshots
+      go run ./tools/demo-record/hero
   smoke:
     desc: CLI help and read-only prerequisite doctor
     run: |

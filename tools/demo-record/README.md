@@ -34,11 +34,12 @@ Screens it waited on are saved in `/tmp/areel-rec/screens/<agent>/`.
 `visuals.py` writes:
 
 - the per-agent web exports for `docs/demo/`;
-- the hero GIF, composed from Claude Code's run;
+- the composed GIF for the compose guide;
 - the side-by-side still.
 
 `screenshots/` captures the library, the viewer and a web embed with
-Chromium.
+Chromium. `hero/` drives the Claude Code web export with a real mouse
+(select text, jump chapters, play) into the README's `hero.gif`.
 
 Requirements:
 

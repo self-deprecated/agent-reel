@@ -391,7 +391,12 @@ const csp = "default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-
 
 // boot waits (bounded) for the bundled faces, then creates the player from
 // the inline cast. window.agentReelPlayer is the player, for the host page's
-// own scripting; nothing else is exported.
+// own scripting; nothing else is exported. Without autoplay it starts the
+// player and pauses it at the poster: until a first play, the pinned player
+// covers the terminal with a start overlay that turns any press (a text
+// selection too) into playback from 0, so the text would not be selectable.
+// The poster is reached by a seek backwards from the end: only a backward
+// seek replays from 0, and a forward one would skip the events at 0.
 const boot = `(async()=>{
 const config=JSON.parse(document.getElementById('agent-reel-config').textContent);
 const data=document.getElementById('agent-reel-cast').textContent;
@@ -399,7 +404,9 @@ await Promise.race([Promise.all([document.fonts.load('16px AgentReelMono'),docum
 const options={fit:config.fit,controls:config.controls,autoPlay:config.autoPlay,loop:config.loop,speed:config.speed,theme:'agentreel',terminalFontFamily:'AgentReelBox, AgentReelMono'};
 if(config.idleTimeLimit)options.idleTimeLimit=config.idleTimeLimit;
 if(config.poster)options.poster=config.poster;
-window.agentReelPlayer=AsciinemaPlayer.create({data},document.getElementById('player'),options);
+const player=AsciinemaPlayer.create({data},document.getElementById('player'),options);
+window.agentReelPlayer=player;
+if(!config.autoPlay){const at=config.poster.slice(4).split(':').reduce((s,v)=>s*60+Number(v),0);await player.play();await player.pause();await player.seek(await player.getDuration());await player.seek(at);}
 })();`
 
 // WriteIndex writes index.html.

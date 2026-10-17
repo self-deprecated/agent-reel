@@ -17,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/chromedp/cdproto/input"
 	"github.com/chromedp/cdproto/log"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/runtime"
@@ -403,5 +404,44 @@ func TestBrowserWebEmbedInIframe(t *testing.T) {
 	run(t, ctx, chromedp.Evaluate(frame+`.document.querySelector('#player .ap-player').getBoundingClientRect().width`, &width))
 	if math.Abs(at-1) > 0.01 || width > 720 || width < 300 {
 		t.Fatalf("in the iframe: marker at %v, player width %v", at, width)
+	}
+}
+
+// Before any play, a real mouse drag over the terminal selects its text and
+// leaves the player paused where it was (the pinned player's start overlay
+// would otherwise start playback from 0 and select nothing), with and
+// without a poster.
+func TestBrowserWebEmbedSelectableBeforePlay(t *testing.T) {
+	parent := embedBrowser(t)
+	for _, c := range []struct{ poster, text string }{{"", "welcome to the lesson"}, {"npt:1.2", "$ ls lessons"}} {
+		t.Run("poster="+c.poster, func(t *testing.T) {
+			b, _ := embedTestBundle(t, true, "asciinema", Options{Poster: c.poster})
+			dir := filepath.Join(t.TempDir(), "embed")
+			if err := b.WriteDir(dir); err != nil {
+				t.Fatal(err)
+			}
+			ctx, _ := embedOpen(t, parent, (&url.URL{Scheme: "file", Path: dir + "/index.html"}).String())
+			embedWaitText(t, ctx, c.text)
+			var box struct{ X, Y, W, H float64 }
+			run(t, ctx, chromedp.Poll(`!document.querySelector('#player .ap-overlay-start')`, nil, chromedp.WithPollingTimeout(10*time.Second)),
+				chromedp.Evaluate(`(()=>{const b=document.querySelector('#player .ap-line').getBoundingClientRect();return {X:b.x,Y:b.y,W:b.width,H:b.height}})()`, &box))
+			var before float64
+			run(t, ctx, chromedp.Evaluate(`window.agentReelPlayer.getCurrentTime()`, &before, await))
+			y := box.Y + box.H/2
+			run(t, ctx,
+				input.DispatchMouseEvent(input.MousePressed, box.X+1, y).WithButton(input.Left).WithClickCount(1),
+				input.DispatchMouseEvent(input.MouseMoved, box.X+box.W/2, y).WithButton(input.Left).WithButtons(1),
+				input.DispatchMouseEvent(input.MouseMoved, box.X+box.W-2, y).WithButton(input.Left).WithButtons(1),
+				input.DispatchMouseEvent(input.MouseReleased, box.X+box.W-2, y).WithButton(input.Left).WithClickCount(1),
+				chromedp.Sleep(700*time.Millisecond))
+			var got struct {
+				Selected string
+				At       float64
+			}
+			run(t, ctx, chromedp.Evaluate(`(async()=>({Selected:getSelection().toString(),At:await window.agentReelPlayer.getCurrentTime()}))()`, &got, await))
+			if !strings.Contains(got.Selected, strings.Fields(c.text)[0]) || math.Abs(got.At-before) > 0.01 {
+				t.Fatalf("drag selected %q and moved the player from %v to %v; want the first row selected and the player paused", got.Selected, before, got.At)
+			}
+		})
 	}
 }

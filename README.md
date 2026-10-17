@@ -1,24 +1,39 @@
 # AgentReel
 
-**Record your terminal sessions, agents and all, and play them back as
-searchable, selectable text.**
+**A flight recorder for your terminal and the agents working in it.**
 
-`areel` records whole Zellij sessions into a private local library. Browse
-them in a web UI, jump between marks your agents leave, search everything
-that was ever on screen, and export a clip as a video or an interactive web
-page.
+`areel` records whole Zellij sessions in the background, as **text, not
+video**. It doesn't capture pixels: it stores every screen as terminal rows,
+and a row that repeats is stored once. So a recording stays tiny, and you
+can search it, select it and copy from it.
+
+- **Hands-off.** Start it once per session, or let your launcher or Pi start
+  it. It keeps recording when you close the terminal or detach, and it
+  needs no window or screen capture. Your agents' hooks mark each
+  prompt, finished turn and permission request on the timeline by
+  themselves.
+- **Small.** The two-minute Claude Code session below is a 190 kB file; the
+  same footage rendered as 1080p video is 2.8 MB. A busy eight-hour session
+  seals to about 10 MB.
+- **Sub-agents included.** When an agent's worker runs in its own Zellij
+  session, record that session too and it links itself to the recording
+  that spawned it (launchers set `AREEL_PARENT_SESSION`). The library then
+  plays the worker next to its parent, in sync. Screenshots and videos can
+  be pinned to a moment the same way.
+- **Text in, text out.** Search everything that was ever on screen. Export a
+  clip as a cast, a video or an interactive web page whose text you can
+  still select.
 
 <a href="https://self-deprecated.github.io/agent-reel/demo/">
-  <img src="docs/images/hero.gif" alt="Claude Code explains AgentReel's web export, documents it, then a floating Zellij pane exports the recording itself">
+  <img src="docs/images/hero.gif" alt="The web export of a recorded Claude Code session: the mouse selects the agent's answer as text, jumps between chapters and plays">
 </a>
 
-Claude Code, asked how this repository's web export works, then asked to
-document it. Finally a floating Zellij pane exports the very recording
-you're watching. It's composed with `areel compose`, sped up.
-
-▶ **[Play the real recordings](https://self-deprecated.github.io/agent-reel/demo/)**
-of Claude Code and Codex doing the same task. Each is one HTML file from
-`areel export --format web`: select the text, click a chapter, scrub.
+That's the web export of a real Claude Code session, in a browser. The
+agent was asked how this repository's web export works and to document it,
+and at the end a floating Zellij pane exports the recording itself.
+**▶ [Try it yourself](https://self-deprecated.github.io/agent-reel/demo/)**:
+the Claude Code and Codex recordings, each one self-contained HTML file.
+(The README can only show a GIF; the real thing is text.)
 
 | The library | A recording, with your agent's marks |
 |---|---|

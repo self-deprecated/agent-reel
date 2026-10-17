@@ -11,6 +11,12 @@ a time or a search hit, and you can preview everything before rendering.
 For a plain cut of one recording with nothing drawn on it, use an [export
 recipe](exports.md#picking-a-range) instead.
 
+![A composed video: title cards and three chapters of a Claude Code session, idle trimmed and sped up](images/compose.gif)
+
+The GIF above is one: three chapters of a Claude Code session with title
+cards, idle pauses trimmed and sped up 3×. Its EDL is in
+[`tools/demo-record/visuals.py`](../tools/demo-record/visuals.py).
+
 ## Workflow
 
 ```sh

@@ -1,9 +1,19 @@
 # Recording
 
-AgentReel records a whole Zellij session: every pane and tab, as the
-session's clients see it. Recordings land in a private library
-(`~/.local/share/agent-reel` by default) and keep running when the shell
-that started them exits.
+AgentReel records a whole Zellij session, as the session's clients see it,
+in the background. It records text, not pixels:
+
+- each screen is stored as a list of terminal rows;
+- each distinct row is stored once.
+
+A two-minute agent session is about 190 kB and a busy eight-hour one about
+10 MB, and all of it stays searchable and selectable. Recordings land in a
+private library (`~/.local/share/agent-reel` by default) and keep running
+when the shell that started them exits.
+
+A worker an agent spawns in its own Zellij session can be recorded the same
+way. It links itself to the parent's recording (see [linked
+recordings](library.md#linked-recordings)).
 
 ## Start, pause, stop
 

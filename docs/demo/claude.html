@@ -10314,7 +10314,9 @@ await Promise.race([Promise.all([document.fonts.load('16px AgentReelMono'),docum
 const options={fit:config.fit,controls:config.controls,autoPlay:config.autoPlay,loop:config.loop,speed:config.speed,theme:'agentreel',terminalFontFamily:'AgentReelBox, AgentReelMono'};
 if(config.idleTimeLimit)options.idleTimeLimit=config.idleTimeLimit;
 if(config.poster)options.poster=config.poster;
-window.agentReelPlayer=AsciinemaPlayer.create({data},document.getElementById('player'),options);
+const player=AsciinemaPlayer.create({data},document.getElementById('player'),options);
+window.agentReelPlayer=player;
+if(!config.autoPlay){const at=config.poster.slice(4).split(':').reduce((s,v)=>s*60+Number(v),0);await player.play();await player.pause();await player.seek(await player.getDuration());await player.seek(at);}
 })();
 </script>
 <!--

@@ -2,7 +2,7 @@
 """Build the README visuals from the demo recordings made by record.py:
 
   docs/demo/<agent>.html     one web export per agent (the demo page's tabs)
-  docs/images/hero.gif       Claude Code's run, composed and sped up
+  docs/images/compose.gif    Claude Code's run, composed and sped up (areel compose)
   docs/images/compare.png    every agent's docs edit side by side
 
     nix develop -c python3 tools/demo-record/visuals.py
@@ -76,7 +76,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         mp4 = os.path.join(tmp, "hero.mp4")
         compose(a.library, hero, mp4)
-        gif = os.path.join(ROOT, "docs", "images", "hero.gif")
+        gif = os.path.join(ROOT, "docs", "images", "compose.gif")
         # A small diff-rectangle palette GIF: terminal frames change little.
         subprocess.run([os.environ["AREEL_EXPORT_FFMPEG"], "-loglevel", "error", "-y", "-i", mp4, "-vf",
                         "fps=8,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];"
