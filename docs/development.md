@@ -37,6 +37,14 @@ Browser and video suites use synthetic private libraries and never touch
 your real one. `AREEL_BROWSER_EVIDENCE=DIR` and `AREEL_VIDEO_EVIDENCE=DIR`
 keep their screenshots and artifacts.
 
+## Import formats and looks
+
+A new log format is a reader in `internal/transcript`: a `Source` that turns
+it into `Event`s (incremental, so `--follow` works; JSONL formats only write
+a `lineParser`), plus a signature in `Detect`. A new look is a `look` in
+`internal/transcriptcast` registered in `styles`, with its palette. Test
+readers with synthetic fixtures, never real sessions.
+
 ## Pinned pieces
 
 `flake.lock` pins the dev shell's Go, Chromium, asciinema 3.2.1, Zellij,
@@ -65,6 +73,7 @@ validated and `areel doctor` warns about others; tmux must be 3.2 or newer.
 | `internal/visualcapture`, `visualstore`, `seal` | capture into screens, the store, the sealed `.areel` format |
 | `internal/castexport`, `videoexport`, `webembed`, `editmap` | exports, video rendering, web embeds, recipes and EDLs |
 | `internal/textindex` | search index |
+| `internal/transcript`, `transcriptcast` | `areel import`: reading conversation logs, drawing them as casts |
 | `agent-plugin/` | Claude Code, Codex and OpenCode hooks |
 | `pi/` | the Pi extension |
 | `nix/` | package, Home Manager module, checks |

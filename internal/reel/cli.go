@@ -19,8 +19,8 @@ const Help = `areel — record terminal sessions into a private library
 
 Record
   record [TARGET]       start recording this (or the named) Zellij or tmux session
-  pause|resume|stop [REC]  pause, resume or stop a recording
-  status [REC]          show a recording's state
+  import FILE           record an agent's conversation log or an asciicast
+  pause|resume|stop|status [REC]  control a recording, or show its state
   mark [LABEL] [REC]    mark this moment of a live recording, with a label
   attach SESSION        zellij attach, capturing keys (areel keys on|off|pause)
 
@@ -58,14 +58,14 @@ take the library from --library or the settings (see areel config).
   service feed [--once]                    status feed: RUNTIME/feed.sock, status.json
   service niri-highlight [--reload]        Niri recording highlight from the feed
   service supervisor [--once]              allowlisted ensure loop (exit 2: no restart)
-  _hold, _watch                            private holder entrypoints
+  _hold, _watch, _import-feed, _import-render   private holder and capture entrypoints
 
 Per-command help: areel help activity send, areel service feed --help, ...
 Docs: docs/integrations.md, docs/marks-and-agents.md (hooks), docs/niri.md
 `
 
 // visibleCommands and hiddenCommands drive unknown-command suggestions.
-var visibleCommands = []string{"record", "pause", "resume", "stop", "status", "mark", "marks", "attach", "keys", "ls", "open", "export", "search", "inspect", "compose", "doctor", "recover", "index", "config", "version", "help"}
+var visibleCommands = []string{"record", "import", "pause", "resume", "stop", "status", "mark", "marks", "attach", "keys", "ls", "open", "export", "search", "inspect", "compose", "doctor", "recover", "index", "config", "version", "help"}
 var hiddenCommands = []string{"ensure", "activity", "producer", "service", "link", "hook"}
 
 // renamedCommands maps removed command names to their replacement.
@@ -97,6 +97,8 @@ func CLI(args []string, out, errOut io.Writer) error {
 		return markCLI(args, out, errOut)
 	case "marks":
 		return marksCLI(args, out, errOut)
+	case "import":
+		return importCLI(args, out, errOut)
 	case "ls":
 		return listCLI(args, out, errOut)
 	case "open":
@@ -137,6 +139,14 @@ func CLI(args []string, out, errOut io.Writer) error {
 			return fmt.Errorf("invalid private holder arguments")
 		}
 		return Hold(args[1], args[2], nil)
+	case "_import-feed", "_import-render":
+		if len(args) != 2 {
+			return fmt.Errorf("invalid private import arguments")
+		}
+		if args[0] == "_import-feed" {
+			return ImportFeed(args[1])
+		}
+		return ImportRender(args[1])
 	}
 	return unknownCommand(args[0])
 }
@@ -164,7 +174,7 @@ func helpCLI(args []string, out, errOut io.Writer) error {
 	case "integrations":
 		_, e := io.WriteString(out, helpIntegrations)
 		return e
-	case "record", "ensure", "status", "pause", "resume", "stop", "mark", "marks", "ls", "open", "export", "search", "index", "compose", "inspect", "doctor", "recover", "config", "version", "attach", "hook":
+	case "record", "import", "ensure", "status", "pause", "resume", "stop", "mark", "marks", "ls", "open", "export", "search", "index", "compose", "inspect", "doctor", "recover", "config", "version", "attach", "hook":
 		return CLI([]string{args[0], "--help"}, out, errOut)
 	case "activity", "producer", "service", "link", "keys":
 		if len(args) > 1 {
@@ -359,6 +369,9 @@ func lifecycleCLI(args []string, out, errOut io.Writer) error {
 		}
 		if command == "status" || command == "stop" {
 			return emit(store.ControlBound(binding, command))
+		}
+		if v.Target.Backend == importBackendName {
+			return usageErr("%s: recording %s is an import; it can only be stopped (import the file again for a new one)", name, shortID(binding))
 		}
 		if b, e := boundBackend(v.Target); e == nil {
 			backends[v.Target.Backend] = b

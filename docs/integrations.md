@@ -14,6 +14,7 @@ library from `--library` or the settings.
 | `hook AGENT` | [agent hook](marks-and-agents.md#agent-hooks) adapter |
 | `producer register\|refresh\|replace` | opt-in producer generations |
 | `link start\|stop\|add\|adjust\|ls` | [links](#links) to sub-recordings, screenshots and videos |
+| `import FILE --json` | [import](importing.md#for-scripts-and-agents) a conversation log or cast |
 | `service ui` | the library UI, for a user unit |
 | `service feed` | the [status feed](#status-feed) |
 | `service niri-highlight` | [Niri highlights](niri.md) |

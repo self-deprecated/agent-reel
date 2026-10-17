@@ -50,6 +50,8 @@ Notes:
   literal characters `A-Za-z0-9._-`. Example: `{date}-{target}-{id}`.
 - Tool paths are environment-only: `AREEL_AVT_CHECKPOINT`,
   `AREEL_EXPORT_CHROMIUM`, `AREEL_EXPORT_FFMPEG`, `AREEL_EXPORT_FFPROBE`.
+- Named [import styles](importing.md#styles) live beside the config file, in
+  `styles/NAME.json`.
 
 ## The library directory
 

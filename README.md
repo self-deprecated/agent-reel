@@ -103,6 +103,7 @@ areel export latest demo.html --format web --single-file --redact secrets,homepa
 |---|---|
 | `areel record` · `pause` · `resume` · `stop` | control the recording of this session |
 | `areel status` · `areel ls` | what's recording |
+| `areel import FILE` | an agent's conversation log (T3 Code, Claude Code, Codex, Pi) or a cast as a recording |
 | `areel mark [LABEL]` · `areel marks REC` | add and list marks |
 | `areel open` | the library web UI |
 | `areel search TEXT [REC]` | find text that was on screen |
@@ -118,6 +119,7 @@ areel export latest demo.html --format web --single-file --redact secrets,homepa
 ## Guides
 
 - [Recording](docs/recording.md): sessions, pauses, sealing, recovery, keystrokes
+- [Importing conversations](docs/importing.md): agent logs as recordings, styles, live imports
 - [The library](docs/library.md): the web UI, search, colours, remote access
 - [Marks and agents](docs/marks-and-agents.md): marks, Claude Code, Codex, OpenCode and Pi hooks
 - [Exports](docs/exports.md): casts, video, web embeds, redaction
@@ -134,6 +136,8 @@ areel export latest demo.html --format web --single-file --redact secrets,homepa
 - **The library UI has no login.** Any local process can read it while it
   runs. Use [Tailscale Serve](docs/library.md#remote-access-with-tailscale-serve)
   to reach it remotely.
+- **Imports show the conversation**: prompts, replies and tool output from
+  the log you import.
 - **Exports publish terminal text.** `--redact` helps, but review an export
   before you share it. Keystrokes are captured only through `areel attach`
   with `areel keys on`, and never exported.

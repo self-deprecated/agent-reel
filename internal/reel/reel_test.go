@@ -72,8 +72,21 @@ func TestMain(m *testing.M) {
 	if os.Getenv("AREEL_REEL_TEST_FAKE_AVT") == "old" {
 		fakeOldHelper()
 	}
+	if len(os.Args) == 3 && (os.Args[1] == "_import-feed" || os.Args[1] == "_import-render") {
+		if err := CLI(os.Args[1:], os.Stdout, os.Stderr); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
 	if len(os.Args) == 4 && os.Args[1] == "_hold" {
-		err := Hold(os.Args[2], os.Args[3], &fakeBackend{})
+		var backend Backend = &fakeBackend{}
+		if store, e := OpenStore(os.Args[2]); e == nil {
+			if v, e := store.read(os.Args[3]); e == nil && v.Target.Backend == importBackendName {
+				backend = nil // the bound import backend runs its real capture under this test binary
+			}
+		}
+		err := Hold(os.Args[2], os.Args[3], backend)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

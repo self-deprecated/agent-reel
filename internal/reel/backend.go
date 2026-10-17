@@ -122,6 +122,9 @@ func boundBackend(t Target) (Backend, error) {
 		x := NewTmux()
 		x.Socket = t.Address
 		return x, nil
+	case importBackendName:
+		self, e := os.Executable()
+		return NewImport(self), e
 	}
 	return nil, fmt.Errorf("backend %q unsupported (Zellij and tmux are implemented)", t.Backend)
 }

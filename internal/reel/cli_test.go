@@ -58,7 +58,7 @@ func TestCLITopLevelHelpIsShortGroupedAndExitsZero(t *testing.T) {
 }
 
 var cliAllCommands = [][]string{
-	{"record"}, {"ensure"}, {"status"}, {"pause"}, {"resume"}, {"stop"}, {"mark"}, {"marks"}, {"ls"}, {"open"}, {"export"}, {"doctor"}, {"recover"}, {"config"}, {"version"},
+	{"record"}, {"import"}, {"ensure"}, {"status"}, {"pause"}, {"resume"}, {"stop"}, {"mark"}, {"marks"}, {"ls"}, {"open"}, {"export"}, {"doctor"}, {"recover"}, {"config"}, {"version"},
 	{"activity", "send"}, {"activity", "mark"}, {"activity", "status"}, {"activity", "ls"},
 	{"producer", "register"}, {"producer", "refresh"}, {"producer", "replace"},
 	{"service", "ui"}, {"service", "feed"}, {"service", "niri-highlight"}, {"service", "supervisor"},

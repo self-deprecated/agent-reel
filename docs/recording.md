@@ -11,6 +11,9 @@ A two-minute agent session is about 190 kB and a busy eight-hour one about
 private library (`~/.local/share/agent-reel` by default) and keep running
 when the shell that started them exits.
 
+To make a recording from an agent's conversation log after the fact, see
+[importing](importing.md).
+
 A worker an agent spawns in its own Zellij or tmux session can be recorded
 the same way. It links itself to the parent's recording (see [linked
 recordings](library.md#linked-recordings)).
