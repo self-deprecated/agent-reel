@@ -38,8 +38,9 @@ Screens it waited on are saved in `/tmp/areel-rec/screens/<agent>/`.
 - the side-by-side still.
 
 `screenshots/` captures the library, the viewer and a web embed with
-Chromium. `hero/` drives the Claude Code web export with a real mouse
-(select text, jump chapters, play) into the README's `hero.gif`.
+Chromium. `hero/` plays the Claude Code web export in Chromium (jumping
+between chapters with a real mouse) into the README's `hero.gif`. It also
+writes the README's text excerpt from the same opening frame.
 
 Requirements:
 

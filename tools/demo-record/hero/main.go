@@ -1,7 +1,9 @@
-// Command hero captures docs/images/hero.gif: the web export of the Claude
-// Code demo recording, driven by a real mouse in Chromium. It selects the
-// agent's answer as text, jumps between chapters and plays, so the README
-// shows that a recording is text and not video.
+// Command hero captures docs/images/hero.gif, the web export of the Claude
+// Code demo recording playing in Chromium (a real mouse reveals the player's
+// controls and jumps between chapters), and writes the README's text
+// excerpt: the agent's answer exactly as the opening frame shows it, as
+// text. A README cannot run the player, so the GIF shows it and the excerpt
+// is the part a reader can select on GitHub itself.
 //
 //	go run ./tools/demo-record/hero -chromium "$AREEL_TEST_CHROMIUM" -ffmpeg "$AREEL_TEST_FFMPEG"
 package main
@@ -11,35 +13,17 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/chromedp/cdproto/input"
+	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
 )
-
-// overlay draws a cursor and a caption over the page; neither takes pointer
-// events, so the real mouse events below select text and click markers.
-const overlay = `(() => {
-  const s = document.createElement('style');
-  s.textContent = '#hero-cursor{position:fixed;z-index:99999;pointer-events:none;width:18px;height:26px;transform:translate(-2px,-1px)}' +
-    '#hero-caption{position:fixed;z-index:99999;pointer-events:none;top:14px;right:16px;padding:6px 14px;border-radius:999px;' +
-    'background:#f5c518;color:#121314;font:600 15px/1.3 system-ui,sans-serif;box-shadow:0 2px 10px #0008;transition:opacity .2s}';
-  document.head.append(s);
-  const c = document.createElement('div'); c.id = 'hero-cursor';
-  c.innerHTML = '<svg viewBox="0 0 18 26" width="18" height="26"><path d="M1 1v20l5-5 4 9 3-1.5-4-8.5h7z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg>';
-  const t = document.createElement('div'); t.id = 'hero-caption';
-  document.body.append(c, t);
-  window.hero = {
-    move(x, y) { c.style.left = x + 'px'; c.style.top = y + 'px'; },
-    caption(text) { t.textContent = text; t.style.opacity = text ? 1 : 0; },
-  };
-  return true;
-})()`
 
 type frame struct {
 	path string
@@ -50,7 +34,6 @@ type recorder struct {
 	ctx    context.Context
 	dir    string
 	frames []frame
-	x, y   float64
 }
 
 func (r *recorder) run(actions ...chromedp.Action) {
@@ -70,35 +53,12 @@ func (r *recorder) snap(d time.Duration) {
 	r.frames = append(r.frames, frame{path, d})
 }
 
-func (r *recorder) caption(text string) {
-	r.run(chromedp.Evaluate(fmt.Sprintf("hero.caption(%q)", text), nil))
-}
-
-// glide moves the mouse to (x, y) in steps, one frame each; with the button
-// held, the browser extends its text selection as it goes.
-func (r *recorder) glide(x, y float64, steps int, held bool) {
-	x0, y0 := r.x, r.y
-	for i := 1; i <= steps; i++ {
-		f := 0.5 - math.Cos(math.Pi*float64(i)/float64(steps))/2
-		r.x, r.y = x0+(x-x0)*f, y0+(y-y0)*f
-		ev := input.DispatchMouseEvent(input.MouseMoved, r.x, r.y)
-		if held {
-			ev = ev.WithButton(input.Left).WithButtons(1)
-		}
-		r.run(ev, chromedp.Evaluate(fmt.Sprintf("hero.move(%f,%f)", r.x, r.y), nil))
-		r.snap(45 * time.Millisecond)
-	}
-}
-
-func (r *recorder) button(t input.MouseType) {
-	r.run(input.DispatchMouseEvent(t, r.x, r.y).WithButton(input.Left).WithClickCount(1))
-}
-
-// click glides to a control and clicks it.
-func (r *recorder) click(at struct{ X, Y float64 }) {
-	r.glide(at.X, at.Y, 10, false)
-	r.button(input.MousePressed)
-	r.button(input.MouseReleased)
+// click moves the mouse to (x, y), which also shows the control bar, and
+// clicks there.
+func (r *recorder) click(x, y float64) {
+	r.run(input.DispatchMouseEvent(input.MouseMoved, x, y),
+		input.DispatchMouseEvent(input.MousePressed, x, y).WithButton(input.Left).WithClickCount(1),
+		input.DispatchMouseEvent(input.MouseReleased, x, y).WithButton(input.Left).WithClickCount(1))
 }
 
 // play lets the player run for d, capturing as fast as it can.
@@ -113,11 +73,46 @@ func (r *recorder) play(d time.Duration) {
 	}
 }
 
+// excerpt is the agent's code pointers on the opening frame: from "Where to
+// look" through the line that says the reply is done.
+func excerpt(lines []string) (string, error) {
+	start := -1
+	for i, l := range lines {
+		if strings.Contains(l, "Where to look") {
+			start = i
+		}
+		if start >= 0 && regexp.MustCompile(`for \d+s · done \d\d:\d\d`).MatchString(l) {
+			for j := range lines[start : i+1] {
+				lines[start+j] = strings.TrimRight(lines[start+j], " ")
+			}
+			return strings.Join(lines[start:i+1], "\n"), nil
+		}
+	}
+	return "", fmt.Errorf("the opening frame has no finished \"Where to look\" answer")
+}
+
+// writeExcerpt replaces the README block between the excerpt markers.
+func writeExcerpt(readme, at, text string) error {
+	b, err := os.ReadFile(readme)
+	if err != nil {
+		return err
+	}
+	const open, close = "<!-- hero-excerpt:start -->", "<!-- hero-excerpt:end -->"
+	s := string(b)
+	i, j := strings.Index(s, open), strings.Index(s, close)
+	if i < 0 || j < i {
+		return fmt.Errorf("%s has no %s ... %s block", readme, open, close)
+	}
+	block := fmt.Sprintf("%s\nThe agent's answer at %s, as text from the recording:\n\n```text\n%s\n```\n", open, at, text)
+	return os.WriteFile(readme, []byte(s[:i]+block+s[j:]), 0o644)
+}
+
 func main() {
 	chromium := flag.String("chromium", os.Getenv("AREEL_TEST_CHROMIUM"), "Chromium executable")
 	ffmpeg := flag.String("ffmpeg", os.Getenv("AREEL_TEST_FFMPEG"), "FFmpeg executable")
 	page := flag.String("page", "docs/demo/claude.html", "web export to drive")
 	out := flag.String("out", "docs/images/hero.gif", "output GIF")
+	readme := flag.String("readme", "README.md", "README whose excerpt block is rewritten")
 	flag.Parse()
 	abs, err := filepath.Abs(*page)
 	if err != nil {
@@ -136,60 +131,45 @@ func main() {
 	defer cancel()
 	ctx, cancel = context.WithTimeout(ctx, 3*time.Minute)
 	defer cancel()
-	r := &recorder{ctx: ctx, dir: dir, x: 760, y: 430}
+	r := &recorder{ctx: ctx, dir: dir}
 
-	var line struct{ X, Y, H, W float64 }
-	var markers []struct{ X, Y, W float64 }
+	// The page opens paused on its poster: the end of the first answer.
+	var lines []string
+	var at float64
 	r.run(
 		chromedp.EmulateViewport(960, 600),
 		chromedp.Navigate("file://"+abs),
-		chromedp.Poll(`document.querySelectorAll('.ap-line').length > 0 && document.querySelector('.ap-term').textContent.includes('buildVisualWebExport')`, nil),
-		chromedp.Evaluate(overlay, nil),
-		chromedp.Evaluate(`(() => { const ls = [...document.querySelectorAll('.ap-line')];
-			const b = ls[ls.findIndex(l => l.textContent.includes('buildVisualWebExport'))].getBoundingClientRect();
-			return {X: b.x, Y: b.y, H: b.height, W: b.width} })()`, &line),
+		chromedp.Poll(`!document.querySelector('.ap-overlay-start') && document.querySelector('.ap-term')?.textContent.includes('Where to look')`, nil),
+		chromedp.Evaluate(`[...document.querySelectorAll('.ap-line')].map(l => l.textContent)`, &lines),
+		chromedp.Evaluate(`window.agentReelPlayer.getCurrentTime()`, &at, func(p *runtime.EvaluateParams) *runtime.EvaluateParams { return p.WithAwaitPromise(true) }),
 	)
-	cell := line.W / 110
-	r.run(chromedp.Evaluate(fmt.Sprintf("hero.move(%f,%f)", r.x, r.y), nil))
+	text, err := excerpt(lines)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err = writeExcerpt(*readme, fmt.Sprintf("%d:%02d", int(at)/60, int(at)%60), text); err != nil {
+		log.Fatal(err)
+	}
+	r.snap(2500 * time.Millisecond)
 
-	r.caption("A real Claude Code session, recorded as text")
-	r.snap(1800 * time.Millisecond)
-
-	// Select three rows of the answer, like a reader would.
-	r.caption("Select it. Copy it.")
-	r.glide(line.X+3*cell, line.Y+line.H/2, 16, false)
-	r.button(input.MousePressed)
-	r.glide(line.X+92*cell, line.Y+2*line.H+line.H/2, 22, true)
-	r.button(input.MouseReleased)
-	r.snap(2400 * time.Millisecond)
-	r.run(chromedp.Evaluate(`getSelection().removeAllRanges()`, nil))
-
-	// The chapters are the script's marks; the control bar shows on hover.
-	r.caption("Jump between chapters")
-	r.glide(480, 560, 12, false)
-	r.run(chromedp.Evaluate(`[...document.querySelectorAll('.ap-marker-container')].map(m => { const b = m.getBoundingClientRect(); return {X: b.x, Y: b.y, W: b.width} })`, &markers))
+	// The chapters are the demo script's marks: jump to the docs request and
+	// play it, then to the floating pane exporting the recording itself.
+	var markers []struct{ X, Y, W float64 }
+	var play struct{ X, Y float64 }
+	r.run(input.DispatchMouseEvent(input.MouseMoved, 480, 560), chromedp.Sleep(300*time.Millisecond),
+		chromedp.Evaluate(`[...document.querySelectorAll('.ap-marker-container')].map(m => { const b = m.getBoundingClientRect(); return {X: b.x, Y: b.y, W: b.width} })`, &markers),
+		chromedp.Evaluate(`(() => { const b = document.querySelector('.ap-playback-button').getBoundingClientRect(); return {X: b.x + b.width / 2, Y: b.y + b.height / 2} })()`, &play))
 	if len(markers) < 4 {
 		log.Fatalf("expected 4 chapter markers, found %d", len(markers))
 	}
-	var play struct{ X, Y float64 }
-	r.run(chromedp.Evaluate(`(() => { const b = document.querySelector('.ap-playback-button').getBoundingClientRect(); return {X: b.x + b.width / 2, Y: b.y + b.height / 2} })()`, &play))
 	for _, i := range []int{2, 3} {
 		m := markers[i]
-		r.glide(m.X+m.W/2, m.Y+8, 14, false)
-		r.button(input.MousePressed)
-		r.button(input.MouseReleased)
+		r.click(m.X+m.W/2, m.Y+8)
 		r.snap(1200 * time.Millisecond)
-		if i == 2 {
-			r.caption("Play it back")
-			r.click(play)
-			r.play(3500 * time.Millisecond)
-			r.click(play)
-			r.caption("Jump between chapters")
-		}
+		r.click(play.X, play.Y)
+		r.play(map[int]time.Duration{2: 4 * time.Second, 3: 10 * time.Second}[i])
+		r.click(play.X, play.Y)
 	}
-	r.caption("Even this: the recording exporting itself")
-	r.click(play)
-	r.play(10 * time.Second)
 	r.snap(2000 * time.Millisecond)
 
 	var list strings.Builder
@@ -208,5 +188,5 @@ func main() {
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("wrote %s (%d frames)\n", *out, len(r.frames))
+	fmt.Printf("wrote %s (%d frames) and the excerpt in %s\n", *out, len(r.frames), *readme)
 }

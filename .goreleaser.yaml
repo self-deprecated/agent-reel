@@ -62,6 +62,8 @@ archives:
     files:
       - README.md
       - LICENSE
+      # The guides the README links to.
+      - docs/*.md
       - src: tools/avt-checkpoint/licenses/*
         dst: licenses/areel-avt-checkpoint
       - src: internal/reel/web/vendor/LICENSE-*.txt

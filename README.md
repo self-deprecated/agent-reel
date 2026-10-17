@@ -24,16 +24,41 @@ can search it, select it and copy from it.
   clip as a cast, a video or an interactive web page whose text you can
   still select.
 
+**[▶ Open the live player and select the text yourself](https://self-deprecated.github.io/agent-reel/demo/)**
+
 <a href="https://self-deprecated.github.io/agent-reel/demo/">
-  <img src="docs/images/hero.gif" alt="The web export of a recorded Claude Code session: the mouse selects the agent's answer as text, jumps between chapters and plays">
+  <img src="docs/images/hero.gif" alt="The web export of a recorded Claude Code session, playing and jumping between chapters">
 </a>
 
-That's the web export of a real Claude Code session, in a browser. The
-agent was asked how this repository's web export works and to document it,
-and at the end a floating Zellij pane exports the recording itself.
-**▶ [Try it yourself](https://self-deprecated.github.io/agent-reel/demo/)**:
-the Claude Code and Codex recordings, each one self-contained HTML file.
-(The README can only show a GIF; the real thing is text.)
+A real Claude Code session in this repository, recorded with `areel`. The
+agent was asked how the web export works and then to document it. In the
+last chapter, a floating Zellij pane exports the recording itself. The
+player is one self-contained HTML file. A README can only show it as a GIF,
+but the recording is stored as text:
+
+<!-- hero-excerpt:start -->
+The agent's answer at 0:58, as text from the recording:
+
+```text
+  Where to look, in order:
+  1. internal/reel/library_exports_visual.go:1270: buildVisualExport takes the snapshot, plans the edit, and
+     hands web to the web path at line 1283.
+  2. internal/reel/library_exports_web.go:333: buildVisualWebExport runs the web export from start to finish.
+     - :187 writeVisualWebCast writes the cast on the plan's output timeline.
+     - :289 visualWebMarkers builds the chapters and marks.
+     - :123 webEmbedFromCast loads the player and fonts from internal/reel/web/vendor. areel compose uses it
+       too (compose_web.go:340).
+  3. internal/webembed/webembed.go:217: Build checks the input. sanitizeCast (:501) cuts the header down to
+     the version and terminal size, drops input and exit events, adds the markers and escapes <.
+  4. internal/webembed/webembed.go:406: WriteIndex writes the HTML (CSP, theme variables, the cast in a
+     <script type="application/x-asciicast"> tag, config, player). The JS that starts the player in the page
+     is the boot constant at :395.
+
+  The user-facing docs are in docs/exports.md#web-embed.
+
+✻ Crunched for 33s · done 13:58
+```
+<!-- hero-excerpt:end -->
 
 | The library | A recording, with your agent's marks |
 |---|---|

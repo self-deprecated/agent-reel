@@ -91,7 +91,7 @@ func TestPresetSecretsFalsePositiveGuards(t *testing.T) {
 
 func TestPresetEmails(t *testing.T) {
 	rules := []Rule{{Preset: PresetEmails}}
-	if got := mask(t, rules, "Author: Jordan <claude@jordan.munchohare.com>"); got != "Author: Jordan <"+m("claude@jordan.munchohare.com")+">" {
+	if got := mask(t, rules, "Author: Ana <ana.lopez@mail.example.org>"); got != "Author: Ana <"+m("ana.lopez@mail.example.org")+">" {
 		t.Fatal(got)
 	}
 	if got := mask(t, rules, "a.b+c@example.co.uk, x@y.io"); got != strings.Repeat(Mask, 19)+", "+strings.Repeat(Mask, 6) {

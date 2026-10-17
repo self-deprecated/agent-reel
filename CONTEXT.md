@@ -23,7 +23,7 @@ activation and Resolve operations remain separate approval gates.
 - Agent integrations are event producers, not the definition of the event model. Sources, activity kinds, reasons and extension metadata must accommodate future integrations without modifying the recorder for every new kind.
 - Attribute each event to its actual emitting agent instance and conversation when known, plus its backend-qualified target/pane location. Neither integration name nor pane ID uniquely identifies an agent. Distinguish parent/child agents when known. Unknown attribution stays unknown.
 - Distinguish observed transport/source, emitting agent, declared initiator and reason. An agent can execute a human-requested marker through the CLI; command execution is not proof of human authorship.
-- Resolve testing is on **Quartz**, the user's Mac mini, through the existing **content-creation MCP setup**. The location question has been answered; actual AgentReel import has not been tested.
+- DaVinci Resolve import of exported markers has not been tested.
 
 ## Domain language
 
@@ -51,20 +51,12 @@ These are recommendations, not authorization to install or activate them:
 
 ## Remaining decisions and approval boundaries
 
-- Platform, actual-size default and CLI-owned backend selection are settled above. Quartz as an export destination does not require a Mac recorder.
+- Platform, actual-size default and CLI-owned backend selection are settled above. A Mac as an export destination does not require a Mac recorder.
 - Pi must visibly indicate recording state, including paused/interrupted/unknown state, using recorder health rather than an extension-local assumption. Pause/resume lifecycle markers and multi-segment navigation are required.
 - The existing official browser player passed short and idle-heavy multi-hour synthetic tests before custom library development. The 8h v3 fixture (71.84 MB, 158,201 events) reached first frame in 324–335 ms and a late painted seek in 485–488 ms, with 953–954 MiB summed browser-process RSS. This is raw local HTTP playback, not compressed archive serving or dense all-day endurance. Measure rather than assume hardware limits; use the existing player first.
 - Proposed lifetime contract: detached holder independent of Pi/calling-terminal lifetime, controlled shutdown, explicit interrupted state and ownership-checked reconciliation after crashes. No promise of surviving logout/cgroup termination, OOM, reboot or power loss; no mandatory systemd or automatic lingering changes. Test the supported boundaries.
 - Persistent library destination, actual recorder installation/activation, shell auto-start/bindings and retention/deletion require explicit rollout decisions; test-only temporary libraries do not authorize permanent capture. The retention policy ([docs/recording.md](docs/recording.md#storage)) sets no maximum library size, recording age or duration and no deletion/rotation; it adds optional byte/footage warning thresholds with a bounded durable notification and fail-closed storage failure classification.
-- Resolve mutations require an approved isolated test project, synthetic media and destination. Knowing the MCP location is not permission to change an active personal project. Consult current content-creation instructions and live version/tool inventory; do not reinstall or restart services.
-
-## Integration surfaces inspected
-
-These described mono-agent, where AgentReel was developed, and do not exist in
-this repository: the root `.sd` workspace and aggregates, the pnpm workspace
-that owned JavaScript dependencies, `catalog.yaml` registration of the Pi
-adapter, and the content-creation repository's rules and skill for live
-DaVinci Resolve work.
+- Resolve mutations require an approved isolated test project, synthetic media and destination; never an active personal project.
 
 ## Verification and non-goals
 
