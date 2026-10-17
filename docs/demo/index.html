@@ -8,32 +8,36 @@
   :root { color-scheme: dark; --bg: #121314; --fg: #e8e6e3; --muted: #9a9894; --line: #2a2b2d; --accent: #f5c518; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 1440px; margin: 0 auto; padding: 28px 20px 40px; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
+  main { max-width: 1440px; margin: 0 auto; padding: 16px 20px 32px; }
+  header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  h1 { font-size: 20px; margin: 0; }
   h1 a { color: inherit; text-decoration: none; }
   p { margin: 0 0 18px; color: var(--muted); }
   code { font: 13px ui-monospace, "DejaVu Sans Mono", monospace; color: var(--fg); }
-  nav { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  nav { display: flex; gap: 6px; flex-wrap: wrap; }
   nav button { font: inherit; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; cursor: pointer; }
   nav button[aria-selected="true"] { color: var(--bg); background: var(--fg); border-color: var(--fg); }
   /* The recordings are 110x32 terminals (about 1.55:1 in the player's font)
-     plus the control bar: a 3:2 frame lets the player fill it, as tall as
-     the window allows. */
-  .frame { aspect-ratio: 3 / 2; width: min(100%, calc((100vh - 40px) * 1.5)); margin: 0 auto; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #000; }
+     plus the control bar: a 3:2 frame lets the player fill it, as large as
+     the window allows below the header, control bar included. */
+  .frame { aspect-ratio: 3 / 2; width: min(100%, calc((100vh - 90px) * 1.5)); margin: 0 auto; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #000; }
   iframe { width: 100%; height: 100%; border: 0; display: block; }
-  .hint { margin-top: 12px; font-size: 13px; }
+  .hint { margin: 12px 0 6px; font-size: 13px; }
+  .about { font-size: 14px; }
   kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--fg); }
 </style>
 </head>
 <body>
 <main>
-  <h1><a href="https://github.com/self-deprecated/agent-reel">AgentReel</a> demo</h1>
-  <p>Each agent was asked the same two things in a fresh checkout of this repository: explain the web export, then document it.
+  <header>
+    <h1><a href="https://github.com/self-deprecated/agent-reel">AgentReel</a> demo</h1>
+    <nav role="tablist" id="tabs"></nav>
+  </header>
+  <div class="frame"><iframe id="player" title="Terminal recording" allowfullscreen></iframe></div>
+  <p class="hint">Select and copy any text. <kbd>space</kbd> plays and pauses, <kbd>←</kbd> <kbd>→</kbd> seek, and <kbd>[</kbd> <kbd>]</kbd> or the timeline's markers jump between chapters.</p>
+  <p class="about">Each agent was asked the same two things in a fresh checkout of this repository: explain the web export, then document it.
      A floating Zellij pane then exports the very recording you're watching. Each tab is a real recording, published with
      <code>areel export --format web --single-file</code>.</p>
-  <nav role="tablist" id="tabs"></nav>
-  <div class="frame"><iframe id="player" title="Terminal recording" allowfullscreen></iframe></div>
-  <p class="hint">Select and copy any text. Click a marker on the timeline, or press <kbd>[</kbd> and <kbd>]</kbd>, to jump between chapters. <kbd>space</kbd> plays and pauses.</p>
 </main>
 <script>
   const demos = [
@@ -47,6 +51,43 @@
     player.src = id + ".html";
     history.replaceState(null, "", "#" + id);
   }
+
+  // Keyboard focus belongs to the player: give it the player once it is
+  // ready (on load and on every tab switch), and play/seek it from keys
+  // pressed anywhere else on this page.
+  let playing = false;
+  const ready = () => player.contentWindow?.agentReelPlayer && player.contentDocument?.querySelector(".ap-wrapper");
+  function focusPlayer() { ready()?.focus({ preventScroll: true }); }
+  player.addEventListener("load", () => {
+    playing = false;
+    const wait = setInterval(() => {
+      if (!ready()) return;
+      clearInterval(wait);
+      const p = player.contentWindow.agentReelPlayer;
+      p.addEventListener("play", () => { playing = true; });
+      p.addEventListener("pause", () => { playing = false; });
+      p.addEventListener("ended", () => { playing = false; });
+      focusPlayer();
+    }, 100);
+  });
+  document.addEventListener("keydown", async e => {
+    const p = player.contentWindow?.agentReelPlayer;
+    if (!p || e.altKey || e.ctrlKey || e.metaKey) return;
+    const act = {
+      " ": () => (playing ? p.pause() : p.play()),
+      ArrowLeft: async () => p.seek(Math.max(0, (await p.getCurrentTime()) - 5)),
+      ArrowRight: async () => p.seek((await p.getCurrentTime()) + 5),
+      "[": () => p.seek({ marker: "prev" }),
+      "]": () => p.seek({ marker: "next" }),
+    }[e.key];
+    if (!act) return;
+    e.preventDefault();
+    focusPlayer();
+    await act();
+  });
+  // A focused tab button would also act on Space's keyup (Firefox does even
+  // after a cancelled keydown) and reload the player.
+  document.addEventListener("keyup", e => { if (e.key === " ") e.preventDefault(); });
   for (const d of demos) {
     const b = document.createElement("button");
     b.role = "tab"; b.dataset.id = d.id; b.textContent = d.label;
