@@ -12,7 +12,7 @@ import (
 )
 
 // libraryConfig is the private LIBRARY/config.json: the configured backend and
-// the optional storage warning thresholds of RETENTION.md. The file is
+// the optional storage warning thresholds (docs/recording.md). The file is
 // user-authored, strict (unknown members are refused) and read by the CLI and
 // the supervisor before a holder is spawned and by the holder itself when it
 // starts, which pins the thresholds for that holder's logical recording.

@@ -1,9 +1,9 @@
 // Package viewblock is the V14 view block codec: it encodes a run of views of
 // one segment, contiguous in seq, into one immutable payload, and decodes it
-// back exactly. The visual store keeps one payload per commit and segment run
-// (docs/visual-recording-store.md); V11 sealing merges runs into larger blocks
-// with the same codec. It is the V9 PoC candidate A (internal/loopoc/blockz,
-// a-blockz without a dictionary) made a production package.
+// back exactly. The visual store keeps one payload per commit and segment run;
+// V11 sealing merges runs into larger blocks with the same codec. It is the V9
+// PoC candidate A (internal/loopoc/blockz, a-blockz without a dictionary) made
+// a production package.
 //
 // A payload holds no header. The first seq, the view count, the segment and
 // the absolute first line and time are the store's columns beside the payload

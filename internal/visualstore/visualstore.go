@@ -9,8 +9,7 @@
 // whether the emulator modelled every sequence, or whether the machine survived
 // a power cut. Verify is the read-only doctor and Salvage copies the verified
 // prefix to a new store; neither repairs in place. Process-kill tests qualify
-// crash recovery; they are not power-loss evidence. See
-// docs/visual-recording-store.md.
+// crash recovery; they are not power-loss evidence.
 package visualstore
 
 import (
@@ -115,7 +114,7 @@ type FidelityRecord struct {
 // deliberately no estimated duration, because an estimate is a UI hint and this
 // is storage accounting.
 //
-// The mapping to RETENTION.md is exact:
+// The mapping to the storage warning thresholds is exact:
 //
 //   - a stored-bytes warning must use AllocatedBytes, the on-disk figure,
 //     because that is what fills a filesystem. LogicalBytes is content

@@ -65,9 +65,7 @@ kills on cancellation, closes pipes and reaps its own process on Close.
 
 A dump is continuation state; it is **not** visual equality. `V` and `W` report
 the presentation instead: the visible grid of the currently active buffer from
-`avt::Vt::view()`, plus the cursor. See
-[`docs/visual-recording-readout.md`](../../docs/visual-recording-readout.md) for
-the contract these operations implement.
+`avt::Vt::view()`, plus the cursor.
 
 Both replies start with the same header: columns, rows, cursor column, cursor
 row, then one byte of cursor visibility (0 or 1). The cursor column may equal

@@ -343,7 +343,7 @@ func TestSecondsFromFloat(t *testing.T) {
 	}
 }
 
-// Pins every number in docs/visual-recording-export.md "Worked example".
+// Pins every number of the recipe/1 time map worked example.
 func TestDocWorkedExample(t *testing.T) {
 	doc := `{"schema":"agent-reel/recipe/1","rate":{"num":30000,"den":1001},"output":{"width":1280,"height":720},
 	  "framing":{"mode":"fit","fontPx":0,"paddingPx":0,"minFontPx":10},"cursor":"steady","includeClipCasts":false,

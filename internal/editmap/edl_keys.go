@@ -9,7 +9,7 @@ import (
 	"unicode/utf8"
 )
 
-// The keys overlay (EDL.md "Keys overlay"): a KeyCastr-style strip of the
+// The keys overlay (docs/compose.md "Keys overlay"): a KeyCastr-style strip of the
 // source's recorded keystrokes (areel attach's areel:keys activity) drawn over
 // its clip for the overlay's range. It takes no text: the chips come from the
 // keystroke track of the clip's own source span. Client, when set, keeps one

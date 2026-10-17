@@ -12,7 +12,7 @@ import (
 	"unicode/utf8"
 )
 
-// Agent hook mapping (ACTIVITY.md, "Agent hooks: areel hook"). One native hook
+// Agent hook mapping (docs/marks-and-agents.md, "Agent hooks: areel hook"). One native hook
 // event of Claude Code (and Cursor's Claude-compatible events), Codex or the
 // generic schema maps to at most one activity envelope: a kind noun, a marker
 // flag, a fixed label and short data fragments. The decode shape names only

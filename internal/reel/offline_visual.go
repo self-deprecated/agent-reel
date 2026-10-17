@@ -24,7 +24,7 @@ import (
 const offlineVisualReportBytes = 256 << 10
 
 // offlineVisualReport is the format-aware doctor/salvage report of a visual/1
-// recording (docs/visual-recording-capture.md, "Doctor and salvage").
+// recording.
 type offlineVisualReport struct {
 	RecoverHint         bool                       `json:"recoverHint,omitempty"`
 	Sealed              *offlineSealedReport       `json:"sealed,omitempty"`

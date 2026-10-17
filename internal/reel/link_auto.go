@@ -13,7 +13,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/links"
 )
 
-// Automatic parent linking (ACTIVITY.md "Automatic parent links"). A launcher
+// Automatic parent linking (docs/integrations.md "Automatic parent links"). A launcher
 // sets AREEL_PARENT_SESSION, the spawning session's backend target name, in the
 // child session's environment. When the child's recording starts, its holder
 // resolves that name in the child's own backend namespace to the parent

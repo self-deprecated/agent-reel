@@ -11,7 +11,7 @@ import (
 // linkResumeHook returns the holder's resume callback: when the parent resumes
 // (segment N begins), one areel:link resume record is admitted for every open
 // link whose start is an admitted record, re-anchoring the child clock on the
-// new segment (ACTIVITY.md "Resume re-anchor"). It runs off the lifecycle
+// new segment (docs/integrations.md "Resume re-anchor"). It runs off the lifecycle
 // loop; the manifest is only read. A manifest that cannot be read leaves the
 // segment un-anchored, which link ls reports.
 func linkResumeHook(root string, activity *activityService, state State) func(int, time.Time) {

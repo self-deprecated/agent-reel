@@ -224,7 +224,7 @@ With REC: verify one recording offline (no backend discovery or control IPC):
 process ownership, visual store integrity against the acknowledged prefix, and
 the activity store; or a sealed file. Legacy raw recordings are refused.` + verificationBudgetHelp,
 	Examples: []string{"areel doctor", "areel doctor latest", "areel doctor 3f2a --json"},
-	Docs:     "ARCHIVE.md, docs/visual-recording-capture.md"}
+	Docs:     "docs/recording.md (Finishing)"}
 
 func doctorCLI(args []string, out, errOut io.Writer) error {
 	return offlineCLI(args, out, errOut)

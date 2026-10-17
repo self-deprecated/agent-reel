@@ -40,8 +40,7 @@ func linkGrouping(root string, templates ...string) (links.Grouping, error) {
 // ResolveLinks reads the parent's links manifest and joins every entry with
 // the parent's areel:link activity records (one frozen snapshot of its live
 // store or sealed file). It never contacts a holder. verifyAssets hashes
-// screenshot assets (otherwise only their presence is checked). This is the
-// consumer contract of docs/visual-recording-links.md.
+// screenshot assets (otherwise only their presence is checked).
 func ResolveLinks(ctx context.Context, root, parent string, verifyAssets bool) (*links.Resolution, error) {
 	return resolveLinks(ctx, root, parent, verifyAssets, contextSealName(ctx))
 }

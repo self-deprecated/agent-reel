@@ -26,7 +26,7 @@ const MaxAcknowledgedBytes = 64 << 10
 // end, the segment of the last commit and whether that commit completed the
 // recording. It lives outside the store directory because it is the only thing
 // that can tell a store whose WAL tail was dropped from one that is simply
-// short (docs/visual-recording-store.md, "The WAL damage finding").
+// short (SQLite recovers a cut WAL tail as a consistent, shorter store).
 type Acknowledged struct {
 	Format     string
 	Views      int64

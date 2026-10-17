@@ -22,7 +22,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// Link sources of a composition (EDL.md, "Layouts and links"). A source
+// Link sources of a composition (docs/compose.md, "Layouts and links"). A source
 // {"link":"parent:linkid"} is resolved through the parent source's links
 // manifest joined with its areel:link records (ResolveLinks): a recording
 // link freezes the child recording like any source, a screenshot link reads

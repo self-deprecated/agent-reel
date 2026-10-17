@@ -19,7 +19,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/keydecode"
 )
 
-// Keystroke capture (KEYS in README.md, "Keystroke overlay" in ACTIVITY.md).
+// Keystroke capture (docs/recording.md, "Keystrokes").
 //
 // `areel attach SESSION` is a PTY proxy around `zellij attach` that decodes
 // the keys its own client sends (internal/keydecode) and submits them, display
@@ -278,25 +278,25 @@ var keysHelp = map[string]cliCommand{
 areel attach are captured, and only while this recording is opted in. REC
 defaults to @, the recording of this session.`,
 		Examples: []string{"areel keys on", "areel keys on 3f2a"},
-		Docs:     "README.md, ACTIVITY.md"},
+		Docs:     "docs/recording.md (Keystrokes)"},
 	"off": {Name: "keys off", Args: "[REC]",
 		Summary:  `Opt a recording out of keystroke capture again. Wrappers stop within about 2s.`,
 		Examples: []string{"areel keys off", "areel keys off 3f2a"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md (Keystrokes)"},
 	"pause": {Name: "keys pause", Args: "[SESSION]",
 		Summary: `Pause keystroke capture for a Zellij session (every areel attach client of
 it) until areel keys resume. SESSION defaults to the session you run in,
 then the configured target. Nothing typed while paused is kept.`,
 		Examples: []string{"areel keys pause", "areel keys pause work"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md (Keystrokes)"},
 	"resume": {Name: "keys resume", Args: "[SESSION]",
 		Summary:  `Resume keystroke capture for a Zellij session after areel keys pause.`,
 		Examples: []string{"areel keys resume", "areel keys resume work"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md (Keystrokes)"},
 	"status": {Name: "keys status", Args: "[REC]",
 		Summary:  `Show whether a recording is opted in to keystroke capture and whether its session is paused.`,
 		Examples: []string{"areel keys status", "areel keys status 3f2a --json"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md (Keystrokes)"},
 }
 
 type keysStatusReply struct {

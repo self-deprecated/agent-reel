@@ -17,7 +17,7 @@ as /reel mark) with their labels and estimated positions: segment and seconds
 on that segment's clock, or unknown. Works on live, stopped and sealed
 recordings; read-only.`,
 	Examples: []string{"areel marks latest", "areel marks 3f2a --json"},
-	Docs:     "README.md, ACTIVITY.md"}
+	Docs:     "docs/marks-and-agents.md"}
 
 // marksCLIMark is one mark of areel marks: its activity sequence, label,
 // kind, who, placement (segment and seconds, precision estimated or unknown,

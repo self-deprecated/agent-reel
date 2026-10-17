@@ -17,8 +17,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// Visual/1 export events (docs/visual-recording-export.md, "Events, markers
-// and chapters"). Every event comes from the job's frozen input: visual-store
+// Visual/1 export events, markers and chapters. Every event comes from the job's frozen input: visual-store
 // events up to the frozen EventSeq, activity rows of the frozen activity
 // selection, and lifecycle events of the state.json read once at the freeze.
 // Placements are taken exactly as stored and mapped through the one

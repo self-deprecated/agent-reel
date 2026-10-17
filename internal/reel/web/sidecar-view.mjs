@@ -1,4 +1,4 @@
-// Sidecar view (LIBRARY.md "Sidecar view"): the links lane under the player,
+// Sidecar view (docs/library.md "Sidecar view"): the links lane under the player,
 // synced panels in full-width tabs beside the Parent tab (or, in Compare,
 // shown with the parent), the "Now running" grid and a child's "↑ parent" link.
 // Go owns every link fact: /api/recordings/ID/links gives each link's anchor
@@ -1277,7 +1277,7 @@ async function childLink(page) {
     const start = Date.parse(seg.recordedStart ?? ''), end = Date.parse(seg.recordedEnd ?? '');
     if (Number.isFinite(start) && Number.isFinite(end) && end > start) ends[seg.number] = (end - start) / 1000;
   }
-  // The child clock is its segment 1 only (docs/visual-recording-links.md), so
+  // The child clock is its segment 1 only, so
   // a later child segment has no parent time to point at.
   if (segment !== 1) return;
   let node = null;

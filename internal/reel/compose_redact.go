@@ -5,7 +5,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/redact"
 )
 
-// Compose redaction and search reporting (EDL.md, "Redaction" and
+// Compose redaction and search reporting (docs/compose.md, "Redaction" and
 // "Timerefs"). An EDL's `redact` rules, plus any `areel compose --redact`
 // presets, travel in the frozen EDL; every source's frozen input masks its
 // screens with them (freezeVisualExport), so the render, --still, --proxy and

@@ -5,4 +5,4 @@ var niriHighlightHelp = cliCommand{Name: "service niri-highlight",
 generated include (highlight.include) from the feed socket (default
 feed.runtime/feed.sock). Terminal titles are matched as NAME + separator.`,
 	Examples: []string{"areel service niri-highlight", "areel service niri-highlight --reload"},
-	Docs:     "NIRI.md"}
+	Docs:     "docs/niri.md"}

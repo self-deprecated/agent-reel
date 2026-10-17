@@ -2,7 +2,7 @@
 // sidecars and sub-recordings (agent-reel/links/1). It is pure apart from the
 // manifest and asset files under the library root; joining a manifest with a
 // parent's activity store is the caller's job (internal/reel.ResolveLinks).
-// The contract is docs/visual-recording-links.md.
+// User-facing behaviour: docs/integrations.md (Links).
 package links
 
 import (

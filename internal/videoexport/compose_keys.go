@@ -9,7 +9,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-// The keys overlay of a composition (EDL.md "Keys overlay"): a KeyCastr-style
+// The keys overlay of a composition (docs/compose.md "Keys overlay"): a KeyCastr-style
 // strip of chips, one per recorded stroke, drawn as DOM in the frames page
 // (textContent only). The caller supplies each stroke's chip text, client
 // colour and the local frame it first shows on; the renderer decides per

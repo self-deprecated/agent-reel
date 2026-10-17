@@ -57,10 +57,9 @@ in
       runHook postCheck
     '';
     postInstall = ''
-      mkdir -p "$out/share/doc/agent-reel"
-      for doc in README.md SUPERVISOR.md LIBRARY.md NIRI.md; do
-        cp "${src}/$doc" "$out/share/doc/agent-reel/"
-      done
+      mkdir -p "$out/share/doc/agent-reel/docs"
+      cp "${src}/README.md" "$out/share/doc/agent-reel/"
+      cp "${src}"/docs/*.md "$out/share/doc/agent-reel/docs/"
       wrapProgram "$out/bin/areel" \
         --prefix PATH : ${lib.makeBinPath [zellij asciinemaPinned checkpoint]} \
         --set-default AREEL_AVT_CHECKPOINT ${checkpoint}/bin/areel-avt-checkpoint

@@ -1,28 +1,11 @@
 # AgentReel
 
-The [Go-first UX migration](LIVE-UX.md) is complete and merged at
-`ef32a76c604da157c318aaa17b1df4585fa7491f`. Go owns catalog/viewer HTML,
-identity, activity/marks, warm Live/preview ownership, immutable raw-history
-cutoffs and cast/video export jobs. Exactly four thin browser adapters and the
-unmodified official player remain; the old JS controllers and fake-DOM suite
-are retired. See [migration coverage](MIGRATION.md).
-
-The user approved updating the visual-recording plan and beginning work on this
-merged baseline. [Baseline, evidence and scope ownership](docs/visual-recording-baseline.md)
-records matching-source prior Nix browser/video/race results and remaining gaps.
-The new visual store is not implemented by the UX merge: V1 establishes timing,
-V2 qualifies visible readout plus the shared presentation adapter, and V3 onward
-adds visual persistence and integrates beneath the existing GUI/export stack.
-No additional UX integration or frontend rebuild is needed.
-
-Status: approved visual-format development, not deployment. Read [LIBRARY.md](LIBRARY.md),
-[EXPORTS.md](EXPORTS.md) and [ARCHIVE.md](ARCHIVE.md) for the current contracts.
-**The legacy raw archive format has been removed (2026-09-26, user decision):**
-every recording is visual/1 without any configuration, and the CLI has no legacy
-support. An old raw-format recording directory is listed as unsupported and
-refused; nothing restarts, converts or deletes it. Real-Zellij qualification, installation,
-auth changes, activation and Resolve operations remain separate gates. Historical
-planning descriptions below do not attest completion of those gates.
+Domain vocabulary and confirmed product decisions for agents working on this
+repository. User-facing behaviour is documented in [README.md](README.md) and
+[docs/](docs/). Every recording is visual/1; the legacy raw archive format was
+removed (2026-09-26, user decision) and old raw-format recordings are listed as
+unsupported and refused. Real-Zellij qualification, installation, auth changes,
+activation and Resolve operations remain separate approval gates.
 
 ## Confirmed product decisions
 
@@ -71,7 +54,7 @@ These are recommendations, not authorization to install or activate them:
 - Pi must visibly indicate recording state, including paused/interrupted/unknown state, using recorder health rather than an extension-local assumption. Pause/resume lifecycle markers and multi-segment navigation are required.
 - The existing official browser player passed short and idle-heavy multi-hour synthetic tests before custom library development. The 8h v3 fixture (71.84 MB, 158,201 events) reached first frame in 324–335 ms and a late painted seek in 485–488 ms, with 953–954 MiB summed browser-process RSS. This is raw local HTTP playback, not compressed archive serving or dense all-day endurance. Measure rather than assume hardware limits; use the existing player first.
 - Proposed lifetime contract: detached holder independent of Pi/calling-terminal lifetime, controlled shutdown, explicit interrupted state and ownership-checked reconciliation after crashes. No promise of surviving logout/cgroup termination, OOM, reboot or power loss; no mandatory systemd or automatic lingering changes. Test the supported boundaries.
-- Persistent library destination, actual recorder installation/activation, shell auto-start/bindings and retention/deletion require explicit rollout decisions; test-only temporary libraries do not authorize permanent capture. The reviewed retention policy ([RETENTION.md](RETENTION.md)) sets no maximum library size, recording age or duration and no deletion/rotation; it adds optional byte/footage warning thresholds with a bounded durable notification and fail-closed storage failure classification.
+- Persistent library destination, actual recorder installation/activation, shell auto-start/bindings and retention/deletion require explicit rollout decisions; test-only temporary libraries do not authorize permanent capture. The retention policy ([docs/recording.md](docs/recording.md#storage)) sets no maximum library size, recording age or duration and no deletion/rotation; it adds optional byte/footage warning thresholds with a bounded durable notification and fail-closed storage failure classification.
 - Resolve mutations require an approved isolated test project, synthetic media and destination. Knowing the MCP location is not permission to change an active personal project. Consult current content-creation instructions and live version/tool inventory; do not reinstall or restart services.
 
 ## Integration surfaces inspected
@@ -83,8 +66,6 @@ adapter, and the content-creation repository's rules and skill for live
 DaVinci Resolve work.
 
 ## Verification and non-goals
-
-Research evidence and measured limitations: [feasibility report](docs/terminal-recording-feasibility.md). Implementation proposal scope: [plan](IMPLEMENTATION-PLAN.md).
 
 Implementation acceptance must include backend-qualified multi-agent attribution, concurrent independent recordings, target-instance-scoped ensure suppression, Pi recording-state indication, pause/resume markers and navigation, clean/interrupted lifecycles, storage failure visibility, checksum-verified recovery, bounded resources, privacy, and deterministic playback/export with one timing map. Reproducible unit and full integration tests are explicit user requirements. Long-recording performance and actual Resolve marker placement need separate evidence.
 

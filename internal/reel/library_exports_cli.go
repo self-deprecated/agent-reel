@@ -28,10 +28,10 @@ as markers. OUT defaults to <export.directory or cwd>/<short-id>-<YYYYMMDD-HHMM>
 pause gaps; --to is exclusive. --recipe selects clips; --plan previews without
 writing. --theme re-colours the default colours and 16-colour palette only
 (explicit 256-colour and true-colour cells stay as recorded). --redact masks
-secrets, emails or home paths in every output (EDL.md, Redaction). Video needs
+secrets, emails or home paths in every output (docs/exports.md, Redaction). Video needs
 Chromium and FFmpeg (see areel doctor). Defaults come from export.* and ui.theme.`,
 	Examples: []string{"areel export 3f2a clip.zip --from 1:30 --to 2:00", "areel export 3f2a --format h264 --size 1920x1080 --fps 30", "areel export 3f2a lesson.zip --format web --recipe lesson.json --idle-limit 2"},
-	Docs:     "EXPORTS.md, LIBRARY.md, docs/visual-recording-export.md"}
+	Docs:     "docs/exports.md"}
 
 func exportCLI(args []string, out, errOut io.Writer) error {
 	f := newCLIFlags(exportHelp, out)

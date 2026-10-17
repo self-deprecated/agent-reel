@@ -24,7 +24,6 @@ import (
 // bounded windows of {"snapshot":{cols,rows,init},"events":[[t,"o"|"r",data]]}.
 // Nothing is replayed from a prefix: pinning plans windows from view metadata
 // only, and a window renders lazily from its own views through internal/repaint.
-// See docs/visual-recording-gui.md.
 
 var (
 	// errHistoryIndexBudget is an explicit pin refusal: the selection needs more

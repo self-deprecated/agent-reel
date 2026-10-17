@@ -26,7 +26,7 @@ indicator only. Clients attached without areel attach are not captured, so
 the overlay's coverage is always partial. Arguments after -- go to zellij
 attach. Exits with zellij's exit status.`,
 	Examples: []string{"areel attach work", "areel attach work -- --create", "alias za='areel attach'"},
-	Docs:     "README.md, ACTIVITY.md"}
+	Docs:     "docs/recording.md (Keystrokes)"}
 
 // attachCLI runs areel attach.
 func attachCLI(args []string, out, errOut io.Writer) error {

@@ -214,14 +214,14 @@ var externalGates = []Blocker{
 		ID:        "gate.zellij-backend",
 		Kind:      "external-gate",
 		Reason:    "The real Zellij backend readiness/resize/working-view gate (existing, separate) was not exercised; V8 uses isolated fixtures and owned artificial PTYs only.",
-		Evidence:  "docs/visual-recording-qualification.md",
+		Evidence:  "sd areel zellij-check (separate suite)",
 		NextInput: "user authorization for the existing capture gate",
 	},
 	{
 		ID:        "gate.capture-beyond-fixtures",
 		Kind:      "external-gate",
 		Reason:    "No capture beyond isolated fixtures was performed.",
-		Evidence:  "docs/visual-recording-qualification.md",
+		Evidence:  "report.json#/notReproduced",
 		NextInput: "explicit authorization",
 	},
 }

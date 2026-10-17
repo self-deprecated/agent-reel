@@ -52,7 +52,7 @@ type State struct {
 	// recordings and never backfilled or discovered from ambient state later.
 	Context *RecordingContext `json:"context,omitempty"`
 	// Storage is the bounded retention/storage-health projection of
-	// RETENTION.md: the warning thresholds in effect for this logical recording,
+	// Storage warnings: the warning thresholds in effect for this logical recording,
 	// at most one warning per threshold, and the first storage failure. The
 	// holder is its only writer; absent for older recordings and for a
 	// recording no holder has assigned itself to yet.

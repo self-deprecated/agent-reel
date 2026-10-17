@@ -19,8 +19,7 @@ import (
 // indexed store is the only activity storage. Every page is read from one
 // frozen activitystore.Selection and paged by the dense receiver sequence;
 // placements are shown exactly as stored and joined to a visual selection by
-// placement basis (docs/visual-recording-activity.md, "Join with the visual
-// selection"). Nothing is recomputed, sorted by producer time or invented.
+// placement basis. Nothing is recomputed, sorted by producer time or invented.
 
 // activityIndexCursorMax bounds an indexed sequence cursor (the largest
 // integer a JSON consumer represents exactly). The store itself has no record

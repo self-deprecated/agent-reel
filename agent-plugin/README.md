@@ -10,7 +10,7 @@ requests, subagents, compactions).
 - **Privacy.** Only generic markers are stored: event kind, phase, role, a
   normalized tool name, subagent type and short enum reasons. Prompt, command,
   tool input/output, messages, paths and models are never read or stored. See
-  "Agent hooks" in `ACTIVITY.md` (source tree).
+  `docs/marks-and-agents.md` (source tree).
 - **Never in the way.** `bin/areel-hook` discards all output and always exits
   0, and every hook is async except SessionEnd (and Claude Code's
   SessionStart), which are time-boxed to 1-2 s. Outside a recording every
@@ -26,5 +26,5 @@ which other agents auto-discover with a different vocabulary),
 
 The Nix package installs this directory at
 `share/agent-reel/agent-plugin` next to the `areel` binary; install steps are
-in "Agent hooks (Claude Code, Codex, OpenCode)" of the AgentReel README
-(`README.md`, installed as `share/doc/agent-reel/README.md`).
+in `docs/marks-and-agents.md` (installed as
+`share/doc/agent-reel/docs/marks-and-agents.md`).

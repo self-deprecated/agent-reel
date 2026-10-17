@@ -25,7 +25,7 @@ import (
 // storage or change to the sealed format.
 
 const (
-	// activityLabelMax is the envelope label bound (ACTIVITY.md).
+	// activityLabelMax is the envelope label bound (docs/integrations.md).
 	activityLabelMax = 256
 	markSource       = "areel:cli"
 	markKind         = "areel:mark"
@@ -41,7 +41,7 @@ recording that covers this terminal (the areel activity target proof). --ago
 records that the moment was that long before now; the viewer applies it.
 Sealed, stopped or superseded recordings refuse.`,
 	Examples: []string{`areel mark "plan approved"`, `areel mark "tests green" 3f2a --ago 10s`, `areel mark --json -- "-rc1 shipped"`},
-	Docs:     "README.md, ACTIVITY.md"}
+	Docs:     "docs/marks-and-agents.md"}
 
 // markOutput is the --json form of areel mark: the receiver's reply plus the
 // recording, library, stored label and offset.

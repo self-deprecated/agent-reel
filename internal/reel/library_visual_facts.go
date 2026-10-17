@@ -21,7 +21,7 @@ import (
 
 // Visual/1 facts are the distinct, labelled observations the viewer's facts
 // strip and the durable preview headers show about one visual recording
-// (docs/visual-recording-gui.md, "Facts"). Each fact has its own source and
+// (the Diagnostics disclosure). Each fact has its own source and
 // none stands in for another: freshness is when this request read the store,
 // last change is the newest committed view, so an unchanged thumbnail is never
 // called stale; an estimate is labelled as one and never a seek target; and a

@@ -31,7 +31,7 @@ A damaged seal beside a directory needs manual removal. Without a directory,
 --out DIR writes a new interrupted seal outside the library, preserving damage.
 Legacy raw recordings are refused. No published seal is deleted.` + verificationBudgetHelp,
 	Examples: []string{"areel recover 3f2a", "areel recover latest --discard-tail", "areel recover 3f2a --out ./rescued --json"},
-	Docs:     "docs/visual-recording-seal.md (Recover)"}
+	Docs:     "docs/recording.md (Finishing)"}
 
 type recoverOptions struct {
 	Out         string

@@ -21,7 +21,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualstore"
 )
 
-// These tests cover RETENTION.md with synthetic temporary libraries, fake
+// These tests cover the storage policy (docs/recording.md) with synthetic temporary libraries, fake
 // observers whose visual store counters the test sets directly, and the real
 // holder state machine, control socket, listing and feed. No capture tool,
 // real library, deletion or rotation exists anywhere in them.

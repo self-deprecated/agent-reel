@@ -640,7 +640,7 @@ func TestHookCLIUsage(t *testing.T) {
 		}
 	}
 	out, _, e := cliRun(t, "help", "hook")
-	if e != nil || !strings.Contains(out, "Usage: areel hook AGENT [flags]") || !strings.Contains(out, "areel hook generic < event.json") || !strings.Contains(out, "Docs: ACTIVITY.md") {
+	if e != nil || !strings.Contains(out, "Usage: areel hook AGENT [flags]") || !strings.Contains(out, "areel hook generic < event.json") || !strings.Contains(out, "Docs: docs/marks-and-agents.md") {
 		t.Fatalf("hook help %v %q", e, out)
 	}
 	if strings.Contains(Help, "hook") {

@@ -20,7 +20,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/webembed"
 )
 
-// areel compose EDL --web OUT: the composition as a web embed (EDL.md "Web
+// areel compose EDL --web OUT: the composition as a web embed (docs/compose.md "Web
 // embed"), through the same page builder as export --format web
 // (webEmbedFromCast): one asciicast v3 on the composition's output clock,
 // every stored view of every clip at its exact output time (speed and idle

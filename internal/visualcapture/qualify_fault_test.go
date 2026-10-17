@@ -1604,11 +1604,11 @@ func (fc *faultCell) f7() (qualify.Cell, []qualify.Sample, []qualify.Finding, er
 			ID: "F7-reader-truncated/" + fc.pc.Key(),
 			Evidence: fmt.Sprintf("scenarios/%sF7/result.json#%s t%02d (%s): the plan's \"Reader refuses\" did not happen: the visualstore Reader served %d of %d acknowledged views (reader: %s; %s); the production doctor, which holds the acknowledged record, reports %q",
 				faultPrefix, fc.pc.Key(), trunc, v.variant, v.readerN, v.in.AckViews, v.reader, strings.Join(v.notes, ", "), v.in.Doctor.Report.ArtifactStatus),
-			SuspectedCause: "the Reader holds no owner expectation (acknowledged record): SQLite recovery of a WAL whose tail was cut yields a consistent, shorter store the Reader cannot tell from a short one (docs/visual-recording-store.md, \"The WAL damage finding\")",
+			SuspectedCause: "the Reader holds no owner expectation (acknowledged record): SQLite recovery of a WAL whose tail was cut yields a consistent, shorter store the Reader cannot tell from a short one",
 			ProposedRemedy: "a product decision (decision 12): e.g. give readers the acknowledged record as an expectation, or accept doctor-only detection and document it",
 		})
 	}
-	ev = append(ev, "the Reader has no owner expectation: a WAL-truncated store is a consistent shorter store it cannot refuse (docs/visual-recording-store.md, the WAL damage finding), so for that store the check asserts the Reader presents fewer views than acknowledged; the acknowledged-record variants leave the store itself intact (the Reader result is informational)")
+	ev = append(ev, "the Reader has no owner expectation: a WAL-truncated store is a consistent shorter store it cannot refuse, so for that store the check asserts the Reader presents fewer views than acknowledged; the acknowledged-record variants leave the store itself intact (the Reader result is informational)")
 	return fc.finish(run, outcomeCheck("F7", fails, ev), true, nil, findings)
 }
 
@@ -2236,7 +2236,7 @@ func runH4(q qualifyEnv, env, cenv []string, bin, dir string, pc qualify.Planned
 		findings = append(findings, qualify.Finding{
 			ID:             "H4/" + pc.Key(),
 			Evidence:       "scenarios/" + h4Scenario + "/result.json#" + pc.Key() + ": " + evidence,
-			SuspectedCause: "Verify runs every check in one read transaction and pins the WAL beside a live writer (docs/visual-recording-store.md, \"Verify on a live store\")",
+			SuspectedCause: "Verify runs every check in one read transaction and pins the WAL beside a live writer",
 			ProposedRemedy: "freeze a selection first and verify each pass in its own short read transaction, as Reader does (decision 12: not fixed in V8)",
 		})
 	}

@@ -30,7 +30,7 @@ Browse & export
   open                  browse the library in the local web UI
   export REC [OUT]      export footage as a ZIP (cast, h264, prores or web)
   search TEXT [REC]     search text shown in sealed recordings (also: index)
-  compose EDL [OUT]     render an EDL composition (see inspect REC, EDL.md)
+  compose EDL [OUT]     render an EDL composition (see inspect REC, docs/compose.md)
 
 Maintain
   doctor [REC]          check prerequisites, or verify one recording
@@ -61,7 +61,7 @@ take the library from --library or the settings (see areel config).
   _hold, _watch                            private holder entrypoints
 
 Per-command help: areel help activity send, areel service feed --help, ...
-Docs: ACTIVITY.md, SUPERVISOR.md, LIBRARY.md, NIRI.md (links: ACTIVITY.md "Links")
+Docs: docs/integrations.md, docs/marks-and-agents.md (hooks), docs/niri.md
 `
 
 // visibleCommands and hiddenCommands drive unknown-command suggestions.
@@ -188,7 +188,7 @@ func groupCLI(args []string, out, errOut io.Writer) error {
 	if args[1] == "-h" || args[1] == "--help" {
 		fmt.Fprintf(out, "Usage: areel %s %s [flags]\n\n", group, strings.Join(subs, "|"))
 		if group == "keys" {
-			fmt.Fprintf(out, "Keystroke capture of areel attach (see README.md). Per-command help:\n")
+			fmt.Fprintf(out, "Keystroke capture of areel attach (see docs/recording.md). Per-command help:\n")
 		} else {
 			fmt.Fprintf(out, "An integration command group (see areel help integrations). Per-command help:\n")
 		}
@@ -229,30 +229,30 @@ var lifecycleHelp = map[string]cliCommand{
 then the configured target. The recording holder outlives this command.
 Recording again after stop starts a new recording; after pause it resumes.`,
 		Examples: []string{"areel record", "areel record work", "areel record --json"},
-		Docs:     "README.md, ARCHIVE.md"},
+		Docs:     "docs/recording.md"},
 	"ensure": {Name: "ensure", Args: "[TARGET]",
 		Summary: `Integration: start recording unless the target's recording is paused,
 stopped, failed or interrupted. Prints the state as JSON.`,
 		Examples: []string{"areel ensure", "areel ensure work --library ~/.local/share/agent-reel"},
-		Docs:     "SUPERVISOR.md"},
+		Docs:     "docs/integrations.md"},
 	"status": {Name: "status", Args: "[REC]",
 		Summary: `Show a recording's state. Without REC: the recording of the current target.
 A bound status (REC given) works after the target has ended.`,
 		Examples: []string{"areel status", "areel status latest", "areel status 3f2a --json"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md"},
 	"pause": {Name: "pause", Args: "[REC]",
 		Summary:  `Pause a recording; this ends the current segment. Resume starts a new one.`,
 		Examples: []string{"areel pause", "areel pause 3f2a"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md"},
 	"resume": {Name: "resume", Args: "[REC]",
 		Summary:  `Resume a paused recording in a new segment.`,
 		Examples: []string{"areel resume", "areel resume latest"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md"},
 	"stop": {Name: "stop", Args: "[REC]",
 		Summary: `Stop a recording. A bound stop (REC given) works after the target has ended
 and controls only that recording.`,
 		Examples: []string{"areel stop", "areel stop @", "areel stop 3f2a --json"},
-		Docs:     "README.md"},
+		Docs:     "docs/recording.md"},
 }
 
 // lifecycleCLI runs record/ensure/status/pause/resume/stop.
@@ -409,7 +409,7 @@ else ~/.config/agent-reel/config.json; Home Manager writes it from
 programs.agent-reel.settings. It is strict JSON: unknown keys, wrong types and
 out-of-range values are refused. The flags show what a command flag would do.`,
 		Examples: []string{"areel config", "areel config --json", "areel config --library /tmp/lib"},
-		Docs:     "README.md (Configure with Nix)"}, out)
+		Docs:     "docs/configuration.md"}, out)
 	f.library()
 	f.setting("backend", "backend", "NAME", "backend")
 	f.setting("listen", "ui.listen", "ADDR", "library UI address")

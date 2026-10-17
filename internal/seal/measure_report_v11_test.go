@@ -181,7 +181,7 @@ func TestSealMeasureReport(t *testing.T) {
 		must(t, json.Unmarshal(b, &exports))
 	}
 	pocDocumented := map[string][2]float64{"b1cc5d39": {19.1, 0.79}, "e30b9818": {109.8, 1.22}, "f6b9a653": {19.1, 0.80}, "3f28c7e3": {20.6, 0.79}}
-	aggregate := map[string]any{"go_version": runtime.Version(), "goarch": runtime.GOARCH, "gomaxprocs_for_measurements": 1, "poc_documented": pocDocumented, "poc_documented_source": "docs/visual-recording-loop-poc.md Part 2; [sealed kB/h, ideal views B/view] (rounded historical measurements)", "schema": "agent-reel-seal-measurement/1", "generated_at": time.Now().UTC().Format(time.RFC3339Nano), "captures": captures, "stores": results, "reader_samples": benches, "export_samples": exports, "real_library_mtime_proof": proof}
+	aggregate := map[string]any{"go_version": runtime.Version(), "goarch": runtime.GOARCH, "gomaxprocs_for_measurements": 1, "poc_documented": pocDocumented, "poc_documented_source": "V9 loop PoC Part 2; [sealed kB/h, ideal views B/view] (rounded historical measurements)", "schema": "agent-reel-seal-measurement/1", "generated_at": time.Now().UTC().Format(time.RFC3339Nano), "captures": captures, "stores": results, "reader_samples": benches, "export_samples": exports, "real_library_mtime_proof": proof}
 	aggregate["configuration"] = map[string]any{
 		"default_visual_limits":            visualstore.DefaultLimits(),
 		"activity_limits":                  activitystore.DefaultLimits(),

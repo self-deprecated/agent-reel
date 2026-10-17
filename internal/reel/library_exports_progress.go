@@ -17,7 +17,7 @@ import (
 // deadline becomes exportAge plus exportFrameBudget per output frame, capped at
 // exportAgeLimit. exportFrameBudget assumes at least 5 rendered frames per
 // second, under half the measured renderer throughput (about 11.5 frames/s for
-// a 200x62 terminal at 1600x900, EXPORTS.md), so an 8-hour recording at 1 fps
+// a 200x62 terminal at 1600x900, docs/exports.md), so an 8-hour recording at 1 fps
 // (about 32,000 frames) gets about 136 minutes instead of being killed at 30.
 // exportAge is also how long a finished job is retained.
 const (

@@ -520,7 +520,7 @@ func TestRecoverRootPrivacyAndHelp(t *testing.T) {
 	if err = CLI([]string{"recover", "--help"}, &out, io.Discard); err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"--out", "--discard-tail", "--json", "--decoded-bytes", "--work", "docs/visual-recording-seal.md"} {
+	for _, want := range []string{"--out", "--discard-tail", "--json", "--decoded-bytes", "--work", "docs/recording.md"} {
 		if !strings.Contains(out.String(), want) {
 			t.Fatal(want, out.String())
 		}

@@ -11,7 +11,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// {"search":"text","nth":N} timerefs (EDL.md, "Timerefs"): the n-th plain
+// {"search":"text","nth":N} timerefs (docs/compose.md, "Timerefs"): the n-th plain
 // hit of the source's text index, in first-appearance order, exactly as
 // `areel search TEXT REC` lists them (screen rows and labelled marks). The
 // index is built first when it is missing or stale; only sealed recordings

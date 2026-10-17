@@ -500,7 +500,7 @@ in
       mkdir -m 0700 "$XDG_RUNTIME_DIR"
 
       test -x ${areel}/bin/areel
-      for doc in README.md SUPERVISOR.md LIBRARY.md NIRI.md; do
+      for doc in README.md docs/integrations.md docs/library.md docs/niri.md; do
         test -f ${areel}/share/doc/agent-reel/$doc
       done
       areel help | grep -F 'areel help integrations' >/dev/null

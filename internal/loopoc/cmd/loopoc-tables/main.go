@@ -1,6 +1,6 @@
 // Command loopoc-tables turns the V9 PoC result files (results/*.json written
 // by TestLoopocReport, TestBlockzReport and TestCyclerleReport) into the
-// Markdown tables of docs/visual-recording-loop-poc.md.
+// Markdown tables of the V9 PoC report.
 //
 //	go run ./internal/loopoc/cmd/loopoc-tables "$AREEL_LOOPOC_OUT/results"
 //

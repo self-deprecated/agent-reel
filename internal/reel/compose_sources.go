@@ -18,7 +18,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// Composition sources (EDL.md). Every source an EDL uses is frozen once, as
+// Composition sources (docs/compose.md). Every source an EDL uses is frozen once, as
 // an export freezes its recording (freezeVisualExport: one visual selection,
 // the activity selection pinned right after it, state.json read once), and
 // every resolve and render read goes through that frozen input only. The

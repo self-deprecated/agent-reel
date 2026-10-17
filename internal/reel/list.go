@@ -44,7 +44,7 @@ type listRecording struct {
 	Suppression  string         `json:"suppression"`  // suppressed | not-suppressed | unknown
 	Holder       string         `json:"holder"`       // reachable | unreachable | timeout | not-expected | not-checked
 	Diagnostic   string         `json:"diagnostic"`   // none | present | unknown
-	Storage      string         `json:"storage"`      // none | warning | failure | unknown (RETENTION.md)
+	Storage      string         `json:"storage"`      // none | warning | failure | unknown (docs/recording.md, Storage)
 	// Role and Parent come from the links manifests (listings only; absent
 	// when they could not be read). ls prints children under their parent.
 	Role   string `json:"role,omitempty"`
@@ -365,9 +365,9 @@ var listHelp = cliCommand{Name: "ls",
 	Summary: `List each target's current recording: short ID, target, status, start,
 footage duration, on-disk size and storage flag (none/warning/failure/unknown).
 Read-only: holder health is a connect-only probe that sends no request.
---json prints the bounded listing page (see LIBRARY.md for its fields).`,
+--json prints the bounded listing page (fields: docs/integrations.md, Status feed).`,
 	Examples: []string{"areel ls", "areel ls --limit 10", "areel ls --json"},
-	Docs:     "LIBRARY.md, RETENTION.md"}
+	Docs:     "docs/recording.md"}
 
 func listCLI(args []string, out, errOut io.Writer) error {
 	f := newCLIFlags(listHelp, out)

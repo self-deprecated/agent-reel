@@ -1,6 +1,6 @@
 #!/bin/sh
 # AgentReel agent-hook shim. Silent and always exit 0: an agent must never see a
-# blocking error or output from this hook (see ACTIVITY.md "Agent hooks").
+# blocking error or output from this hook (see docs/marks-and-agents.md "Agent hooks").
 exec >/dev/null 2>&1
 if command -v areel >/dev/null 2>&1; then
   areel hook "$@"

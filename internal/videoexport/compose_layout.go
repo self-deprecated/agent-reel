@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-// Layout chunks (EDL.md, "Layouts and links"): up to four slots on the one
+// Layout chunks (docs/compose.md, "Layouts and links"): up to four slots on the one
 // compose page, each in its own absolutely positioned container at its
 // output-pixel rectangle. A terminal slot is a fresh official player with its
 // own theme (the slot container carries the theme's colour variables) fitted

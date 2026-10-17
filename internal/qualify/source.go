@@ -28,7 +28,7 @@ type Source struct {
 }
 
 // TreeManifestMethod describes TreeManifest for the report.
-const TreeManifestMethod = "V0 manifest (docs/visual-recording-baseline.md): regular files under cmd/ and internal/ " +
+const TreeManifestMethod = "V0 manifest: regular files under cmd/ and internal/ " +
 	"plus go.mod and go.sum, excluding *.md and cleanSource backup/swap files as the Nix source filter does; " +
 	"paths sorted bytewise; sha256 of the UTF-8 lines sha256(file) + \"  \" + path + \"\\n\""
 

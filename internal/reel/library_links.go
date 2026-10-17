@@ -9,7 +9,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/links"
 )
 
-// Library projections of links (LIBRARY.md "Linked recordings and sidecars").
+// Library projections of links (docs/library.md "Linked recordings and sidecars").
 // A path ref is never projected: no route, JSON field or page names it.
 
 // libraryLinkTarget is what a link opens in the browser.

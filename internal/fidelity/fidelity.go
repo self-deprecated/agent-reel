@@ -7,7 +7,7 @@
 // from the pinned parser; upstream omissions outside them are undetectable, so
 // an empty finding set is never a fidelity certificate. A finding never
 // justifies a raw-output fallback and never excuses a parser or storage
-// failure. See docs/visual-recording-fidelity.md.
+// failure.
 package fidelity
 
 // Class identifies one detected divergence between the emulator and a real

@@ -15,7 +15,7 @@ type Resolved struct {
 	Alignment Alignment
 	// Start and Stop are the resolved anchor positions (nil when unknown).
 	Start, Stop *Placement
-	// Issues name what could not be resolved; see ACTIVITY.md "link ls".
+	// Issues name what could not be resolved; see docs/integrations.md "link ls".
 	Issues []string
 }
 

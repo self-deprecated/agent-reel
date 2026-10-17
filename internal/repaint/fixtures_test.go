@@ -8,8 +8,7 @@ import (
 // A fixture is a terminal geometry and a sequence of steps. Each step is either
 // terminal output or a resize; the screen after every step is a projection
 // target, and the whole sequence is also a reference asciicast for the browser
-// proof. One fixture is one case in the results table of
-// docs/visual-recording-parity.md.
+// proof.
 type step struct {
 	Text       string
 	Cols, Rows int // nonzero means this step is a resize, not output

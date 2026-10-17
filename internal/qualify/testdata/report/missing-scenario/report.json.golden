@@ -14,14 +14,14 @@
         "id": "gate.zellij-backend",
         "kind": "external-gate",
         "reason": "The real Zellij backend readiness/resize/working-view gate (existing, separate) was not exercised; V8 uses isolated fixtures and owned artificial PTYs only.",
-        "evidence": "docs/visual-recording-qualification.md",
+        "evidence": "sd areel zellij-check (separate suite)",
         "nextInput": "user authorization for the existing capture gate"
       },
       {
         "id": "gate.capture-beyond-fixtures",
         "kind": "external-gate",
         "reason": "No capture beyond isolated fixtures was performed.",
-        "evidence": "docs/visual-recording-qualification.md",
+        "evidence": "report.json#/notReproduced",
         "nextInput": "explicit authorization"
       },
       {
@@ -76,7 +76,7 @@
     "commitId": "fd6fixture",
     "treeSha256": "abababababababababababababababababababababababababababababababab",
     "treeFiles": 3,
-    "method": "V0 manifest (docs/visual-recording-baseline.md): regular files under cmd/ and internal/ plus go.mod and go.sum, excluding *.md and cleanSource backup/swap files as the Nix source filter does; paths sorted bytewise; sha256 of the UTF-8 lines sha256(file) + \"  \" + path + \"\\n\""
+    "method": "V0 manifest: regular files under cmd/ and internal/ plus go.mod and go.sum, excluding *.md and cleanSource backup/swap files as the Nix source filter does; paths sorted bytewise; sha256 of the UTF-8 lines sha256(file) + \"  \" + path + \"\\n\""
   },
   "environment": {
     "host": "fixture",

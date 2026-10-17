@@ -306,7 +306,7 @@ func TestBrowserWebEmbedSubpathStrictCSP(t *testing.T) {
 
 // Without 'wasm-unsafe-eval' a host CSP of default-src 'self' 'unsafe-inline'
 // data: blocks the player's WebAssembly terminal: checked here so the hosting
-// notes in EXPORTS.md stay true.
+// notes in docs/exports.md stay true.
 func TestBrowserWebEmbedCSPNeedsWasm(t *testing.T) {
 	parent := embedBrowser(t)
 	b, _ := embedTestBundle(t, true, "asciinema", Options{})
@@ -325,7 +325,7 @@ func TestBrowserWebEmbedCSPNeedsWasm(t *testing.T) {
 	run(t, ctx, chromedp.Navigate(server.URL+"/"), chromedp.Sleep(2*time.Second),
 		chromedp.Evaluate(`!!document.querySelector('#player .ap-term')?.textContent.includes('welcome')`, &mounted))
 	if mounted {
-		t.Fatal("the player painted without 'wasm-unsafe-eval': update the hosting notes in EXPORTS.md")
+		t.Fatal("the player painted without 'wasm-unsafe-eval': update the hosting notes in docs/exports.md")
 	}
 }
 

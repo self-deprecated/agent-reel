@@ -21,7 +21,7 @@ import (
 //
 // Discovery is the qualification boundary. supervisorBackends lists the
 // discovery backends this build can bind, and it is empty: the Zellij adapter
-// implements no Discover (SUPERVISOR.md), so an allowlist naming any backend
+// implements no Discover (docs/integrations.md), so an allowlist naming any backend
 // is refused at startup as a configuration error until a later task adds and
 // qualifies real discovery. The packaged service therefore cannot capture yet;
 // it can only be built, validated and refused truthfully.
@@ -111,14 +111,14 @@ func supervisorCLI(args []string, out, errOut io.Writer) error {
 }
 
 var supervisorHelp = cliCommand{Name: "service supervisor",
-	Summary: `Integration: the user-service entrypoint of SUPERVISOR.md. Loads the
+	Summary: `Integration: the allowlisted supervisor's user-service entrypoint. Loads the
 supervisor.allowlist file ({"entries":[{"backend":..,"target":..}]}, 1..64
 targets), binds the library and reconciles the allowlisted targets through the
 ordinary ensure control every supervisor.interval. It never pauses, stops or
 resumes. A refused configuration exits 2, which the unit must not restart.
 This build has no discovery backend, so every allowlist entry is refused.`,
 	Examples: []string{"areel service supervisor", "areel service supervisor --once", "areel service supervisor --runtime $XDG_RUNTIME_DIR/agent-reel"},
-	Docs:     "SUPERVISOR.md"}
+	Docs:     "docs/integrations.md (Supervisor)"}
 
 func supervisorCommand(ctx context.Context, args []string, out, errOut io.Writer, deps supervisorDeps) error {
 	f := newCLIFlags(supervisorHelp, out)
@@ -210,7 +210,7 @@ func supervisorCommand(ctx context.Context, args []string, out, errOut io.Writer
 // action, diagnostic or recording status to the journal (stderr) and, when a
 // runtime directory was given, replaces RUNTIME/supervisor.json atomically
 // (0600) with the last completed report. The report is the bounded privacy-safe
-// projection of SUPERVISOR.md: no addresses, paths, process identity, segments,
+// projection of the supervisor contract: no addresses, paths, process identity, segments,
 // events or unlisted target names.
 type supervisorRun struct {
 	supervisor *Supervisor

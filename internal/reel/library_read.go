@@ -273,7 +273,7 @@ type libraryRecording struct {
 	// Sealed reports a sealed .areel file, downloadable as it is.
 	Sealed bool `json:"sealed,omitempty"`
 	// Role (parent, child or standalone) and Parent (a child's parent ID)
-	// are derived from the library's links manifests (LIBRARY.md "Linked
+	// are derived from the library's links manifests (docs/library.md "Linked
 	// recordings and sidecars"); Role is absent when they could not be read.
 	Role   string `json:"role,omitempty"`
 	Parent string `json:"parent,omitempty"`

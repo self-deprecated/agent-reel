@@ -18,7 +18,7 @@ manifest.json records the shipped asset/license byte hashes. Runtime assets are
 embedded and local. The root pnpm development dependency graph is not a claim
 that it reconstructs the official prebuilt bundle's original build environment.
 Go-driven Chromium tests qualify representative rendering, continuation, inert
-preview/link behavior and measured synthetic performance; see LIBRARY.md and
-MIGRATION.md in the source distribution for scope and provenance. This is not
+preview/link behavior and measured synthetic performance; see docs/library.md and
+docs/development.md in the source distribution for scope. This is not
 exhaustive terminal/OSC/link/clipboard conformance or browser isolation. No fake
 DOM or Node test wrapper substitutes for the real-browser checks.

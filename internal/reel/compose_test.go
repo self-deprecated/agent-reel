@@ -19,7 +19,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualstore"
 )
 
-// The compose fixture (EDL.md acceptance): one recording, sealed by default.
+// The compose fixture (docs/compose.md acceptance): one recording, sealed by default.
 //
 // Segment 1, 80x24, paused at 20 s: views 0 red, 2 blue, 4 green, 14 red
 // (a 10 s hold 4→14), 16 blue (lines 1..5), closed at 20 (line 6).

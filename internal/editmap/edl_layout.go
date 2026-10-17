@@ -9,7 +9,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/termtheme"
 )
 
-// Layouts and links (EDL.md, "Layouts and links"). A source may be a link of
+// Layouts and links (docs/compose.md, "Layouts and links"). A source may be a link of
 // a recording source ({"link":"parent:linkid"}): a linked sub-recording, a
 // screenshot (a static image slot) or a video (decoded once per span at the
 // output rate into an image slot). A layout segment shows up to MaxEDLSlots

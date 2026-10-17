@@ -23,7 +23,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualstore"
 )
 
-// The link fixture (EDL.md "Layouts and links" acceptance): a sealed parent
+// The link fixture (docs/compose.md "Layouts and links" acceptance): a sealed parent
 // and a sealed child recording, linked as "worker", plus a screenshot link
 // (and, for video tests, a video link). All terminals are 80x24.
 //

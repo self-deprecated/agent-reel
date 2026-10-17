@@ -17,6 +17,4 @@
 //   - the V0 tree-manifest source identity (source.go);
 //   - the report generator, which applies the verdict rules and always
 //     reports rollout: blocked (report.go, report_md.go, cmd/qualify-report).
-//
-// See docs/visual-recording-qualification.md.
 package qualify

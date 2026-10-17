@@ -28,8 +28,8 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/termtheme"
 )
 
-// Chunked composition rendering (EDL.md, docs/visual-recording-export.md "Not
-// in V7": one render input per chunk, fed to fresh players). One Chromium
+// Chunked composition rendering (docs/compose.md): one render input per
+// chunk, fed to fresh players. One Chromium
 // page and one FFmpeg process render the whole output; every chunk gets a
 // fresh official player (its own theme and cursor), is preflighted like
 // RenderFrames, and may be a static cells view: the frame is captured with a

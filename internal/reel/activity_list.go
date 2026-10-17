@@ -20,7 +20,7 @@ const (
 	activityListPageMax       = 128
 	activityListOutputDefault = 256 << 10
 	activityListOutputMax     = 1 << 20
-	// Library metadata routes keep their smaller shared allowance (LIBRARY.md).
+	// Library metadata routes keep their smaller shared allowance (docs/library.md).
 	libraryWorkMax = 8192
 )
 
@@ -289,7 +289,7 @@ var activityListHelp = cliCommand{Name: "activity ls", Args: "REC",
 including historical recordings, read from one frozen selection of the
 recording's indexed activity store.`,
 	Examples: []string{"areel activity ls latest", "areel activity ls 3f2a --after 32 --limit 32"},
-	Docs:     "ACTIVITY.md, docs/visual-recording-activity.md"}
+	Docs:     "docs/integrations.md (Activity)"}
 
 func activityListCLI(args []string, out, errOut io.Writer) error {
 	f := newCLIFlags(activityListHelp, out)

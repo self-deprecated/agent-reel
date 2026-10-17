@@ -205,7 +205,7 @@ const grid=id=>{
 				err = compare(reference, candidate, last, .5, false)
 				switch {
 				case f.gapFull != "" && err == nil:
-					t.Fatalf("recorded known gap (%s) no longer diverges; re-qualify it and update docs/visual-recording-parity.md", f.gapFull)
+					t.Fatalf("recorded known gap (%s) no longer diverges; re-qualify it and remove the recorded gap", f.gapFull)
 				case f.gapFull != "":
 					t.Logf("known gap holds (%s): %v", f.gapFull, err)
 				case err != nil:
@@ -222,7 +222,7 @@ const grid=id=>{
 					reason, known := f.gapSteps[i]
 					switch {
 					case known && err == nil:
-						t.Errorf("step %d: recorded known gap (%s) no longer diverges; re-qualify it and update docs/visual-recording-parity.md", i, reason)
+						t.Errorf("step %d: recorded known gap (%s) no longer diverges; re-qualify it and remove the recorded gap", i, reason)
 					case known:
 						t.Logf("step %d: known gap holds (%s): %v", i, reason, err)
 					case err != nil:

@@ -129,7 +129,7 @@ seam leaves it off unless `startConfig({ autoBind: true })` is passed.
   `covered:true` with the recording ID and library only when a live holder
   (recording, paused, starting or pausing; not stopped, stopping, interrupted
   or suppressed) records exactly that target; otherwise `covered:false` with a
-  reason code. See [ACTIVITY.md](../ACTIVITY.md#auto-bind-proof-query).
+  reason code. See [docs/integrations.md](../docs/integrations.md#activity).
 - `covered:true` while unbound binds that recording (an **auto** binding: new
   producer, normal registration). A different covering recording (the old one
   ended and a new one started) replaces an auto binding, discarding the old

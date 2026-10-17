@@ -224,7 +224,7 @@ func visualFileHashes(t *testing.T, store string) map[string][32]byte {
 
 // visualLibraryHashes hashes every file of the library except the store's
 // shared-memory index, which SQLite rebuilds when any reader opens a WAL
-// database (docs/visual-recording-store.md, "Doctor: Verify").
+// database.
 func visualLibraryHashes(t *testing.T, root string) map[string][32]byte {
 	t.Helper()
 	hashes := treeHashes(t, root)

@@ -60,9 +60,7 @@ saved-cursor, mode, charset and parser state produce no rows at all. Every field
 read back from the helper is validated — geometry, cursor range, scalar
 codepoints, cell width, wide head/tail pairing, colour kind, attribute bits,
 ascending in-range row indices, `MaxViewBytes` payload bounds — and rejected on
-failure; nothing is coerced. The full contract, including what it deliberately
-does not model, is
-[`docs/visual-recording-readout.md`](../../docs/visual-recording-readout.md).
+failure; nothing is coerced.
 
 Only events strictly before the start feed reconstruction. The first export event
 contains the terminal **state** dump, not raw historical output; selected events
@@ -102,7 +100,7 @@ row inside a full readout — scalar codepoints, legal widths, wide head/tail
 pairing, colour kind, attribute bits. **Trailing bytes are an error**, not
 something to ignore, as is a payload that ends early, exceeds `MaxRowBytes`, or
 a `cols` outside 1..512. Nothing is repaired or coerced. The store built on this
-encoding is [`docs/visual-recording-store.md`](../../docs/visual-recording-store.md).
+encoding is `internal/visualstore`.
 
 ## Validation
 

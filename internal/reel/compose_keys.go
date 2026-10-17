@@ -17,7 +17,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// The EDL keys overlay (EDL.md "Keys overlay"): the keystroke track of a clip's
+// The EDL keys overlay (docs/compose.md "Keys overlay"): the keystroke track of a clip's
 // source span (areel attach's areel:keys records, read from the source's
 // frozen activity selection, so a frozen EDL over a sealed digest always
 // shows the same keys) as chips on the chunk's local frames. Keys appear only

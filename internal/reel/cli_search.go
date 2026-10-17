@@ -17,7 +17,7 @@ var indexHelp = cliCommand{Name: "index", Args: "[REC]",
 file's digest: an up-to-date index is kept unless --force. Recordings are
 indexed automatically after sealing; live recordings are not indexed yet.`,
 	Examples: []string{"areel index latest", "areel index --all", "areel index 3f2a --force --json"},
-	Docs:     "LIBRARY.md (Text search)"}
+	Docs:     "docs/library.md (Search)"}
 
 var searchHelp = cliCommand{Name: "search", Args: "TEXT [REC]",
 	Summary: `Search the text shown in sealed recordings: one recording, or the whole
@@ -26,7 +26,7 @@ row (a phrase wrapped over two lines is not found) and labelled marks. Each
 hit is the row's first appearance: segment, time, view, row (y) and columns.
 Missing or stale indexes are built first. --fuzzy tolerates typos.`,
 	Examples: []string{`areel search "All tests passed"`, `areel search "panic:" latest --json`, `areel search "conection refused" --fuzzy`},
-	Docs:     "LIBRARY.md (Text search)"}
+	Docs:     "docs/library.md (Search)"}
 
 func textIndexCLI(args []string, out, errOut io.Writer) error {
 	f := newCLIFlags(indexHelp, out)

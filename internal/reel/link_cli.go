@@ -16,7 +16,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/links"
 )
 
-// Link commands (ACTIVITY.md "Links"). The manifest is written by these
+// Link commands (docs/integrations.md "Links"). The manifest is written by these
 // commands only; the live start/stop anchors are areel:link marker records
 // admitted by the parent's own holder.
 
@@ -31,27 +31,27 @@ areel:link start record; the manifest entry points at it.`,
 		Examples: []string{"areel link start --parent P --recording C --label \"summon review\" --origin summon --json",
 			"areel link start --parent P --kind video --path ~/Videos/obs.mkv --offset -1.5s",
 			"areel link start --parent @ --kind screenshot --path shot.png"},
-		Docs: "ACTIVITY.md (Links), LIBRARY.md"},
+		Docs: "docs/integrations.md (Links), docs/library.md"},
 	"stop": {Name: "link stop",
 		Summary: `Close an open link: the parent's holder admits an areel:link stop record.
 Without --parent, --recording finds the one open link to that recording.
 A parent that is no longer live closes the entry without a record (warning).`,
 		Examples: []string{"areel link stop --recording C --json", "areel link stop --parent P --link rec-0eeb7167"},
-		Docs:     "ACTIVITY.md (Links)"},
+		Docs:     "docs/integrations.md (Links)"},
 	"add": {Name: "link add",
 		Summary: `Attach a sidecar after the fact at a declared parent position (precision
 "declared"). Works for live and sealed parents; only the manifest changes.`,
 		Examples: []string{"areel link add --parent P --kind screenshot --path login.png --at 42.5",
 			"areel link add --parent P --kind video --path /abs/obs.mkv --at 3 --segment 2"},
-		Docs: "ACTIVITY.md (Links)"},
+		Docs: "docs/integrations.md (Links)"},
 	"adjust": {Name: "link adjust",
 		Summary:  `Correct a link: its offset, label, or a declared start position.`,
 		Examples: []string{"areel link adjust --parent P --link video-1 --offset -1.5s", "areel link adjust --parent P --link shot-1 --at 40"},
-		Docs:     "ACTIVITY.md (Links)"},
+		Docs:     "docs/integrations.md (Links)"},
 	"ls": {Name: "link ls", Args: "[REC]",
 		Summary:  `List a recording's links with their anchors resolved on the parent clock.`,
 		Examples: []string{"areel link ls @", "areel link ls 0eeb --json"},
-		Docs:     "ACTIVITY.md (Links)"},
+		Docs:     "docs/integrations.md (Links)"},
 }
 
 func linkCLI(args []string, out, errOut io.Writer) error {
@@ -64,7 +64,7 @@ func linkCLI(args []string, out, errOut io.Writer) error {
 		for _, s := range linkSubcommands {
 			fmt.Fprintf(out, "  areel link %s --help\n", s)
 		}
-		fmt.Fprintln(out, "\nDocs: ACTIVITY.md (Links), LIBRARY.md")
+		fmt.Fprintln(out, "\nDocs: docs/integrations.md (Links), docs/library.md")
 		return nil
 	}
 	rest := args[1:]
@@ -207,7 +207,7 @@ func linkSubmit(b linkBinding, envelope activityEnvelope) (*linkAnchorReply, err
 	return &linkAnchorReply{Phase: phase, ActivityID: envelope.ID, Seq: res.Receipt.Sequence, Accepted: res.Accepted, Durable: res.Durable}, nil
 }
 
-// linkEnvelope builds a link record envelope (ACTIVITY.md "Records").
+// linkEnvelope builds a link record envelope (docs/integrations.md "Records").
 func linkEnvelope(l links.Link, phase, source string, extra map[string]any) activityEnvelope {
 	data := map[string]any{"link": l.ID, "phase": phase, "sidecar": l.Sidecar()}
 	if phase == links.PhaseStart {

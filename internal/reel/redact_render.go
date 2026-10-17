@@ -11,7 +11,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/textindex"
 )
 
-// Redaction in the repaint projection (course-design memo §4.3, EDL.md
+// Redaction in the repaint projection (course-design memo §4.3, docs/compose.md
 // "Redaction"). Rules from an EDL's `redact` list or `--redact` presets are
 // evaluated once per distinct row: a row's text is textindex.RowText (the
 // same text the search index holds), its matches are rune spans mapped to

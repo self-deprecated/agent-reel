@@ -619,7 +619,7 @@ a snapshot, then changes and heartbeats). RUNTIME is feed.runtime (default
 $XDG_RUNTIME_DIR/agent-reel-feed) and must exist, private and outside the
 library. The feed controls and persists nothing.`,
 	Examples: []string{"areel service feed", "areel service feed --once"},
-	Docs:     "LIBRARY.md, NIRI.md"}
+	Docs:     "docs/integrations.md (Status feed), docs/niri.md"}
 
 func feedCLI(args []string, out, errOut io.Writer) error {
 	f := newCLIFlags(feedHelp, out)

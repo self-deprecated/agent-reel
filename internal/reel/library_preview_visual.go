@@ -18,7 +18,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// Visual/1 durable previews (docs/visual-recording-gui.md, "Durable previews").
+// Visual/1 durable previews.
 // A durable still is a one-frame v3 cast, the same form decodeLivePreview
 // produces: the header and [0,"o",repaint.Full(view)] of one committed view,
 // with that view's cursor. It is footage the store has committed, never a

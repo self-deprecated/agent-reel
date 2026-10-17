@@ -20,7 +20,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/webembed"
 )
 
-// Web embed export (format "web", EXPORTS.md "Web embed"): the edit as one
+// Web embed export (format "web", docs/exports.md "Web embed"): the edit as one
 // output-clock cast in a self-contained player page (internal/webembed),
 // with chapters and marks as player markers. Only the page, the pinned
 // player/fonts and their licenses are published: metadata.json is written to

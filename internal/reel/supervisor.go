@@ -24,7 +24,7 @@ import (
 // after discovery has observed it absent and then present again. Holders are
 // launched through Store.Launch (transient per-recording units in the packaged
 // service), so supervisor shutdown or restart leaves them running. Nothing here
-// is compositor-specific and nothing activates a service. See SUPERVISOR.md.
+// is compositor-specific and nothing activates a service. See docs/integrations.md (Supervisor).
 const (
 	supervisorEntriesMax   = 64
 	supervisorTargetMax    = 256
@@ -167,7 +167,7 @@ type SupervisorEntry struct {
 	Target        string               `json:"target"`
 	Key           string               `json:"key,omitempty"` // target index key once resolved
 	Presence      string               `json:"presence"`      // present | absent | unknown | unresolved
-	Action        string               `json:"action"`        // see SUPERVISOR.md
+	Action        string               `json:"action"`        // see docs/integrations.md (Supervisor)
 	Recording     *SupervisorRecording `json:"recording,omitempty"`
 	Error         string               `json:"error,omitempty"`
 	Failures      int                  `json:"failures"`

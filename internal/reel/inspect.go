@@ -20,17 +20,17 @@ import (
 )
 
 // areel inspect REC: what an EDL author needs from one recording in one
-// read-only call (EDL.md, "Discover"): segments with their durable coverage
+// read-only call (docs/compose.md, "Discover"): segments with their durable coverage
 // ends, terminal sizes, labelled marks with ready-to-paste timerefs, visual
 // markers, lifecycle gaps, links (none yet) and the search index status (not
 // built yet). Everything comes from one frozen input, like an export.
 
 var inspectHelp = cliCommand{Name: "inspect", Args: "REC",
-	Summary: `Describe one recording for composing it (EDL.md): each segment's durable
+	Summary: `Describe one recording for composing it (docs/compose.md): each segment's durable
 coverage end and terminal sizes, marks with a timeref to paste into an EDL,
 visual markers and the pauses between segments. Read-only; sealed or live.`,
 	Examples: []string{"areel inspect latest", "areel inspect 3f2a --json"},
-	Docs:     "EDL.md"}
+	Docs:     "docs/compose.md"}
 
 type inspectSegment struct {
 	Segment     int        `json:"segment"`

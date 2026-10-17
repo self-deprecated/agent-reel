@@ -486,7 +486,7 @@ in {
       programs.agent-reel.settings.supervisor.launch = mkDefault "systemd-run";
       systemd.user.services.agent-reel-supervisor = unit {
         description = "AgentReel allowlisted recording supervisor";
-        doc = "SUPERVISOR.md";
+        doc = "docs/integrations.md";
         # --runtime: the private cycle report location has no config key.
         command = "supervisor --runtime %t/${supervisorRuntime}";
         service = {
@@ -507,7 +507,7 @@ in {
       ];
       systemd.user.services.agent-reel-ui = unit {
         description = "AgentReel local library UI";
-        doc = "LIBRARY.md";
+        doc = "docs/library.md";
         command =
           "ui"
           + lib.concatMapStrings (h: " --allow-host ${h}") svc.ui.allowHosts
@@ -529,7 +529,7 @@ in {
     (lib.optionalAttrs (options ? systemd.user.services) (mkIf (pkgs.stdenv.isLinux && svc.feed.enable) {
       systemd.user.services.agent-reel-feed = unit {
         description = "AgentReel status feed";
-        doc = "LIBRARY.md";
+        doc = "docs/library.md";
         command = "feed";
         # The default feed.runtime is $XDG_RUNTIME_DIR/agent-reel-feed; a
         # custom feed.runtime must already exist.
@@ -548,7 +548,7 @@ in {
       ];
       systemd.user.services.agent-reel-highlight = unit {
         description = "AgentReel Niri recording highlight";
-        doc = "NIRI.md";
+        doc = "docs/niri.md";
         command = "niri-highlight${lib.optionalString svc.highlight.reload " --reload"}";
         # Niri's IPC socket belongs to the graphical session.
         extraUnit =

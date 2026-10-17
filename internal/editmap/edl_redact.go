@@ -6,7 +6,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/redact"
 )
 
-// EDL `redact` rules (EDL.md, "Redaction"): a top-level list of
+// EDL `redact` rules (docs/compose.md, "Redaction"): a top-level list of
 // {"preset":"secrets"|"emails"|"homepaths"} and {"pattern":RE2,"replace":…}
 // entries, strictly decoded and validated by internal/redact. The resolver
 // only canonicalises them; the render masks matching cells in every chunk's

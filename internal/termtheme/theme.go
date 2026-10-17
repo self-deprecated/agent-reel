@@ -45,7 +45,7 @@ const Default = "asciinema"
 const SpecMax = 256
 
 // presets are the built-in themes. Values come from each theme's canonical
-// source (see ../../LIBRARY.md "Terminal colours"):
+// source (see ../../docs/library.md "Terminal colours"):
 //   - asciinema: the pinned asciinema-player 3.17.0 default theme
 //     (vendor/player.css .asciinema-player-theme-asciinema);
 //   - dracula: the Dracula specification (draculatheme.com/spec), ANSI 0..15;

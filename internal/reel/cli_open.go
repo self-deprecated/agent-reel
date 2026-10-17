@@ -30,7 +30,7 @@ UI already answers at ui.listen, print its URL; otherwise serve the UI in the
 foreground at ui.listen (default 127.0.0.1:0, a free port) until Ctrl-C. A
 browser opens only with --browser or ui.openBrowser = true.`,
 	Examples: []string{"areel open", "areel open --browser", "areel open --listen 127.0.0.1:8765"},
-	Docs:     "LIBRARY.md"}
+	Docs:     "docs/library.md"}
 
 var serviceUIHelp = cliCommand{Name: "service ui",
 	Summary: `Integration: serve the library UI at ui.listen for a user service unit.
@@ -51,7 +51,7 @@ tailnet source address, but any local process can reach the listener and set
 them, exactly as it can already use the UI directly.`,
 	Examples: []string{"areel service ui", "areel service ui --listen 127.0.0.1:8765",
 		"areel service ui --listen 127.0.0.1:8765 --allow-host agent-reel.example.ts.net --tailscale-user alice@github"},
-	Docs: "LIBRARY.md"}
+	Docs: "docs/library.md"}
 
 func openCLI(args []string, out, errOut io.Writer) error {
 	return openCommand(args, out, errOut, openProduction())

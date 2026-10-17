@@ -19,7 +19,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// agent-reel/edl/1: a declarative composition over recordings (EDL.md). A
+// agent-reel/edl/1: a declarative composition over recordings (docs/compose.md). A
 // sibling of recipe/1, never an extension of it: recipe/1 keeps its strict
 // canonical hash unchanged. DecodeEDL is as strict as Decode (unknown fields,
 // duplicate keys and case variants are refused at every depth) and also
@@ -121,7 +121,7 @@ type EDLIdle struct {
 }
 
 // EDLSource names one recording, or (Link "parent:linkid") one link of a
-// recording source: a linked sub-recording, screenshot or video (EDL.md,
+// recording source: a linked sub-recording, screenshot or video (docs/compose.md,
 // "Layouts and links"). Digest pins a sealed recording's manifest digest
 // ("sha256:…") or a screenshot's asset digest; a frozen EDL always carries it
 // when there is one. A frozen link source also pins the child Recording.

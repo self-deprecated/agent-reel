@@ -10,7 +10,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// Timerefs: one way to name a moment of a source (EDL.md, "Timerefs").
+// Timerefs: one way to name a moment of a source (docs/compose.md, "Timerefs").
 //
 //	"12.5"                                 segment 1, source seconds
 //	{"segment":2,"at":"12.5"}              exact source seconds

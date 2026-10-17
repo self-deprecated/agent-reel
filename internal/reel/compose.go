@@ -26,7 +26,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// areel compose: agent-reel/edl/1 compositions (EDL.md). --plan resolves and
+// areel compose: agent-reel/edl/1 compositions (docs/compose.md). --plan resolves and
 // prints the composition without a browser; --freeze writes the resolved
 // canonical EDL; --still renders one frame; --proxy renders a small fast
 // preview; the default renders the video through the export job engine
@@ -43,7 +43,7 @@ const (
 )
 
 var composeHelp = cliCommand{Name: "compose", Args: "EDL [OUT]",
-	Summary: `Render an agent-reel/edl/1 composition (EDL.md): ordered segments of sealed or
+	Summary: `Render an agent-reel/edl/1 composition (docs/compose.md): ordered segments of sealed or
 live recordings with per-segment speed, idle compression, theme and cell zoom,
 title cards, overlays and fades. Timerefs name source seconds, labelled marks
 or search hits ({"search":"text","nth":N}); redact rules or --redact presets
@@ -56,7 +56,7 @@ output clock); --proxy OUT.mp4 renders 640 px wide at 2 fps; --web OUT.zip
 writes OUT (.mp4 for h264, .mov for prores) and OUT.metadata.json, outside the
 library.`,
 	Examples: []string{"areel compose course.edl.json --plan", "areel compose course.edl.json --freeze course.frozen.json", "areel compose course.edl.json --still s1@2.5 s1.png", "areel compose course.edl.json --proxy draft.mp4", "areel compose course.edl.json --web lesson.zip", "areel compose course.frozen.json course.mp4 --json"},
-	Docs:     "EDL.md, EXPORTS.md"}
+	Docs:     "docs/compose.md, docs/exports.md"}
 
 // composeSourceManifest pins one source in the plan and metadata.
 type composeSourceManifest struct {

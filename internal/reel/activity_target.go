@@ -31,7 +31,7 @@ import (
 var activityTargetDeadline = 3 * time.Second
 
 // activityTargetLive are the holder statuses that count as a live recording
-// covering the target. A paused holder still receives metadata (see ACTIVITY.md).
+// covering the target. A paused holder still receives metadata (see docs/integrations.md).
 var activityTargetLive = map[string]bool{"recording": true, "paused": true, "starting": true, "pausing": true}
 
 type activityTargetID struct {
@@ -76,7 +76,7 @@ the configured default target are ignored. Prints {"covered":true,"recording":ID
 only when a live holder records that target, otherwise covered:false and a
 reason. Read-only: never starts, resumes, repairs or locks anything.`,
 	Examples: []string{"areel activity target --json", "areel activity target --library LIB --json"},
-	Docs:     "ACTIVITY.md"}
+	Docs:     "docs/integrations.md (Activity)"}
 
 func activityTargetCLI(args []string, out, errOut io.Writer) error {
 	f := newCLIFlags(activityTargetHelp, out)

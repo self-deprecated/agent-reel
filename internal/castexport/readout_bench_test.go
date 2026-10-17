@@ -3,8 +3,8 @@ package castexport
 // Readout cost measurement against the real pinned helper. This file MEASURES
 // and asserts nothing about speed: every check here is a contract sanity check
 // that holds on any host, so no budget, threshold or coalescing policy can be
-// smuggled in as a test. The numbers belong in
-// docs/visual-recording-readout-benchmarks.md, not in an assertion.
+// smuggled in as a test. The numbers belong in a report, not in an
+// assertion.
 
 import (
 	"bufio"

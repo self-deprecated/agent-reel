@@ -28,7 +28,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// Visual/1 exports (docs/visual-recording-export.md). A job freezes exactly one
+// Visual/1 exports (docs/exports.md). A job freezes exactly one
 // visualExportInput when it starts and reads nothing newer afterwards. Every
 // store read is its own short Reader call (one read transaction each), so the
 // capturing holder keeps appending and committing, and WAL checkpoints proceed,

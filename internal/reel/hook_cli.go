@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// areel hook AGENT: the agent hook adapter (ACTIVITY.md, "Agent hooks: areel
+// areel hook AGENT: the agent hook adapter (docs/marks-and-agents.md, "Agent hooks: areel
 // hook"). A hook runs inside the agent's own turn, so after its arguments
 // parse the command never fails and never prints: every outcome is exit 0 and
 // silence, within hookBudget. It reads one native event on stdin, maps it
@@ -28,7 +28,7 @@ Prompt, command and tool text are never stored. Once its arguments parse it
 always exits 0 and prints nothing, within 750 ms. AREEL_HOOK=off disables it;
 AREEL_HOOK_LOG=PATH appends one diagnostic line per call.`,
 	Examples: []string{"areel hook claude < event.json", "areel hook codex < event.json", "areel hook generic < event.json"},
-	Docs:     "ACTIVITY.md"}
+	Docs:     "docs/marks-and-agents.md (Agent hooks)"}
 
 var (
 	// hookBudget bounds a whole invocation: read, settings, proof, delivery

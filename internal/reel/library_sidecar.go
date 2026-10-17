@@ -15,7 +15,7 @@ import (
 	"github.com/self-deprecated/agent-reel/internal/visualtime"
 )
 
-// The sidecar view (LIBRARY.md "Sidecar view"): the viewer's links lane,
+// The sidecar view (docs/library.md "Sidecar view"): the viewer's links lane,
 // Parent/child tabs and "Now running" grid (web/sidecar-view.mjs). Go
 // supplies three things the page cannot derive itself:
 //

@@ -3,7 +3,7 @@
 // OpenCode has no command hooks; it loads JS plugins from
 // ~/.config/opencode/plugins/ or a path under "plugin" in opencode.json. This
 // shim maps OpenCode's session, prompt, tool, permission and compaction events
-// to the generic hook schema v1 (ACTIVITY.md, "Agent hooks")
+// to the generic hook schema v1 (docs/marks-and-agents.md, "Agent hooks")
 // and pipes each one as JSON to a fresh `areel hook generic`, which proves the
 // covering recording and delivers it (or silently drops it).
 //

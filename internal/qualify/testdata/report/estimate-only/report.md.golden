@@ -17,8 +17,8 @@ Budget amendments: none.
 | # | ID | Kind | Reason | Evidence | Next input |
 |---|---|---|---|---|---|
 | 1 | gate.soak | external-gate | No real sustained-runtime soak was run; accelerated logical timelines do not reproduce real-duration effects. | report.json#/notReproduced | user authorization + duration (e.g. ≥ 72 h) + hardware + isolated resources |
-| 2 | gate.zellij-backend | external-gate | The real Zellij backend readiness/resize/working-view gate (existing, separate) was not exercised; V8 uses isolated fixtures and owned artificial PTYs only. | docs/visual-recording-qualification.md | user authorization for the existing capture gate |
-| 3 | gate.capture-beyond-fixtures | external-gate | No capture beyond isolated fixtures was performed. | docs/visual-recording-qualification.md | explicit authorization |
+| 2 | gate.zellij-backend | external-gate | The real Zellij backend readiness/resize/working-view gate (existing, separate) was not exercised; V8 uses isolated fixtures and owned artificial PTYs only. | sd areel zellij-check (separate suite) | user authorization for the existing capture gate |
+| 3 | gate.capture-beyond-fixtures | external-gate | No capture beyond isolated fixtures was performed. | report.json#/notReproduced | explicit authorization |
 | 4 | B23 | budget | budget B23 not evaluated (process-cold first seek ≤ 250 ms; random p99 ≤ 50 ms, max ≤ 250 ms; p99(latest 10%) ÷ p99(earliest 10%) ≤ 2; plan uses `views_at`, no `SCAN views`): metric seek.cold_first is an estimate; an estimate never passes | scenarios/A.seek/result.json#mixed@1:3d/seek.cold_first | run the missing scenario or metric with measured evidence, or a user-approved budget amendment |
 
 ## Budgets

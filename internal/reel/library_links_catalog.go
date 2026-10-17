@@ -1,6 +1,6 @@
 package reel
 
-// Catalog nesting of linked children (LIBRARY.md "Linked recordings and
+// Catalog nesting of linked children (docs/library.md "Linked recordings and
 // sidecars"): a child whose parent exists is hidden from the top level and
 // listed in a collapsed disclosure on its parent's card.
 

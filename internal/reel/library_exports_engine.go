@@ -30,7 +30,7 @@ type exportSpec struct {
 	FPS       int               `json:"fps"`
 	Width     int               `json:"width"`
 	Height    int               `json:"height"`
-	// Recipe is the optional edit recipe (docs/visual-recording-export.md).
+	// Recipe is the optional edit recipe (docs/exports.md).
 	Recipe *editmap.Recipe `json:"recipe,omitempty"`
 	// Theme is the canonical termtheme spec the export paints with; "" takes
 	// the library default when the job starts. A recipe's theme overrides it.
