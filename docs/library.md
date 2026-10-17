@@ -80,7 +80,7 @@ and true colour) are kept. Exports use the same colours as the viewer.
 ## Linked recordings
 
 A recording can have **links**: sub-recordings (for example a worker agent's
-own Zellij session), screenshots and local videos, each pinned to a moment.
+own Zellij or tmux session), screenshots and local videos, each pinned to a moment.
 A parent's viewer shows them in a lane under the player. Click one to open
 it in a tab beside the parent, synced to the parent's playhead. **Compare**
 shows both side by side.

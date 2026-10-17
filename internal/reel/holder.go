@@ -538,6 +538,14 @@ func holdWithActivity(root, id string, backend Backend, startActivity func(*Stor
 	if err = requireVisualFormat(state.Format); err != nil {
 		return err
 	}
+	// The detached holder captures with the recording's own backend, in the
+	// recording's own namespace.
+	if backend == nil {
+		var e error
+		if backend, e = boundBackend(state.Target); e != nil {
+			backend = unsupportedBackend{state.Target, e}
+		}
+	}
 	// Separate per-recording lock prevents a duplicate internal holder invocation.
 	lock, err := os.OpenFile(filepath.Join(dir, "holder.lock"), os.O_CREATE|os.O_RDWR, 0600)
 	if err != nil {

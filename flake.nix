@@ -34,7 +34,7 @@
     in {
       default = pkgs.mkShell ({
           packages = with pkgs;
-            [go cargo rustc nodejs_24 bun jq asciinema zellij ffmpeg checkpoint]
+            [go cargo rustc nodejs_24 bun jq asciinema zellij tmux ffmpeg checkpoint]
             # The library UI's box-drawing font generator (scripts/box-font.py).
             ++ [(python3.withPackages (ps: [ps.fonttools]))]
             ++ lib.optionals linux [chromium];

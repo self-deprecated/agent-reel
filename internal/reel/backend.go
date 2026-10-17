@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -81,6 +82,69 @@ func (s Selection) validateBinding() error {
 	return nil
 }
 
+// callerNamer is a backend whose caller environment names the target only
+// through the server: tmux's $TMUX and $TMUX_PANE.
+type callerNamer interface {
+	CallerName(context.Context, map[string]string) (string, error)
+}
+
+// targetValidator re-resolves a stored target in its own namespace and
+// refuses one whose selection no longer matches.
+type targetValidator interface {
+	validate(context.Context, Target) error
+}
+
+// captureChecker gates capture on the backend's tools.
+type captureChecker interface {
+	Check(context.Context) error
+}
+
+// captureBackends are the implemented backends as the caller's environment
+// configures them (the Zellij socket namespace, the tmux server socket).
+func captureBackends() map[string]Backend {
+	return map[string]Backend{"zellij": NewZellij(), "tmux": NewTmux()}
+}
+
+// callerEnvironment is the backend caller environment target selection reads.
+func callerEnvironment() map[string]string {
+	return map[string]string{"ZELLIJ_SESSION_NAME": os.Getenv("ZELLIJ_SESSION_NAME"), "TMUX": os.Getenv("TMUX"), "TMUX_PANE": os.Getenv("TMUX_PANE")}
+}
+
+// boundBackend is t's backend in t's own namespace: a binding carries its
+// namespace, and ambient caller context never redirects it.
+func boundBackend(t Target) (Backend, error) {
+	switch t.Backend {
+	case "zellij":
+		z := NewZellij()
+		z.SocketRoot = t.Address
+		return z, nil
+	case "tmux":
+		x := NewTmux()
+		x.Socket = t.Address
+		return x, nil
+	}
+	return nil, fmt.Errorf("backend %q unsupported (Zellij and tmux are implemented)", t.Backend)
+}
+
+// unsupportedBackend stands in for a stored target whose backend this build
+// cannot capture: the holder still finishes and seals what was recorded, and
+// a new capture is refused before any process exists (a nil observer).
+type unsupportedBackend struct {
+	target Target
+	err    error
+}
+
+func (u unsupportedBackend) Name() string { return u.target.Backend }
+func (u unsupportedBackend) Resolve(context.Context, string) (Target, error) {
+	return Target{}, u.err
+}
+func (u unsupportedBackend) Observe(context.Context, Target) (Observation, error) {
+	return Observation{}, u.err
+}
+func (u unsupportedBackend) Start(context.Context, Target, CaptureSpec) (Observer, error) {
+	return nil, u.err
+}
+
 // Resolve is used only by the CLI. Integrations supply recording IDs, not backend discovery.
 func Resolve(ctx context.Context, s Selection, backends map[string]Backend) (Target, error) {
 	if err := s.validateBinding(); err != nil {
@@ -110,7 +174,7 @@ func Resolve(ctx context.Context, s Selection, backends map[string]Backend) (Tar
 	}
 	b, ok := backends[backend]
 	if !ok {
-		return Target{}, fmt.Errorf("backend %q unsupported (only Zellij is implemented)", backend)
+		return Target{}, fmt.Errorf("backend %q unsupported (Zellij and tmux are implemented)", backend)
 	}
 	name := s.Target
 	if name == "" && s.Binding != nil {
@@ -118,6 +182,12 @@ func Resolve(ctx context.Context, s Selection, backends map[string]Backend) (Tar
 	}
 	if name == "" && backend == "zellij" {
 		name = s.Environment["ZELLIJ_SESSION_NAME"]
+	}
+	if caller, ok := b.(callerNamer); ok && name == "" && backend == "tmux" && s.Environment["TMUX"] != "" {
+		var err error
+		if name, err = caller.CallerName(ctx, s.Environment); err != nil {
+			return Target{}, err
+		}
 	}
 	if name == "" {
 		return Target{}, fmt.Errorf("no capture target: use --target or a backend caller environment")

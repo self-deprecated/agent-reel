@@ -16,7 +16,8 @@ import (
 // (for example the Pi adapter). It answers one question: does a currently
 // live holder record the backend target that contains the caller's terminal?
 // The caller's terminal is taken ONLY from its backend caller environment
-// (ZELLIJ_SESSION_NAME, TMUX, the Zellij socket namespace), resolved with the
+// (ZELLIJ_SESSION_NAME and the Zellij socket namespace, or TMUX and
+// TMUX_PANE), resolved with the
 // same Resolve/backend code `areel record` uses, so both sides agree on "same
 // target". It never reads AREEL_RECORDING, never falls back to the configured
 // default target, never starts, resumes, repairs or reconciles anything, and
@@ -70,8 +71,8 @@ const (
 
 var activityTargetHelp = cliCommand{Name: "activity target",
 	Summary: `Integration: prove whether a live recording covers the caller's terminal.
-The caller's target comes only from its backend environment (Zellij session and
-socket namespace), resolved exactly as areel record does; AREEL_RECORDING and
+The caller's target comes only from its backend environment (the Zellij session
+and socket namespace, or the tmux server and pane), resolved exactly as areel record does; AREEL_RECORDING and
 the configured default target are ignored. Prints {"covered":true,"recording":ID,...}
 only when a live holder records that target, otherwise covered:false and a
 reason. Read-only: never starts, resumes, repairs or locks anything.`,
@@ -90,8 +91,8 @@ func activityTargetCLI(args []string, out, errOut io.Writer) error {
 	if e != nil {
 		return e
 	}
-	env := map[string]string{"ZELLIJ_SESSION_NAME": os.Getenv("ZELLIJ_SESSION_NAME"), "TMUX": os.Getenv("TMUX")}
-	reply := activityTarget(s, env, map[string]Backend{"zellij": NewZellij()})
+	env := callerEnvironment()
+	reply := activityTarget(s, env, captureBackends())
 	if *asJSON {
 		return writeJSONLine(out, reply)
 	}

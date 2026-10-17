@@ -1,7 +1,7 @@
 # Recording
 
-AgentReel records a whole Zellij session, as the session's clients see it,
-in the background. It records text, not pixels:
+AgentReel records a whole Zellij or tmux session, as the session's clients
+see it, in the background. It records text, not pixels:
 
 - each screen is stored as a list of terminal rows;
 - each distinct row is stored once.
@@ -11,14 +11,14 @@ A two-minute agent session is about 190 kB and a busy eight-hour one about
 private library (`~/.local/share/agent-reel` by default) and keep running
 when the shell that started them exits.
 
-A worker an agent spawns in its own Zellij session can be recorded the same
-way. It links itself to the parent's recording (see [linked
+A worker an agent spawns in its own Zellij or tmux session can be recorded
+the same way. It links itself to the parent's recording (see [linked
 recordings](library.md#linked-recordings)).
 
 ## Start, pause, stop
 
 ```sh
-areel record          # inside Zellij: record this session
+areel record          # inside Zellij or tmux: record this session
 areel record work     # or name a session
 areel status          # what is being recorded, and how much
 areel pause           # stop capturing for a while
@@ -51,9 +51,23 @@ command for machine-readable output.
 
 ## When it starts
 
-`areel record` needs at least one client attached to the session, with every
-client on the same tab (Zellij can only show one tab to the recorder). If
-clients are on different tabs, start is refused and tells you why.
+**Zellij.** `areel record` needs at least one client attached to the
+session, with every client on the same tab (Zellij can only show one tab to
+the recorder). If clients are on different tabs, start is refused and tells
+you why.
+
+**tmux** (3.2 or newer). Every client of a tmux session shows its current
+window, so any session can be recorded, even a detached one. The recorder
+attaches its own client:
+
+- it ignores its size, so it never shrinks your session;
+- it draws the current window plus the status line;
+- it never sends a key, so it can't type into the session.
+
+It uses the `tmux` on your PATH, which must be the same tmux as the server.
+From outside tmux, name the session and the backend: `areel record work
+--backend tmux`, or set `"backend": "tmux"` in your
+[configuration](configuration.md).
 
 Nothing records automatically. You start every recording yourself, or an
 integration does it for you: [Pi](marks-and-agents.md#pi) has `/reel start`,
@@ -101,8 +115,9 @@ on its own; run `areel recover` once the disk is fixed.
 
 ## Keystrokes (`areel attach`)
 
-The recorder only sees output. To show what was typed, attach through
-`areel attach` instead of `zellij attach`, and opt the recording in:
+The recorder only sees output. To show what was typed in a Zellij session
+(tmux isn't supported here yet), attach through `areel attach` instead of
+`zellij attach`, and opt the recording in:
 
 ```sh
 areel keys on            # opt this recording in
@@ -137,7 +152,8 @@ alias za='areel attach'
 
 ## Platforms
 
-Linux and macOS have native backends; Zellij is the only supported
-multiplexer (tmux is not implemented). macOS source builds need cgo and the
+Linux and macOS have native backends for Zellij and tmux. Keystroke
+capture, automatic parent links and [Niri highlights](niri.md) are
+Zellij-only for now. macOS source builds need cgo and the
 macOS SDK. On macOS, protected Apple binaries can hide their environment, so
 key capture masks panes it cannot identify.

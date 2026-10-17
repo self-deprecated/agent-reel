@@ -24,6 +24,7 @@ detached holder re-executes its own binary, and `go run` deletes it on exit.
 | `checkpoint-check` | the pinned `avt` helper against the player | `nix develop` |
 | `browser-check` | real Chromium: library, history, search, exports, web embeds | `nix develop` |
 | `zellij-check` | real Zellij and asciinema in throwaway sessions | Zellij on PATH |
+| `tmux-check` | real tmux and asciinema on a throwaway server | `nix develop` |
 | `video-check` | H.264/ProRes renders, decoded-pixel checks | `nix develop` |
 | `video-race-check` | `video-check` under the race detector | `nix develop` |
 | `pi-check` | Pi extension typecheck and tests | npm |
@@ -38,9 +39,10 @@ keep their screenshots and artifacts.
 
 ## Pinned pieces
 
-`flake.lock` pins the dev shell's Go, Chromium, asciinema 3.2.1, Zellij and
-FFmpeg. Capture uses whichever Zellij is on PATH; 0.44.3 and 0.45.1 are
-validated, and `areel doctor` warns about others.
+`flake.lock` pins the dev shell's Go, Chromium, asciinema 3.2.1, Zellij,
+tmux and FFmpeg. Capture uses whichever Zellij or tmux is on PATH, so it
+matches the server that runs your sessions. Zellij 0.44.3 and 0.45.1 are
+validated and `areel doctor` warns about others; tmux must be 3.2 or newer.
 
 - **`tools/avt-checkpoint`**: a tiny Rust helper wrapping
   [avt](https://github.com/asciinema/avt) 0.18.0, the terminal emulator

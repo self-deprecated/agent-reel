@@ -23,7 +23,7 @@ absolute or start with `~/`.
 | Key | Environment | Flag | Default |
 |---|---|---|---|
 | `library` | `AREEL_LIBRARY` | `--library` | `~/.local/share/agent-reel` |
-| `backend` | `AREEL_BACKEND` | `--backend` | from the caller's session |
+| `backend` | `AREEL_BACKEND` | `--backend` | from the caller's session (`zellij` or `tmux`) |
 | `target` | `AREEL_TARGET` | `TARGET` | the caller's session |
 | `seal.name` | `AREEL_SEAL_NAME` | | `{id}` |
 | `ui.listen` | `AREEL_UI_LISTEN` | `--listen` | `127.0.0.1:0` (any free port) |

@@ -13,8 +13,12 @@ const helperEnv = "AREEL_AVT_CHECKPOINT"
 // helperHint adds where a mismatched checkpoint helper came from: a stale
 // AREEL_AVT_CHECKPOINT (for example exported by an older dev shell)
 // silently overrides the helper bundled with an installed areel.
-func (z *Zellij) helperHint(err error) error {
-	if z.Helper != "" {
+func (z *Zellij) helperHint(err error) error { return helperHintFor(z.Helper, err) }
+
+// helperHintFor is helperHint for a backend whose explicit helper override is
+// override.
+func helperHintFor(override string, err error) error {
+	if override != "" {
 		return err
 	}
 	return annotateHelperMismatch(err, os.Getenv(helperEnv))

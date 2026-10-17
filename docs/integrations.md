@@ -46,8 +46,9 @@ JSON
   by name in the viewer and can be targeted by EDLs and web chapters.
 
 **`activity target`** answers one question: does a live holder record the
-Zellij session this process runs in? It reads only `ZELLIJ_SESSION_NAME`
-and the Zellij socket directory, never `AREEL_RECORDING`. It always exits 0,
+Zellij or tmux session this process runs in? It reads only
+`ZELLIJ_SESSION_NAME` and the Zellij socket directory, or `TMUX` and
+`TMUX_PANE`, never `AREEL_RECORDING`. It always exits 0,
 with `covered` and a `reason`, for example `no-caller-terminal`,
 `no-recording-for-target` or `holder-absent`.
 
@@ -66,7 +67,8 @@ A link attaches something to a **parent** recording at a moment: a
 sub-recording, a screenshot (copied into the library) or a local video (left
 in place and never served).
 
-The simplest way: a launcher that starts a recorded child Zellij session
+The simplest way (Zellij only for now): a launcher that starts a recorded
+child Zellij session
 sets `AREEL_PARENT_SESSION=<parent session name>` in the child's
 environment. When the child starts recording, it links itself to the
 parent's live recording, and closes the link when it stops. If anything
@@ -151,5 +153,5 @@ The allowlist is a private file (or a Home Manager list):
 ```
 
 > [!NOTE]
-> The Zellij backend doesn't implement session discovery yet, so this build
+> Neither backend implements session discovery yet, so this build
 > refuses every allowlist entry at startup (exit 2) and the unit stays down.

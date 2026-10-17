@@ -153,8 +153,8 @@ func hookRun(f *cliFlags, agent string, input io.Reader, start time.Time, cfg ho
 	if left <= 0 {
 		return dropped("budget")
 	}
-	env := map[string]string{"ZELLIJ_SESSION_NAME": os.Getenv("ZELLIJ_SESSION_NAME"), "TMUX": os.Getenv("TMUX")}
-	reply := activityTargetWithin(s, env, map[string]Backend{"zellij": NewZellij()}, min(cfg.target, left))
+	env := callerEnvironment()
+	reply := activityTargetWithin(s, env, captureBackends(), min(cfg.target, left))
 	if !reply.Covered || reply.Recording == nil || reply.Target == nil {
 		return dropped("not-covered:" + reply.Reason)
 	}

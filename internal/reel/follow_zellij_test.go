@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/creack/pty"
-	"github.com/self-deprecated/agent-reel/internal/castexport"
 	"github.com/self-deprecated/agent-reel/internal/visualcapture"
 	"github.com/self-deprecated/agent-reel/internal/visualstore"
 )
@@ -23,19 +22,6 @@ import (
 // asciinema 3.2.1 against a throwaway session in a private socket directory
 // with private XDG homes; they never see the user's sessions or library. Run
 // with `sd areel zellij-check`.
-
-// watchArg makes this test binary the recorder's `_watch` re-exec target, as
-// the areel binary is in production.
-const watchArg = "_watch"
-
-func init() {
-	if len(os.Args) == 3 && os.Args[1] == watchArg {
-		if err := Watch(os.Args[2]); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-		}
-		os.Exit(1)
-	}
-}
 
 // zellijClient is one attached Zellij client on its own PTY, like a terminal
 // window or an ssh session.
@@ -78,17 +64,6 @@ func (c *zellijClient) detach() {
 	select {
 	case <-c.done:
 	case <-time.After(5 * time.Second):
-	}
-}
-
-func waitFor(t *testing.T, what string, timeout time.Duration, ok func() bool) {
-	t.Helper()
-	deadline := time.Now().Add(timeout)
-	for !ok() {
-		if time.Now().After(deadline) {
-			t.Fatalf("timed out waiting for %s", what)
-		}
-		time.Sleep(100 * time.Millisecond)
 	}
 }
 
@@ -297,21 +272,6 @@ func TestZellijFollowsClientResize(t *testing.T) {
 	if marks[0] < small.Columns || marks[1] >= small.Columns || marks[2] < small.Columns {
 		t.Fatalf("marker columns per size run %v; want beyond column %d, within it, beyond it", marks, small.Columns)
 	}
-}
-
-// markerColumn is the cell column where text starts on screen, or -1.
-func markerColumn(screen castexport.Screen, text string) int {
-	col := -1
-	for _, row := range screen.Cells {
-		runes := make([]rune, len(row))
-		for i, cell := range row {
-			runes[i] = cell.Char
-		}
-		if i := strings.Index(string(runes), text); i >= 0 {
-			col = max(col, len([]rune(string(runes)[:i])))
-		}
-	}
-	return col
 }
 
 // TestZellijFollowHoldsWithoutClient: with every client detached mid-segment

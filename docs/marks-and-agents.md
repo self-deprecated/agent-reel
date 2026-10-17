@@ -16,10 +16,16 @@ areel marks latest                  # list a recording's marks
 You can also mark from:
 
 - **the viewer**: the Mark button, or press `m`.
-- **a Zellij keybinding**: the spawned command knows its session:
+- **a keybinding**. In Zellij the spawned command knows its session:
 
   ```kdl
   bind "Alt m" { Run "areel" "mark" "checkpoint" { floating true; close_on_exit true; }; }
+  ```
+
+  In tmux, pass the pane, which `run-shell` doesn't set:
+
+  ```tmux
+  bind m run-shell -b "TMUX_PANE=#{pane_id} areel mark checkpoint"
   ```
 
 - **inside an agent**: `! areel mark "label"` from Claude Code's or Codex's

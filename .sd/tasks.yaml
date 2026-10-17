@@ -57,6 +57,15 @@ tasks:
       test -x "$AREEL_TEST_AVT"
       command -v zellij >/dev/null && command -v asciinema >/dev/null
       go test -tags=zellij -run '^TestZellij(Follow|Link|Keys)' -count=1 -v ./internal/reel
+  tmux-check:
+    desc: Real tmux (3.2 or newer) on PATH + asciinema 3.2.1 capture of a throwaway private server (start, follow, stop on the last screen, session end; explicit prerequisite)
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
+      export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
+      test -x "$AREEL_TEST_AVT"
+      command -v tmux >/dev/null && command -v asciinema >/dev/null
+      go test -tags=tmux -run '^TestTmux' -count=1 -v ./internal/reel
   video-check:
     desc: Official-player H.264/ProRes decoded-pixel, cancellation and throughput qualification
     run: |

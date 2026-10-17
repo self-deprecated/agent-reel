@@ -2,8 +2,8 @@
 
 **A flight recorder for your terminal and the agents working in it.**
 
-`areel` records whole Zellij sessions in the background, as **text, not
-video**. It doesn't capture pixels: it stores every screen as terminal rows,
+`areel` records whole Zellij or tmux sessions in the background, as **text,
+not video**. It doesn't capture pixels: it stores every screen as terminal rows,
 and a row that repeats is stored once. So a recording stays tiny, and you
 can search it, select it and copy from it.
 
@@ -16,7 +16,7 @@ can search it, select it and copy from it.
   same footage rendered as 1080p video is 2.8 MB. A busy eight-hour session
   seals to about 10 MB.
 - **Sub-agents included.** When an agent's worker runs in its own Zellij
-  session, record that session too and it links itself to the recording
+  or tmux session, record that session too and it links itself to the recording
   that spawned it (launchers set `AREEL_PARENT_SESSION`). The library then
   plays the worker next to its parent, in sync. Screenshots and videos can
   be pinned to a moment the same way.
@@ -48,7 +48,8 @@ brew install --cask self-deprecated/tap/agent-reel   # macOS; brings Zellij and 
 - **Linux and macOS**: archives on the [releases
   page](https://github.com/self-deprecated/agent-reel/releases). Put `areel`
   and `areel-avt-checkpoint` on your PATH, and install
-  [Zellij](https://zellij.dev) and asciinema 3.2.1.
+  [Zellij](https://zellij.dev) or [tmux](https://github.com/tmux/tmux) 3.2+,
+  and asciinema 3.2.1.
 - **Nix**: use the flake (`packages.<system>.areel`) or the [Home Manager
   module](docs/configuration.md#home-manager).
 
@@ -56,7 +57,7 @@ brew install --cask self-deprecated/tap/agent-reel   # macOS; brings Zellij and 
 
 ## Quick start
 
-Inside a Zellij session:
+Inside a Zellij or tmux session:
 
 ```sh
 areel record                # start recording this session
@@ -82,7 +83,7 @@ areel export latest demo.html --format web --single-file --redact secrets,homepa
 | `areel search TEXT [REC]` | find text that was on screen |
 | `areel export REC [OUT]` | cast, MP4/MOV or web page |
 | `areel compose EDL` | edit several clips into one video |
-| `areel attach SESSION` | `zellij attach` that also captures keystrokes |
+| `areel attach SESSION` | `zellij attach` that also captures keystrokes (Zellij only) |
 | `areel doctor [REC]` · `areel recover REC` | check prerequisites; repair a recording |
 | `areel config` | effective settings and where they came from |
 

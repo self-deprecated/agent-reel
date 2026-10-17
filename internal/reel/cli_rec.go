@@ -152,7 +152,6 @@ func latestRecording(root string, ids []string, templates ...string) (string, er
 // context (or the configured target) and its target index entry.
 func currentRecording(root string, s *settings) func() (string, error) {
 	return func() (string, error) {
-		z := NewZellij()
 		selection := contextSelection(s, "")
 		if selection.Configured == "" {
 			if config, e := readLibraryConfig(root); e == nil {
@@ -161,7 +160,7 @@ func currentRecording(root string, s *settings) func() (string, error) {
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
 		defer cancel()
-		t, e := Resolve(ctx, selection, map[string]Backend{"zellij": z})
+		t, e := Resolve(ctx, selection, captureBackends())
 		if e != nil {
 			return "", fmt.Errorf("@: %w", e)
 		}
@@ -182,7 +181,7 @@ func currentRecording(root string, s *settings) func() (string, error) {
 // contextSelection builds the backend selection of lifecycle commands: an
 // explicit TARGET, else the caller's context, else the configured target.
 func contextSelection(s *settings, target string) Selection {
-	env := map[string]string{"ZELLIJ_SESSION_NAME": os.Getenv("ZELLIJ_SESSION_NAME"), "TMUX": os.Getenv("TMUX")}
+	env := callerEnvironment()
 	if target == "" && env["ZELLIJ_SESSION_NAME"] == "" && env["TMUX"] == "" {
 		target = s.Target
 	}

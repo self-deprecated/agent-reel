@@ -48,9 +48,17 @@ func Watch(dir string) error {
 	if e := readJSON(filepath.Join(dir, "watch.json"), &spec); e != nil {
 		return e
 	}
-	z := NewZellij()
-	z.Executable = spec.Executable
-	if e := z.validate(context.Background(), spec.Target); e != nil {
+	var e error
+	if spec.Target.Backend == "tmux" {
+		x := NewTmux()
+		x.Executable = spec.Executable
+		e = x.validate(context.Background(), spec.Target)
+	} else {
+		z := NewZellij()
+		z.Executable = spec.Executable
+		e = z.validate(context.Background(), spec.Target)
+	}
+	if e != nil {
 		return e
 	}
 	id, e := identify(os.Getpid())
@@ -59,6 +67,9 @@ func Watch(dir string) error {
 	}
 	if e = writeJSON(filepath.Join(dir, "watcher.json"), id); e != nil {
 		return e
+	}
+	if spec.Target.Backend == "tmux" {
+		return watchTmux(spec)
 	}
 	return syscall.Exec(spec.Executable, []string{spec.Executable, "watch", "--", spec.Target.Name}, cleanCaptureEnv(spec.Target.Address))
 }
@@ -166,6 +177,24 @@ func (c *capture) Stop(ctx context.Context) error {
 
 }
 func (z *Zellij) Start(ctx context.Context, t Target, spec CaptureSpec) (Observer, error) {
+	return startRecorder(ctx, recorderSpec{Executable: z.Executable, Asciinema: z.Asciinema, Self: z.Self, Helper: z.Helper,
+		Check: z.Check, Observe: z.Observe, Env: cleanCaptureEnv(t.Address)}, t, spec)
+}
+
+// recorderSpec is what starting a capture needs from a backend: its client
+// executable (run by `areel _watch`), the tools, the capture gate, the
+// observation, and the recorder's environment.
+type recorderSpec struct {
+	Executable, Asciinema, Self, Helper string
+	Check                               func(context.Context) error
+	Observe                             func(context.Context, Target) (Observation, error)
+	Env                                 []string
+}
+
+// startRecorder runs asciinema on an owned PTY with `areel _watch` (the
+// backend's read-only view of the target) as its command, into the
+// recording's visual store, and follows the target's geometry.
+func startRecorder(ctx context.Context, r recorderSpec, t Target, spec CaptureSpec) (Observer, error) {
 	dir := spec.Directory
 	// Every capture is visual/1; anything else is refused before any query,
 	// directory or process exists.
@@ -173,14 +202,14 @@ func (z *Zellij) Start(ctx context.Context, t Target, spec CaptureSpec) (Observe
 		return nil, e
 	}
 	// A visual/1 capture cannot run without its readout helper.
-	helper, e := z.helper()
+	helper, e := recorderHelper(r.Helper)
 	if e != nil {
 		return nil, fmt.Errorf("visual/1 capture requires areel-avt-checkpoint: %w", e)
 	}
-	if e = z.Check(ctx); e != nil {
+	if e = r.Check(ctx); e != nil {
 		return nil, e
 	}
-	o, e := z.Observe(ctx, t)
+	o, e := r.Observe(ctx, t)
 	if e != nil {
 		return nil, e
 	}
@@ -195,7 +224,7 @@ func (z *Zellij) Start(ctx context.Context, t Target, spec CaptureSpec) (Observe
 	if e = os.WriteFile(filepath.Join(dir, "config", "config.toml"), []byte(recorderConfig), 0600); e != nil {
 		return nil, e
 	}
-	exe, e := exec.LookPath(z.Executable)
+	exe, e := exec.LookPath(r.Executable)
 	if e != nil {
 		return nil, e
 	}
@@ -220,7 +249,7 @@ func (z *Zellij) Start(ctx context.Context, t Target, spec CaptureSpec) (Observe
 		Helper: helper, Limits: visualcapture.Defaults(),
 	})
 	if e != nil {
-		return nil, z.helperHint(e)
+		return nil, helperHintFor(r.Helper, e)
 	}
 	fifo, e := archive.OpenFIFO(cast)
 	if e != nil {
@@ -230,10 +259,11 @@ func (z *Zellij) Start(ctx context.Context, t Target, spec CaptureSpec) (Observe
 	sink.Start(fifo.Reader)
 	// No --window-size: asciinema 3.2.1 then takes its size from the owned PTY
 	// (started at the observed geometry below), follows later window-size
-	// changes of that PTY, forwards them to `zellij watch` and writes "r"
-	// events. With --window-size the size would stay fixed for the segment.
-	cmd := exec.Command(z.Asciinema, "session", "--overwrite", "--return", "--stream-local", "127.0.0.1:0", "--output-file", cast, "-c", shellQuote(z.Self)+" _watch "+shellQuote(dir))
-	cmd.Env = append(cleanCaptureEnv(t.Address), "ASCIINEMA_CONFIG_HOME="+filepath.Join(dir, "config"), "ASCIINEMA_STATE_HOME="+filepath.Join(dir, "state"))
+	// changes of that PTY, forwards them to the watcher (`zellij watch`, or
+	// the tmux client behind `areel _watch`) and writes "r" events. With
+	// --window-size the size would stay fixed for the segment.
+	cmd := exec.Command(r.Asciinema, "session", "--overwrite", "--return", "--stream-local", "127.0.0.1:0", "--output-file", cast, "-c", shellQuote(r.Self)+" _watch "+shellQuote(dir))
+	cmd.Env = append(r.Env, "ASCIINEMA_CONFIG_HOME="+filepath.Join(dir, "config"), "ASCIINEMA_STATE_HOME="+filepath.Join(dir, "state"))
 	observer, err := startVisualCapture(ctx, cmd, sink, fifo, o, dir)
 	if err == nil {
 		c := observer.(interface{ owned() *capture }).owned()
@@ -245,7 +275,7 @@ func (z *Zellij) Start(ctx context.Context, t Target, spec CaptureSpec) (Observe
 			c.mu.Unlock()
 		}
 		c.startFollow(func(ctx context.Context) (Geometry, error) {
-			o, e := z.Observe(ctx, t)
+			o, e := r.Observe(ctx, t)
 			return o.Geometry, e
 		}, followInterval)
 	}
@@ -332,9 +362,13 @@ func setWinsize(f *os.File, g Geometry) error {
 
 // helper resolves the visual/1 readout helper: the explicit override, else
 // the same lookup exports use.
-func (z *Zellij) helper() (string, error) {
-	if z.Helper != "" {
-		return exec.LookPath(z.Helper)
+func (z *Zellij) helper() (string, error) { return recorderHelper(z.Helper) }
+
+// recorderHelper resolves the readout helper: override when set, else the
+// same lookup exports use.
+func recorderHelper(override string) (string, error) {
+	if override != "" {
+		return exec.LookPath(override)
 	}
 	return exportExecutable(helperEnv, "areel-avt-checkpoint")
 }

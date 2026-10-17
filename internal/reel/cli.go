@@ -18,7 +18,7 @@ const Version = "0.1.0"
 const Help = `areel — record terminal sessions into a private library
 
 Record
-  record [TARGET]       start recording this (or the named) Zellij session
+  record [TARGET]       start recording this (or the named) Zellij or tmux session
   pause|resume|stop [REC]  pause, resume or stop a recording
   status [REC]          show a recording's state
   mark [LABEL] [REC]    mark this moment of a live recording, with a label
@@ -136,7 +136,7 @@ func CLI(args []string, out, errOut io.Writer) error {
 		if len(args) != 3 {
 			return fmt.Errorf("invalid private holder arguments")
 		}
-		return Hold(args[1], args[2], NewZellij())
+		return Hold(args[1], args[2], nil)
 	}
 	return unknownCommand(args[0])
 }
@@ -225,7 +225,7 @@ func groupCLI(args []string, out, errOut io.Writer) error {
 
 var lifecycleHelp = map[string]cliCommand{
 	"record": {Name: "record", Args: "[TARGET]",
-		Summary: `Start recording a Zellij session. TARGET defaults to the session you run in,
+		Summary: `Start recording a Zellij or tmux session. TARGET defaults to the session you run in,
 then the configured target. The recording holder outlives this command.
 Recording again after stop starts a new recording; after pause it resumes.`,
 		Examples: []string{"areel record", "areel record work", "areel record --json"},
@@ -328,7 +328,7 @@ func lifecycleCLI(args []string, out, errOut io.Writer) error {
 		}
 		return printLifecycle(out, name, store.Root, v, e, jsonOut, store.SealName)
 	}
-	z := NewZellij()
+	backends := captureBackends()
 	selection := contextSelection(s, target)
 	if binding != "" {
 		// A binding carries its own target: only an explicit TARGET may
@@ -354,28 +354,28 @@ func lifecycleCLI(args []string, out, errOut io.Writer) error {
 		selection.Binding = &v.Target
 		// A binding carries its own namespace. Ambient caller context is not
 		// an explicit contradiction and must never redirect bound controls.
-		z.SocketRoot = v.Target.Address
 		if e := selection.validateBinding(); e != nil {
 			return e
 		}
 		if command == "status" || command == "stop" {
 			return emit(store.ControlBound(binding, command))
 		}
-		if v.Target.Backend == z.Name() {
-			if e = z.validate(context.Background(), v.Target); e != nil {
+		if b, e := boundBackend(v.Target); e == nil {
+			backends[v.Target.Backend] = b
+			if e = b.(targetValidator).validate(context.Background(), v.Target); e != nil {
 				return e
 			}
 		}
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
 	defer cancel()
-	t, e := Resolve(ctx, selection, map[string]Backend{"zellij": z})
+	t, e := Resolve(ctx, selection, backends)
 	if e != nil {
 		return e
 	}
 	// The tool-baseline gate precedes capture, not status/control of existing recordings.
 	if command == "start" || command == "ensure" || command == "resume" {
-		if e = z.Check(ctx); e != nil {
+		if e = backends[t.Backend].(captureChecker).Check(ctx); e != nil {
 			return e
 		}
 		// Declared start context for library grouping: the caller's working

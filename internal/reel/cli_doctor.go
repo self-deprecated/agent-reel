@@ -13,10 +13,12 @@ import (
 )
 
 // doctorEnvironmentCLI is `areel doctor` without REC: the detected Zellij
-// version against the validated ones, the tested asciinema baseline, the
+// version against the validated ones and tmux (3.2 or newer), the tested
+// asciinema baseline, the
 // availability of every other external tool, the library and the config file.
-// It fails (exit 1) only when the capture prerequisites are not met; an
-// unvalidated Zellij version is reported, not a failure.
+// It fails (exit 1) only when the capture prerequisites are not met (neither
+// multiplexer is usable); an unvalidated Zellij version is reported, not a
+// failure.
 func doctorEnvironmentCLI(f *cliFlags, out io.Writer, asJSON bool) error {
 	d := doctorEnvironment{Platform: runtime.GOOS, Capture: "ready"}
 	add := func(name, status, detail string) { d.Checks = append(d.Checks, doctorCheck{name, status, detail}) }
@@ -28,16 +30,33 @@ func doctorEnvironmentCLI(f *cliFlags, out io.Writer, asJSON bool) error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	// Capture needs one usable multiplexer: Zellij (any version, some
+	// validated) or tmux 3.2 or newer.
 	z := NewZellij()
 	validated := "validated: " + strings.Join(validatedZellij, ", ")
+	zellijErr, tmuxErr := error(nil), error(nil)
 	switch v, e := zellijVersion(ctx, z.Executable); {
 	case e != nil:
-		add("zellij", "not-ready", e.Error())
-		d.Capture = "not-ready"
+		zellijErr = e
 	case zellijValidated(v):
 		add("zellij", "ok", fmt.Sprintf("zellij %s (%s)", v, validated))
 	default:
 		add("zellij", "unvalidated", fmt.Sprintf("zellij %s (not validated, capture proceeds; %s)", v, validated))
+	}
+	if v, e := tmuxVersion(ctx, NewTmux().Executable); e != nil {
+		tmuxErr = e
+	} else {
+		add("tmux", "ok", "tmux "+v)
+	}
+	switch {
+	case zellijErr != nil && tmuxErr != nil:
+		add("zellij", "not-ready", zellijErr.Error())
+		add("tmux", "not-ready", tmuxErr.Error())
+		d.Capture = "not-ready"
+	case zellijErr != nil:
+		add("zellij", "missing", zellijErr.Error()+" (tmux sessions can still be recorded)")
+	case tmuxErr != nil:
+		add("tmux", "missing", tmuxErr.Error()+" (Zellij sessions can still be recorded)")
 	}
 	if e := checkVersion(ctx, z.Asciinema, "asciinema 3.2.1"); e != nil {
 		add("asciinema", "not-ready", e.Error())

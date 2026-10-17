@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"os"
 	"strings"
 	"time"
 	"unicode"
@@ -219,8 +218,8 @@ func markCLI(args []string, out, errOut io.Writer) error {
 	case rec == "":
 		// The live recording covering this terminal, proven as Pi's
 		// auto-binding proves it; AREEL_RECORDING is not read.
-		env := map[string]string{"ZELLIJ_SESSION_NAME": os.Getenv("ZELLIJ_SESSION_NAME"), "TMUX": os.Getenv("TMUX")}
-		reply := activityTarget(s, env, map[string]Backend{"zellij": NewZellij()})
+		env := callerEnvironment()
+		reply := activityTarget(s, env, captureBackends())
 		if !reply.Covered || reply.Recording == nil {
 			return fmt.Errorf("mark: no live recording covers this terminal (%s); pass REC", reply.Reason)
 		}
