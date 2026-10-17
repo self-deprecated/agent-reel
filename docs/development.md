@@ -29,7 +29,7 @@ detached holder re-executes its own binary, and `go run` deletes it on exit.
 | `pi-check` | Pi extension typecheck and tests | npm |
 | `plugin-check` | OpenCode shim tests | bun |
 | `nix-check` | the Nix package and its contract | Nix |
-| `docs-assets` | regenerate the screenshots in `docs/images/` | `nix develop` |
+| `docs-assets` | rebuild `docs/images/` and `docs/demo/` from the demo recordings | `nix develop` |
 | `qualify-smoke` / `qualify` | the long capture qualification (full profile: ~8 h, 40 GiB) | idle machine |
 
 Browser and video suites use synthetic private libraries and never touch
@@ -72,6 +72,7 @@ Domain vocabulary and product decisions live in [CONTEXT.md](../CONTEXT.md).
 
 ## Docs images
 
-`sd areel docs-assets` rebuilds `docs/images/*.png` from the demo
-recordings in a throwaway library, using the browser test harness. See
-`tools/demo-record` for how the demo recordings themselves are made.
+The README footage and screenshots come from real, scripted agent sessions.
+`tools/demo-record/record.py --agent claude|codex|pi` records them; then
+`sd areel docs-assets` rebuilds `docs/images/` and `docs/demo/` from them.
+See [`tools/demo-record`](../tools/demo-record/README.md).

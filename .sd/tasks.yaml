@@ -162,6 +162,13 @@ tasks:
   qualify-report:
     desc: Regenerate report.json/report.md in a qualification artifact dir (--in DIR [--suites FILE] [--exit-on ...])
     run: go run ./internal/qualify/cmd/qualify-report "$@"
+  docs-assets:
+    desc: Rebuild docs/images and docs/demo from the demo recordings made by tools/demo-record/record.py (needs nix develop)
+    run: |
+      set -euo pipefail
+      : "${AREEL_TEST_CHROMIUM:?Run inside nix develop for locked Chromium}"
+      python3 tools/demo-record/visuals.py
+      go run ./tools/demo-record/screenshots
   smoke:
     desc: CLI help and read-only prerequisite doctor
     run: |

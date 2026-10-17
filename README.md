@@ -9,14 +9,18 @@ that was ever on screen, and export a clip as a video or an interactive web
 page.
 
 <a href="https://self-deprecated.github.io/agent-reel/demo/">
-  <img src="docs/images/hero.webp" alt="Claude Code, Codex and Pi answering the same prompt, recorded with AgentReel">
+  <img src="docs/images/hero.gif" alt="Claude Code explains AgentReel's web export, documents it, then a floating Zellij pane exports the recording itself">
 </a>
 
-▶ **[Play the demo](https://self-deprecated.github.io/agent-reel/demo/)**:
-the same recording as a web export. Select the text, click a chapter, scrub.
-It's one HTML file with no server.
+Claude Code, asked how this repository's web export works, then asked to
+document it. Finally a floating Zellij pane exports the very recording
+you're watching. It's composed with `areel compose`, sped up.
 
-| The library | A recording |
+▶ **[Play the real recordings](https://self-deprecated.github.io/agent-reel/demo/)**
+of Claude Code and Codex doing the same task. Each is one HTML file from
+`areel export --format web`: select the text, click a chapter, scrub.
+
+| The library | A recording, with your agent's marks |
 |---|---|
 | ![Library](docs/images/library.png) | ![Viewer](docs/images/viewer.png) |
 

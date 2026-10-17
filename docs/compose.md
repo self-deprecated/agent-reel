@@ -102,6 +102,8 @@ background, for up to 60 s of `duration`.
            {"source": "pi", "from": "0"}]}
 ```
 
+![Claude Code and Codex side by side](images/compare.png)
+
 - `side-by-side`: equal columns for 2 or 3 slots, a 2×2 grid for 4.
 - `pip`: the first slot fills the frame and the others are insets.
 - Every slot plays the same length of its own source. Linked sources line

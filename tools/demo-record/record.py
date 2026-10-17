@@ -38,14 +38,10 @@ POPOVER = [
     "areel export @ demo.html --format web --single-file",
 ]
 
-# How each agent is launched (as typed; the demo shell's functions add flags)
-# and quit, and how its screen reads while it waits for input.
-AGENTS = {
-    "claude": {"launch": "claude", "quit": "/exit"},
-    "codex": {"launch": "codex", "quit": "/quit"},
-    "pi": {"launch": "pi", "quit": "/quit"},
-}
-TRUST = ["trust the files", "trust this folder", "trust the contents", "Do you trust"]
+# What is typed to launch each agent; the demo shell's functions add the flags.
+AGENTS = {"claude": "claude", "codex": "codex", "pi": "pi"}
+TRUST = ["trust the files", "trust this folder", "trust the contents", "do you trust"]
+PERMISSION = ["Do you want to proceed?", "Allow command?", "Would you like to run", "Approve?"]
 
 
 def log(msg):
@@ -62,7 +58,7 @@ class Demo:
         self.rec = None
         self.screens = os.path.join(self.work, "screens", args.agent)
         self.step = 0
-        env = {k: v for k, v in os.environ.items() if not k.startswith("ZELLIJ")}
+        env = {k: v for k, v in os.environ.items() if not k.startswith(("ZELLIJ", "CLAUDE", "T3CODE"))}
         env.update(
             AREEL_LIBRARY=self.lib,
             AREEL_BACKEND="zellij",
@@ -79,7 +75,8 @@ class Demo:
         os.makedirs(self.screens, exist_ok=True)
         os.makedirs(self.lib, mode=0o700, exist_ok=True)
         os.chmod(self.lib, 0o700)
-        repo = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip()
+        repo = subprocess.run(["git", "-C", os.path.dirname(os.path.abspath(__file__)), "rev-parse", "--show-toplevel"],
+                              capture_output=True, text=True, check=True).stdout.strip()
         co = self.a.checkout
         if os.path.exists(co):
             shutil.rmtree(co)
@@ -92,7 +89,7 @@ class Demo:
             f.write(f"""HISTFILE=/dev/null
 export GIT_PAGER=cat PAGER=cat
 PS1='\\[\\e[1;35m\\]agent-reel\\[\\e[0m\\] \\$ '
-claude() {{ command claude --plugin-dir {co}/agent-plugin --permission-mode acceptEdits "$@"; }}
+claude() {{ command claude --plugin-dir {co}/agent-plugin --permission-mode auto --disallowedTools Agent Task "$@"; }}
 codex() {{ command codex -s workspace-write -a never "$@"; }}
 pi() {{ PI_DISABLE_NATIVE_TEXT_CLIPBOARD=1 command pi "$@"; }}
 cd {co}
@@ -114,7 +111,9 @@ session_serialization false
         return subprocess.run(["zellij", *args], env=self.env, capture_output=True, text=True, check=check)
 
     def areel(self, *args):
-        out = subprocess.run(["areel", *args, "--library", self.lib], env=self.env, capture_output=True, text=True)
+        # From the checkout, so the library groups the recording under it.
+        out = subprocess.run(["areel", *args, "--library", self.lib], env=self.env, capture_output=True, text=True,
+                             cwd=self.a.checkout)
         if out.returncode != 0:
             raise SystemExit(f"areel {' '.join(args)}: {out.stderr.strip()}")
         return out.stdout
@@ -142,18 +141,16 @@ session_serialization false
     # --- screen --------------------------------------------------------------
 
     def screen(self):
-        path = os.path.join(self.work, "screen.txt")
-        self.zellij("--session", self.session, "action", "dump-screen", path, check=False)
-        try:
-            with open(path, errors="replace") as f:
-                return f.read()
-        except FileNotFoundError:
-            return ""
+        return self.zellij("--session", self.session, "action", "dump-screen", check=False).stdout
 
     def save(self, name):
         self.step += 1
         with open(os.path.join(self.screens, f"{self.step:02d}-{name}.txt"), "w") as f:
             f.write(self.screen())
+
+    def at_shell(self):
+        lines = [l for l in self.screen().splitlines() if l.strip()]
+        return bool(lines) and lines[-1].strip() == "agent-reel $"
 
     def wait_for(self, pred, what, timeout=60):
         end = time.time() + timeout
@@ -195,6 +192,18 @@ session_serialization false
             time.sleep(random.uniform(0.4, 0.7))
             os.write(self.fd, b"\r")
 
+    def answer_trust(self):
+        """Move the dialog's cursor to its "yes" choice, then confirm."""
+        lines = self.screen().splitlines()
+        cur = next(i for i, l in enumerate(lines) if l.lstrip().startswith(("❯", "›")))
+        near = range(max(0, cur - 3), min(len(lines), cur + 4))
+        yes = next(i for i in near if "yes" in lines[i].lower() or "trust and" in lines[i].lower())
+        for _ in range(abs(yes - cur)):
+            os.write(self.fd, b"\x1b[B" if yes > cur else b"\x1b[A")
+            time.sleep(0.4)
+        time.sleep(0.6)
+        os.write(self.fd, b"\r")
+
     def mark(self, label):
         if self.rec:
             self.areel("mark", label, self.rec)
@@ -213,20 +222,29 @@ session_serialization false
         time.sleep(1.5)
 
         self.mark(f"Start {self.a.agent}")
-        self.type(self.agent["launch"])
+        self.type(self.agent)
         self.settle("the agent to start", quiet=3, timeout=90, min_time=2)
-        if any(t in self.screen() for t in TRUST):
+        if any(t in self.screen().lower() for t in TRUST):
             self.save("trust")
             time.sleep(1.0)
-            os.write(self.fd, b"\r")
+            self.answer_trust()
             self.settle("the agent after the trust prompt", quiet=3, timeout=60)
         self.save("ready")
+        if self.at_shell():
+            raise SystemExit(f"{self.a.agent} exited at start; see {self.screens}")
 
         for label, prompt in zip(["Ask about web export", "Update the docs"], PROMPTS):
             time.sleep(1.0)
             self.mark(label)
             self.type(prompt)
             self.settle(f"the reply to {label!r}", quiet=self.a.quiet, timeout=600, min_time=4)
+            for _ in range(5):
+                if not any(p in self.screen() for p in PERMISSION):
+                    break
+                self.save("permission")
+                log("approving a permission prompt")
+                os.write(self.fd, b"\r")
+                self.settle(f"the reply to {label!r}", quiet=self.a.quiet, timeout=600)
             self.save(label.split()[0].lower())
             time.sleep(2.0)
 
@@ -237,17 +255,13 @@ session_serialization false
         time.sleep(0.8)
         for cmd in POPOVER:
             self.type(cmd)
-            self.settle(f"`{cmd}`", quiet=1.5, timeout=120)
+            time.sleep(0.5)
+            self.wait_for(lambda _: self.at_shell(), f"`{cmd}`", timeout=120)
             time.sleep(1.5)
         self.save("popover")
         time.sleep(1.5)
         self.type("exit")
-        time.sleep(1.5)
-
-        self.type(self.agent["quit"])
-        self.wait_for(lambda s: "agent-reel" in s.strip().splitlines()[-1] if s.strip() else False,
-                      "the shell after quitting", timeout=30)
-        time.sleep(1.5)
+        time.sleep(4.0)
         self.save("done")
         if self.rec:
             self.areel("stop", self.rec)

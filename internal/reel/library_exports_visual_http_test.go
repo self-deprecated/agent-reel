@@ -322,7 +322,7 @@ func TestExportsVisualFormRecipeRefusalsAndWarnings(t *testing.T) {
 	g.acknowledge()
 	page := visualHTTP(g, "GET", "/exports/new?recording="+g.id, "")
 	body := page.Body.String()
-	if page.Code != 200 || !strings.Contains(body, `<textarea class="control" name="recipe"`) || !strings.Contains(body, `class="derived-notice"`) || !strings.Contains(body, "visual-recording-export.md") || strings.Contains(body, "<script") {
+	if page.Code != 200 || !strings.Contains(body, `<textarea class="control" name="recipe"`) || !strings.Contains(body, `class="derived-notice"`) || !strings.Contains(body, "docs/exports.md") || strings.Contains(body, "<script") {
 		t.Fatalf("visual form %d %s", page.Code, body)
 	}
 	if strings.Contains(body, `"title":""`) {
