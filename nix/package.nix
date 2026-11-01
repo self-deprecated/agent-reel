@@ -41,7 +41,7 @@ in
     pname = "areel";
     version = "0.1.0";
     src = source;
-    vendorHash = "sha256-VVx1t1S7kxdnvrsVy3DIP9MX/VlEfcbTF15x/34bAzk=";
+    vendorHash = "sha256-5/Nxj0+Lw3GZw9CH6GTPVb+WBkKaVD0aApIWc5QjUZs=";
     subPackages = ["cmd/areel"];
     env.CGO_ENABLED = if stdenv.isDarwin then 1 else 0;
     ldflags = ["-s" "-w"];
