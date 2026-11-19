@@ -104,6 +104,7 @@ areel export latest demo.html --format web --single-file --redact secrets,homepa
 | `areel record` · `pause` · `resume` · `stop` | control the recording of this session |
 | `areel status` · `areel ls` | what's recording |
 | `areel import FILE` | an agent's conversation log (T3 Code, Claude Code, Codex, Pi) or a cast as a recording |
+| `areel t3-replay DB -o OUT` | a stretch of T3 Code work, animated as its window with the sidebar's threads: timeline, page or MP4 |
 | `areel mark [LABEL]` · `areel marks REC` | add and list marks |
 | `areel open` | the library web UI |
 | `areel search TEXT [REC]` | find text that was on screen |
@@ -120,6 +121,7 @@ areel export latest demo.html --format web --single-file --redact secrets,homepa
 
 - [Recording](docs/recording.md): sessions, pauses, sealing, recovery, keystrokes
 - [Importing conversations](docs/importing.md): agent logs as recordings, styles, live imports
+- [T3 Code replays](docs/t3-replay.md): one thread and its sidebar, animated for slides
 - [The library](docs/library.md): the web UI, search, colours, remote access
 - [Marks and agents](docs/marks-and-agents.md): marks, Claude Code, Codex, OpenCode and Pi hooks
 - [Exports](docs/exports.md): casts, video, web embeds, redaction

@@ -155,8 +155,10 @@ func (s *t3Source) Format() Format { return FormatT3 }
 func (s *t3Source) Close() error   { return s.db.Close() }
 
 func (s *t3Source) Read() ([]Event, error) {
+	// aggregate_kind lets SQLite use the (aggregate_kind, stream_id, sequence)
+	// index; without it a large database is scanned whole.
 	rows, e := s.db.Query(`select sequence, occurred_at, event_type, payload_json from orchestration_events
-		where stream_id = ? and sequence > ? order by sequence`, s.thread, s.after)
+		where aggregate_kind = 'thread' and stream_id = ? and sequence > ? order by sequence`, s.thread, s.after)
 	if e != nil {
 		return nil, e
 	}

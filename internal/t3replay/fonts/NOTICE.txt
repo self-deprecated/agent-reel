@@ -1,0 +1,13 @@
+Fonts embedded in T3 Code replay pages
+
+Inter 4.001 (InterVariable.ttf, nixpkgs inter-4.1)
+Copyright 2016 The Inter Project Authors. https://github.com/rsms/inter
+Inter.woff2 is a subset: the weight axis limited to 400-700, the optical-size
+axis dropped, and Latin, punctuation, arrows and box drawing kept.
+
+JetBrains Mono 2.304 (JetBrainsMono-Regular.ttf, nixpkgs jetbrains-mono-2.304)
+Copyright 2020 The JetBrains Mono Project Authors. https://github.com/JetBrains/JetBrainsMono
+JetBrainsMono.woff2 is a subset with the same characters.
+
+Both are licensed under the SIL Open Font License, Version 1.1: OFL-1.1.txt.
+Made with fontTools (varLib.instancer, pyftsubset).

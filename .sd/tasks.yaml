@@ -76,7 +76,7 @@ tasks:
       : "${AREEL_TEST_AVT:?Run inside nix develop for the locked avt helper}"
       export AREEL_AVT_CHECKPOINT="$AREEL_TEST_AVT"
       test -x "$AREEL_TEST_AVT"
-      go test -tags=video -count=1 -v ./internal/videoexport ./internal/reel
+      go test -tags=video -count=1 -v ./internal/videoexport ./internal/reel ./internal/t3replay
   video-race-check:
     desc: Explicit CGO-enabled real video qualification with the Go race detector
     run: |

@@ -18,7 +18,7 @@ func t3DB(t *testing.T) (string, func(thread, at, kind string, payload any)) {
 	}
 	t.Cleanup(func() { db.Close() })
 	for _, q := range []string{
-		`create table orchestration_events (sequence integer primary key autoincrement, stream_id text, event_type text, occurred_at text, payload_json text)`,
+		`create table orchestration_events (sequence integer primary key autoincrement, aggregate_kind text not null default 'thread', stream_id text, event_type text, occurred_at text, payload_json text)`,
 		`create table orchestration_v2_projection_threads (thread_id text, title text, updated_at text, deleted_at text)`,
 		`insert into orchestration_v2_projection_threads values ('aaaa1111', 'Older', '2026-10-16T09:00:00Z', null), ('bbbb2222', 'Newer', '2026-10-17T09:00:00Z', null), ('cccc3333', 'Gone', '2026-10-18T09:00:00Z', '2026-10-18T10:00:00Z')`,
 	} {

@@ -20,6 +20,7 @@ const Help = `areel — record terminal sessions into a private library
 Record
   record [TARGET]       start recording this (or the named) Zellij or tmux session
   import FILE           record an agent's conversation log or an asciicast
+  t3-replay DB -o OUT   animate a stretch of T3 Code work (timeline, page or video)
   pause|resume|stop|status [REC]  control a recording, or show its state
   mark [LABEL] [REC]    mark this moment of a live recording, with a label
   attach SESSION        zellij attach, capturing keys (areel keys on|off|pause)
@@ -33,8 +34,7 @@ Browse & export
   compose EDL [OUT]     render an EDL composition (see inspect REC, docs/compose.md)
 
 Maintain
-  doctor [REC]          check prerequisites, or verify one recording
-  recover REC           seal/recover a recording and safely remove its source
+  doctor [REC] | recover REC  check prerequisites or a recording | seal/recover one
   config | version      effective settings and their sources | the version
 
 REC is a recording ID, a unique prefix (4+ hex), @ (this target) or latest.
@@ -65,7 +65,7 @@ Docs: docs/integrations.md, docs/marks-and-agents.md (hooks), docs/niri.md
 `
 
 // visibleCommands and hiddenCommands drive unknown-command suggestions.
-var visibleCommands = []string{"record", "import", "pause", "resume", "stop", "status", "mark", "marks", "attach", "keys", "ls", "open", "export", "search", "inspect", "compose", "doctor", "recover", "index", "config", "version", "help"}
+var visibleCommands = []string{"record", "import", "t3-replay", "pause", "resume", "stop", "status", "mark", "marks", "attach", "keys", "ls", "open", "export", "search", "inspect", "compose", "doctor", "recover", "index", "config", "version", "help"}
 var hiddenCommands = []string{"ensure", "activity", "producer", "service", "link", "hook"}
 
 // renamedCommands maps removed command names to their replacement.
@@ -99,6 +99,8 @@ func CLI(args []string, out, errOut io.Writer) error {
 		return marksCLI(args, out, errOut)
 	case "import":
 		return importCLI(args, out, errOut)
+	case "t3-replay":
+		return t3ReplayCLI(args, out, errOut)
 	case "ls":
 		return listCLI(args, out, errOut)
 	case "open":
@@ -174,7 +176,7 @@ func helpCLI(args []string, out, errOut io.Writer) error {
 	case "integrations":
 		_, e := io.WriteString(out, helpIntegrations)
 		return e
-	case "record", "import", "ensure", "status", "pause", "resume", "stop", "mark", "marks", "ls", "open", "export", "search", "index", "compose", "inspect", "doctor", "recover", "config", "version", "attach", "hook":
+	case "record", "import", "t3-replay", "ensure", "status", "pause", "resume", "stop", "mark", "marks", "ls", "open", "export", "search", "index", "compose", "inspect", "doctor", "recover", "config", "version", "attach", "hook":
 		return CLI([]string{args[0], "--help"}, out, errOut)
 	case "activity", "producer", "service", "link", "keys":
 		if len(args) > 1 {
